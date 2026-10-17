@@ -2,13 +2,20 @@
 @import 'tailwindcss';
 
 :root {
-  --color-bg: #f7f8fa;
+  --color-bg: #f3f5f9;
   --color-surface: #ffffff;
-  --color-text: #111827;
-  --color-text-muted: #4b5563;
-  --color-border: #e5e7eb;
-  --color-primary: #1d4ed8;
+  --color-surface-2: #f8fafc;
+  --color-text: #0f172a;
+  --color-text-muted: #475569;
+  --color-border: #e2e8f0;
+  --color-primary: #2f5bea;
+  --color-primary-strong: #1e40af;
   --color-focus: #2563eb;
+  --color-brand: #0b1b33;
+  --color-brand-2: #13294b;
+  --color-brand-text: #e6ecf5;
+  --color-brand-muted: #94a3b8;
+  --color-accent: #f5a524;
   --color-tier-low: #15803d;
   --color-tier-medium: #b45309;
   --color-tier-high: #c2410c;
@@ -20,26 +27,33 @@
   --color-qr-light: #ffffff;
 
   --font-sans: 'Inter', 'Noto Sans Tamil', system-ui, sans-serif;
-  --radius-control: 6px;
-  --radius-card: 10px;
-  --radius-phone: 24px;
+  --radius-control: 8px;
+  --radius-card: 14px;
+  --radius-phone: 28px;
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.05), 0 4px 16px rgb(15 23 42 / 0.05);
+  --shadow-raised: 0 10px 40px rgb(11 27 51 / 0.25);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-bg: #0f1216;
-    --color-surface: #171b21;
-    --color-text: #e5e7eb;
-    --color-text-muted: #9ca3af;
-    --color-border: #2a3039;
-    --color-primary: #60a5fa;
+    --color-bg: #0b1220;
+    --color-surface: #121a2b;
+    --color-surface-2: #172036;
+    --color-text: #e5e9f0;
+    --color-text-muted: #9aa6b8;
+    --color-border: #243049;
+    --color-primary: #6b8cff;
+    --color-primary-strong: #93abff;
     --color-focus: #93c5fd;
+    --color-brand: #070e1c;
+    --color-brand-2: #0f1a30;
     --color-tier-low: #4ade80;
     --color-tier-medium: #fbbf24;
     --color-tier-high: #fb923c;
     --color-tier-very-high: #f87171;
     --color-success: #4ade80;
     --color-simulated: #c4b5fd;
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3);
   }
 }
 
@@ -51,6 +65,13 @@
   --color-text-muted: var(--color-text-muted);
   --color-border: var(--color-border);
   --color-primary: var(--color-primary);
+  --color-primary-strong: var(--color-primary-strong);
+  --color-surface-2: var(--color-surface-2);
+  --color-brand: var(--color-brand);
+  --color-brand-2: var(--color-brand-2);
+  --color-brand-text: var(--color-brand-text);
+  --color-brand-muted: var(--color-brand-muted);
+  --color-accent: var(--color-accent);
   --color-focus: var(--color-focus);
   --color-tier-low: var(--color-tier-low);
   --color-tier-medium: var(--color-tier-medium);
@@ -63,6 +84,7 @@
 
 html {
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
   background: var(--color-bg);
   color: var(--color-text);
 }

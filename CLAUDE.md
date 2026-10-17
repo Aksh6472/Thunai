@@ -166,6 +166,7 @@ make seed                       # python -m sim.seed --seed 42
 make dev                        # API :8000 (reload) + Vite :5173
 make demo                       # production-like local run (DEPLOYMENT.md §4)
 cd backend && uv run python -m sim.replay --scenario P1 --speed 4320
+make demo-data                  # reset + replay all scenario families (sample data on every screen)
 
 # quality
 make lint                       # ruff check, ruff format --check, mypy, oxlint, tsc --noEmit, prettier --check

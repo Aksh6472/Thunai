@@ -38,6 +38,7 @@ The full reference is [ENVIRONMENT.md](ENVIRONMENT.md), and the template is [.en
 | Roll back one migration | `uv run alembic downgrade -1` |
 | Seed demo data | `uv run python -m sim.seed --seed 42` (idempotent: it truncates, then inserts) |
 | Reset everything during the demo | `make demo-reset` or **Reset** in `/demo` (calls `POST /demo/reset`) |
+| Fill every screen with sample activity (browsing, not the stage demo) | `make demo-data`: reset, then replay all 13 scenario families |
 | Snapshot for backup | `docker compose exec db pg_dump -U thunai thunai > reports/demo-snapshot.sql` (synthetic data only) |
 | Restore the snapshot | `docker compose exec -T db psql -U thunai thunai < reports/demo-snapshot.sql` |
 

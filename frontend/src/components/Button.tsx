@@ -6,8 +6,8 @@ type Variant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'success'
 type Size = 'sm' | 'md' | 'lg' | 'xl'
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-primary text-white hover:opacity-90',
-  secondary: 'border border-border bg-surface text-text hover:bg-bg',
+  primary: 'bg-primary text-white shadow-sm hover:bg-primary-strong',
+  secondary: 'border border-border bg-surface text-text shadow-sm hover:bg-surface-2',
   danger: 'bg-tier-very-high text-white hover:opacity-90',
   success: 'bg-success text-white hover:opacity-90',
   ghost: 'text-primary underline-offset-2 hover:underline',
@@ -41,7 +41,7 @@ export function Button({
       type={type}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
-      className={`inline-flex items-center justify-center gap-2 rounded-[var(--radius-control)] font-semibold transition-opacity disabled:cursor-not-allowed disabled:opacity-50 ${VARIANTS[variant]} ${SIZES[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-[var(--radius-control)] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${VARIANTS[variant]} ${SIZES[size]} ${className}`}
       {...rest}
     >
       {loading && <Spinner />}

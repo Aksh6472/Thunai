@@ -37,4 +37,4 @@ export function Field({
 }
 
 export const inputClass =
-  'min-h-11 w-full rounded-[var(--radius-control)] border border-border bg-surface px-3 text-base text-text aria-[invalid=true]:border-tier-very-high'
+  'min-h-11 w-full rounded-[var(--radius-control)] border border-border bg-surface px-3 text-base text-text shadow-sm transition-colors focus:border-primary aria-[invalid=true]:border-tier-very-high'

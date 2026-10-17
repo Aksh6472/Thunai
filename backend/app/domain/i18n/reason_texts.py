@@ -31,6 +31,8 @@ FRI_RATING_NAMES = {
 def _age(hours: int) -> tuple[str, str]:
     if hours < 1:
         return "less than an hour", "ஒரு மணி நேரத்திற்கும் குறைவான நேரத்திற்கு"
+    if hours == 1:
+        return "1 hour", "1 மணி நேரத்திற்கு"
     if hours < 48:
         return f"{hours} hours", f"{hours} மணி நேரத்திற்கு"
     days = hours // 24

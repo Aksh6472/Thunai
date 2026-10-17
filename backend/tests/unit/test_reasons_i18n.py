@@ -71,3 +71,11 @@ def test_indian_grouping() -> None:
     assert group_indian(999) == "999"
     assert group_indian(1000) == "1,000"
     assert group_indian(100000) == "1,00,000"
+
+
+@pytest.mark.parametrize(
+    ("hours", "phrase"), [(0, "less than an hour"), (1, "1 hour before"), (2, "2 hours before")]
+)
+def test_payee_age_is_grammatical(hours: int, phrase: str) -> None:
+    text_en, _ = render("NEW_PAYEE", {"payee_age_minutes": hours * 60})
+    assert phrase in text_en

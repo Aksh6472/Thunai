@@ -68,7 +68,7 @@ make dev                      # API http://localhost:8000 · UI http://localhost
 
 Demo logins: `teller.priya`, `officer.rao`, `admin.demo`, `cust.kamala`, `cust.iqbal`, `cust.meena`. The password for all of them is the value of `THUNAI_SEED_PASSWORD` in your `.env`.
 
-**Run the demo.** Sign in as `admin.demo` → `/demo` → **Run P1** (classic digital arrest) and watch `/ops`, `/teller` and the console message / QR code for the trusted-contact link. Or from a terminal with the API running: `make replay SCENARIO=P1 SPEED=4320`. `make demo-reset` restores seed 42 in about half a second. The full script is [DEMO_SCRIPT.md](DEMO_SCRIPT.md).
+**Run the demo.** Sign in as `admin.demo` → `/demo` → **Run P1** (classic digital arrest) and watch `/ops`, `/teller` and the console message / QR code for the trusted-contact link. Or from a terminal with the API running: `make replay SCENARIO=P1 SPEED=4320`. `make demo-reset` restores seed 42 in about half a second. To browse with every screen populated, run `make demo-data` (API running): it resets, then replays all 13 synthetic scenario families, ending on P1. The full script is [DEMO_SCRIPT.md](DEMO_SCRIPT.md).
 
 ## Environment configuration
 

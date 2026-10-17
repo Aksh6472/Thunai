@@ -61,7 +61,7 @@ function CustomerAppScreens() {
 
   return (
     <PhoneFrame>
-      <header className="flex items-center justify-between gap-2 border-b border-border bg-primary px-4 py-3 text-white">
+      <header className="flex items-center justify-between gap-2 bg-gradient-to-r from-brand to-brand-2 px-4 py-3 text-white">
         <span className="font-bold">{t('cust.app', { bank: BANK_NAME })}</span>
         <LanguageToggle value={lang} onChange={setLang} />
       </header>
@@ -89,19 +89,28 @@ function CustomerAppScreens() {
           <TransferOutcome transferRef={screen.ref} onDone={() => setScreen({ name: 'home' })} />
         ) : (
           <section className="space-y-5 p-5">
-            <h2 className="text-[22px] font-bold">
+            <h2 className="text-[22px] font-bold tracking-tight">
               {t('cust.greeting', { name: overview.data.display_name })}
             </h2>
-            <ul className="space-y-3">
+            <div className="rounded-[var(--radius-card)] bg-gradient-to-br from-primary to-primary-strong p-5 text-white shadow-[var(--shadow-card)]">
+              <p className="text-sm text-white/80">{t('cust.total')}</p>
+              <p className="text-[30px] font-bold tracking-tight tabular-nums">
+                {formatINR(overview.data.accounts.reduce((sum, a) => sum + a.balance_paise, 0))}
+              </p>
+            </div>
+            <ul className="space-y-2">
               {overview.data.accounts.map((a) => (
                 <li
                   key={a.masked_number}
-                  className="rounded-[var(--radius-card)] border border-border p-4"
+                  className="flex items-center justify-between gap-3 rounded-[var(--radius-card)] border border-border bg-surface-2 px-4 py-3"
                 >
-                  <p className="text-base text-text-muted">
-                    {a.account_type} · {a.masked_number}
-                  </p>
-                  <p className="text-[22px] font-bold tabular-nums">{formatINR(a.balance_paise)}</p>
+                  <span>
+                    <span className="block text-sm font-semibold">{a.account_type}</span>
+                    <span className="block text-sm text-text-muted">{a.masked_number}</span>
+                  </span>
+                  <span className="text-lg font-bold tabular-nums">
+                    {formatINR(a.balance_paise)}
+                  </span>
                 </li>
               ))}
             </ul>

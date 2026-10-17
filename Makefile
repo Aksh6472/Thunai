@@ -6,10 +6,10 @@ envval = $(shell grep -E '^$(1)=' .env 2>/dev/null | head -1 | cut -d= -f2- | se
 API_PORT := $(or $(call envval,THUNAI_API_PORT),8000)
 
 .PHONY: help db db-down dev frontend-env test test-backend test-frontend lint format \
-        migrate seed demo demo-reset replay snapshot restore-snapshot bench eval e2e security
+        migrate seed demo demo-reset demo-data replay snapshot restore-snapshot bench eval e2e security
 
 help:
-	@echo "make db | db-down | migrate | seed | dev | demo-reset | replay | test | lint | format"
+	@echo "make db | db-down | migrate | seed | dev | demo-reset | demo-data | replay | test | lint | format"
 	@echo "make demo | e2e | eval | bench | security"
 
 db:
@@ -43,6 +43,9 @@ seed:
 
 demo-reset:  # needs the API running (make dev / make demo)
 	cd backend && uv run python -m sim.demo_reset
+
+demo-data:  # reset, then replay every scenario family so all screens have sample data (API running)
+	cd backend && uv run python -m sim.demo_data
 
 replay:  # make replay SCENARIO=P1 SPEED=4320 (API running)
 	cd backend && uv run python -m sim.replay --scenario $(or $(SCENARIO),P1) --speed $(or $(SPEED),4320)

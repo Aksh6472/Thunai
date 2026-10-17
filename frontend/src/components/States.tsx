@@ -14,7 +14,10 @@ export function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center gap-2 px-6 py-12 text-center">
-      <span aria-hidden="true" className="text-3xl text-text-muted">
+      <span
+        aria-hidden="true"
+        className="grid h-14 w-14 place-items-center rounded-full bg-primary/10 text-2xl text-primary"
+      >
         {icon}
       </span>
       <p className="font-semibold">{title}</p>
@@ -68,19 +71,19 @@ export function Card({
 }) {
   return (
     <section
-      className={`rounded-[var(--radius-card)] border border-border bg-surface shadow-[0_1px_2px_rgb(0_0_0/0.06)] ${className}`}
+      className={`rounded-[var(--radius-card)] border border-border bg-surface shadow-[var(--shadow-card)] ${className}`}
     >
       {(title || actions) && (
-        <header className="flex items-center justify-between gap-2 border-b border-border px-4 py-2">
+        <header className="flex items-center justify-between gap-2 border-b border-border px-5 py-3">
           {title && (
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-text-muted">
+            <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.08em] text-text-muted before:h-3.5 before:w-1 before:rounded-full before:bg-primary before:content-['']">
               {title}
             </h2>
           )}
           {actions}
         </header>
       )}
-      <div className="p-4">{children}</div>
+      <div className="p-5">{children}</div>
     </section>
   )
 }

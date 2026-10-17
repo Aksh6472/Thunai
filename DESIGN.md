@@ -226,13 +226,18 @@ Tokens are defined in `frontend/src/styles/tokens.css` as CSS variables and mapp
 
 | Token | Light | Dark | Use |
 |---|---|---|---|
-| `--color-bg` | `#F7F8FA` | `#0F1216` | Page background |
-| `--color-surface` | `#FFFFFF` | `#171B21` | Cards |
-| `--color-text` | `#111827` | `#E5E7EB` | Body text |
-| `--color-text-muted` | `#4B5563` | `#9CA3AF` | Secondary text |
-| `--color-border` | `#E5E7EB` | `#2A3039` | Dividers |
-| `--color-primary` | `#1D4ED8` | `#60A5FA` | Primary actions, links |
+| `--color-bg` | `#F3F5F9` | `#0B1220` | Page background |
+| `--color-surface` | `#FFFFFF` | `#121A2B` | Cards |
+| `--color-surface-2` | `#F8FAFC` | `#172036` | Hover rows, inset panels |
+| `--color-text` | `#0F172A` | `#E5E9F0` | Body text |
+| `--color-text-muted` | `#475569` | `#9AA6B8` | Secondary text |
+| `--color-border` | `#E2E8F0` | `#243049` | Dividers |
+| `--color-primary` | `#2F5BEA` | `#6B8CFF` | Primary actions, links |
+| `--color-primary-strong` | `#1E40AF` | `#93ABFF` | Primary hover, gradients |
 | `--color-focus` | `#2563EB` | `#93C5FD` | Focus ring |
+| `--color-brand` / `--color-brand-2` | `#0B1B33` / `#13294B` | `#070E1C` / `#0F1A30` | Staff header, login panel, customer app bar |
+| `--color-brand-text` / `--color-brand-muted` | `#E6ECF5` / `#94A3B8` | same | Text on brand backgrounds |
+| `--color-accent` | `#F5A524` | same | Logo tick, clock dot, avatar initials (never a status) |
 | `--color-tier-low` | `#15803D` | `#4ADE80` | LOW |
 | `--color-tier-medium` | `#B45309` | `#FBBF24` | MEDIUM |
 | `--color-tier-high` | `#C2410C` | `#FB923C` | HIGH |
@@ -250,8 +255,9 @@ Tier backgrounds use a 10% tint of the tier color, with the text in the full tie
 
 ### 7.3 Spacing, radius, elevation
 - The spacing scale is 4 px based: 4, 8, 12, 16, 24, 32, 48.
-- Radius: 6 px (inputs and buttons), 10 px (cards), 24 px (phone frame).
-- Elevation: cards get `0 1px 2px rgb(0 0 0 / 0.06)`. Dialogs get `0 10px 30px rgb(0 0 0 / 0.2)`.
+- Radius: 8 px (inputs and buttons), 14 px (cards), 28 px (phone frame).
+- Elevation: cards use `--shadow-card` (`0 1px 2px` + `0 4px 16px` at 5% slate). The phone frame and dialogs use `--shadow-raised`.
+- Staff screens sit under a dark brand header (logo, nav, simulated clock, user avatar). KPI tiles carry a tier-coloured edge and icon; queue rows carry a tier-coloured left edge. Colour is never the only signal: the tier badge text stays.
 
 ### 7.4 Motion
 150–200 ms ease-out for highlights and toasts. New-row highlight: fade the background from tier tint to transparent over 2 s. Everything is disabled under `prefers-reduced-motion`.
