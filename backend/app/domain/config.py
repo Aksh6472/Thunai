@@ -5,17 +5,13 @@ Pure: this module validates an already-parsed mapping. Reading the YAML file is 
 """
 
 from datetime import date
-from enum import StrEnum
 from typing import Any, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.domain.enums import Tier
 
-class Tier(StrEnum):
-    LOW = "LOW"
-    MEDIUM = "MEDIUM"
-    HIGH = "HIGH"
-    VERY_HIGH = "VERY_HIGH"
+__all__ = ["ScoringConfig", "Tier"]
 
 
 class _Frozen(BaseModel):

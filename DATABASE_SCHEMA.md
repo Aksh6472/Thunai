@@ -88,6 +88,8 @@ There is deliberately **no age, gender, address or ID number** ([AI_DESIGN.md](A
 | maturity_date | DATE | NULL. Required when `account_type IN ('FD','RD')` (CHECK) |
 | status | TEXT | CHECK IN (`ACTIVE`,`CLOSED`) |
 
+UNIQUE `(customer_id, masked_number)`: the API refers to accounts by their masked number (`from_account`, `account_ref`).
+
 ### 3.4 `payees`
 | Column | Type | Constraints |
 |---|---|---|
@@ -147,6 +149,7 @@ The latest row per `(customer_id, consent_type)` wins. Index on `(customer_id, c
 | payload | JSONB | NOT NULL DEFAULT '{}' (validated per type by Pydantic) |
 | stage | TEXT | NULL. CHECK IN (`S1_LIQUIDATION`,`S2_POOLING`,`S3_NEW_PAYEE`). Set by the stage tracker |
 | received_at | TIMESTAMPTZ | NOT NULL DEFAULT now() |
+| request_hash | TEXT | NOT NULL. SHA-256 of the canonical request body, so a replay with a different body gets 409 `IDEMPOTENCY_CONFLICT` (API_SPEC §2.3) |
 
 Index: `(customer_id, occurred_at DESC)`.
 
@@ -167,8 +170,9 @@ Index: `(customer_id, occurred_at DESC)`.
 | executed_at | TIMESTAMPTZ | NULL |
 | cancelled_reason | TEXT | NULL, CHECK IN (`CUSTOMER_CANCELLED`,`OFFICER_CANCELLED`,`CONTACT_REPORTED_SCAM_OFFICER_CONFIRMED`) |
 | scenario_label | TEXT | NULL. Evaluation only, written by the simulator through a demo-only field. **Never read by the engine** (enforced by test) |
+| request_hash | TEXT | NOT NULL. SHA-256 of the canonical request body, for the idempotency conflict check |
 
-Indexes: `(customer_id, initiated_at DESC)`, `(status)`.
+Indexes: `(customer_id, initiated_at DESC)`, `(status)`, `(payee_id)` (prior transfers per payee).
 
 Allowed status transitions (enforced in `hold_service`):
 `PENDING → EXECUTED | WARNED | HELD`

@@ -9,8 +9,8 @@ API_PORT := $(or $(call envval,THUNAI_API_PORT),8000)
         migrate seed demo demo-reset eval e2e security
 
 help:
-	@echo "make db | db-down | dev | test | lint | format    (available now)"
-	@echo "make migrate | seed | demo | demo-reset | eval | e2e | security    (added by later tasks)"
+	@echo "make db | db-down | migrate | dev | test | lint | format    (available now)"
+	@echo "make seed | demo | demo-reset | eval | e2e | security    (added by later tasks)"
 
 db:
 	docker compose up -d --wait db
@@ -35,6 +35,9 @@ test-backend:
 test-frontend:
 	cd frontend && npx vitest run
 
+migrate:
+	cd backend && uv sync && uv run alembic upgrade head
+
 lint:
 	cd backend && uv run ruff check . && uv run ruff format --check . && uv run mypy
 	cd frontend && npm run -s lint && npm run -s typecheck && npm run -s format:check
@@ -44,8 +47,6 @@ format:
 	cd frontend && npm run -s format
 
 # ---- Added by later tasks; fail loudly until then (CLAUDE.md §11) ----
-migrate:
-	@echo "Not implemented yet: T-008 (Alembic)"; exit 1
 seed:
 	@echo "Not implemented yet: T-009 / T-022 (sim.seed)"; exit 1
 demo:

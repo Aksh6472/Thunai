@@ -1,11 +1,23 @@
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Iterator
 
 import httpx
 import pytest
+from alembic import command
+from alembic.config import Config
 from fastapi import FastAPI
+from sqlalchemy import Engine
+from sqlalchemy.orm import Session, sessionmaker
 
-from app.core.settings import Settings, load_settings
+from app.core.settings import BACKEND_DIR, Settings, load_settings
+from app.db import make_engine
 from app.main import create_app
+
+
+def alembic_config(url: str) -> Config:
+    cfg = Config(str(BACKEND_DIR / "alembic.ini"))
+    cfg.attributes["url"] = url
+    cfg.attributes["configure_logger"] = False
+    return cfg
 
 
 @pytest.fixture
@@ -26,9 +38,52 @@ def test_settings() -> Settings:
     )
 
 
+@pytest.fixture(scope="session")
+def migrated_engine(test_settings: Settings) -> Iterator[Engine]:
+    """The test DB, rebuilt from migrations once per session."""
+    cfg = alembic_config(test_settings.database_url)
+    command.downgrade(cfg, "base")
+    command.upgrade(cfg, "head")
+    engine = make_engine(test_settings.database_url)
+    yield engine
+    engine.dispose()
+
+
 @pytest.fixture
-def app(test_settings: Settings) -> FastAPI:
-    return create_app(test_settings)
+def db(migrated_engine: Engine) -> Iterator[Session]:
+    """A session inside an outer transaction that is rolled back after the test.
+
+    Service code may call commit(): with create_savepoint it only releases a SAVEPOINT.
+    """
+    connection = migrated_engine.connect()
+    outer = connection.begin()
+    session = Session(
+        bind=connection,
+        join_transaction_mode="create_savepoint",
+        expire_on_commit=False,
+        autoflush=False,
+    )
+    try:
+        yield session
+    finally:
+        session.close()
+        outer.rollback()
+        connection.close()
+
+
+@pytest.fixture
+def app(test_settings: Settings, request: pytest.FixtureRequest) -> FastAPI:
+    application = create_app(test_settings)
+    if "db" in request.fixturenames:
+        # Route every request session through the test's rolled-back connection.
+        session: Session = request.getfixturevalue("db")
+        application.state.session_factory = sessionmaker(
+            bind=session.get_bind(),
+            join_transaction_mode="create_savepoint",
+            expire_on_commit=False,
+            autoflush=False,
+        )
+    return application
 
 
 @pytest.fixture

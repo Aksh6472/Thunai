@@ -15,7 +15,7 @@ The full specification of each task (steps, acceptance, tests) is in [IMPLEMENTA
 | T-004 | Local Postgres and env | WS3 | P0 | 0.5 | T-001 | M0 | Claude | done — `make db` healthy on port 5433; `thunai` and `thunai_test` reachable via psycopg |
 | T-006 | Scoring config YAML and loader | WS2 | P0 | 1 | T-002 | M0 | Claude | done — loader in `app/core/scoring_config.py` (domain stays I/O-free); not yet wired into startup (T-005) |
 | T-005 | Settings, logging, error envelope, `/readyz` | WS3 | P0 | 2 | T-002, T-004 | M1 | Claude | done — startup now loads the scoring config (fail closed) |
-| T-008 | ORM models and migration 0001 | WS3 | P0 | 3 | T-004, T-005 | M1 | | todo |
+| T-008 | ORM models and migration 0001 | WS3 | P0 | 3 | T-004, T-005 | M1 | Claude | done — adds `request_hash` columns and account/payee indexes (DATABASE_SCHEMA updated) |
 | T-007 | Clock abstraction | WS2 | P0 | 1 | T-005, T-008 | M1 | | todo |
 | T-025 | Baseline computation | WS2 | P0 | 1.5 | T-006 | M1 | | todo |
 | T-027 | Signal adapters (FRI mock, call, teller cap) | WS2 | P0 | 1.5 | T-006 | M1 | | todo |
