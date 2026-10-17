@@ -6,7 +6,7 @@ or is explicitly public (CLAUDE.md §10).
 
 from collections.abc import Callable, Iterator
 
-from fastapi import Depends, Request
+from fastapi import BackgroundTasks, Depends, Request
 from sqlalchemy.orm import Session
 
 from app.core.clock import Clock
@@ -15,6 +15,7 @@ from app.core.rate_limit import RateLimiter
 from app.core.security import Principal, decode_access_token, service_key_matches
 from app.core.settings import Settings
 from app.domain.enums import Role
+from app.services.context import Ctx
 
 SERVICE_KEY_HEADER = "X-Thunai-Service-Key"
 USER_LIMIT = (300, 60)
@@ -118,3 +119,18 @@ def require_staff_or_service(*roles: Role) -> Callable[..., Principal]:
         return principal
 
     return dependency
+
+
+def get_ctx(request: Request, background: BackgroundTasks) -> Ctx:
+    state = request.app.state
+    return Ctx(
+        settings=state.settings,
+        cfg=state.scoring_config,
+        clock=state.clock,
+        fri=state.fri_client,
+        console=state.console_notifier,
+        real_notifier=state.real_notifier,
+        session_factory=state.session_factory,
+        limiter=state.rate_limiter,
+        schedule=background.add_task,
+    )

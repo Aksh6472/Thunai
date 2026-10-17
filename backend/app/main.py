@@ -1,7 +1,7 @@
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1 import auth, health, ingest
+from app.api.v1 import auth, customer, health, holds, ingest, transfers, trusted
 from app.core.branding import PRODUCT_NAME
 from app.core.clock import Clock, RealClock, SimClock
 from app.core.errors import install_error_handlers
@@ -11,6 +11,9 @@ from app.core.rate_limit import RateLimiter
 from app.core.scoring_config import load_scoring_config
 from app.core.settings import Settings, get_settings
 from app.db import make_engine, make_session_factory
+from app.integrations.fri.mock import MockFriClient
+from app.integrations.notifier.console import ConsoleNotifier
+from app.integrations.notifier.factory import make_real_notifier
 
 API_PREFIX = "/api/v1"
 
@@ -32,6 +35,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     clock: Clock = SimClock(session_factory) if settings.demo_mode else RealClock()
     app.state.clock = clock
     app.state.rate_limiter = RateLimiter(enabled=settings.rate_limits_enabled)
+    app.state.fri_client = MockFriClient(timeout_ms=settings.fri_timeout_ms)  # SIMULATED
+    app.state.console_notifier = ConsoleNotifier()
+    app.state.real_notifier = make_real_notifier(settings)
 
     install_error_handlers(app)
     app.add_middleware(
@@ -52,6 +58,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     v1.include_router(health.router)
     v1.include_router(auth.router)
     v1.include_router(ingest.router)
+    v1.include_router(transfers.router)
+    v1.include_router(customer.router)
+    v1.include_router(holds.router)
+    v1.include_router(trusted.router)
     app.include_router(v1)
 
     return app

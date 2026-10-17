@@ -176,7 +176,7 @@ Indexes: `(customer_id, initiated_at DESC)`, `(status)`, `(payee_id)` (prior tra
 
 Allowed status transitions (enforced in `hold_service`):
 `PENDING → EXECUTED | WARNED | HELD`
-`WARNED → EXECUTED | CANCELLED`
+`WARNED → EXECUTED | CANCELLED | HELD` (HELD only by teller-checklist escalation, API_SPEC §7)
 `HELD → EXECUTED | CANCELLED`
 
 ### 3.9 `customer_baselines`
@@ -267,14 +267,15 @@ stateDiagram-v2
     [*] --> AWAITING_OFFICER: VERY_HIGH, or no active contact
     AWAITING_CONTACT --> RELEASED: contact CONFIRM_GENUINE (HIGH only)
     AWAITING_CONTACT --> AWAITING_OFFICER: REPORT_SUSPICIOUS / CANNOT_REACH / cooling-off expired / escalated to VERY_HIGH
-    AWAITING_CONTACT --> CANCELLED: customer cancels
+    AWAITING_CONTACT --> CANCELLED: customer cancels / officer CANCEL_TRANSFER
+    AWAITING_CONTACT --> RELEASED: officer RELEASE (note required)
     AWAITING_OFFICER --> RELEASED: officer RELEASE (note required)
     AWAITING_OFFICER --> CANCELLED: officer CANCEL_TRANSFER (note) / customer cancels
     RELEASED --> [*]
     CANCELLED --> [*]
 ```
 
-A VERY_HIGH hold still notifies the trusted contact, but it starts in `AWAITING_OFFICER`. The contact's response is recorded in `contact_response` and shown to the officer.
+The table lives in `app/domain/transitions.py` and is tested pair by pair. A VERY_HIGH hold still notifies the trusted contact, but it starts in `AWAITING_OFFICER`. The contact's response is recorded in `contact_response` and shown to the officer.
 
 ### 3.14 `contact_requests`
 | Column | Type | Constraints |

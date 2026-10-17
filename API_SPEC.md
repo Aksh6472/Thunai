@@ -78,8 +78,8 @@ Rate limiting is bypassed when `THUNAI_ENV=test` (unit and integration tests, an
  "decision": "ALLOW" | "WARN" | "HOLD",
  "tier": "LOW" | "MEDIUM" | "HIGH" | "VERY_HIGH",
  "score": 100, "raw_score": 115, "reasons": [Reason], "overrides_applied": ["FRI_VERY_HIGH_FLOOR"],
- "hold_id": "uuid" | null, "assessment_id": "uuid", "config_version": "scoring_v1@2026-10-17",
- "assessed_at": "…"}
+ "hold_id": "uuid" | null, "assessment_id": "uuid", "trigger": "INITIAL" | "TELLER_CHECKLIST",
+ "config_version": "scoring_v1@2026-10-17", "assessed_at": "…"}
 ```
 
 Enum values are exactly those in [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md).
@@ -185,7 +185,7 @@ Returns the transfer status plus the latest `AssessmentResult`.
 |---|---|---|
 | `GET /customer/overview` | Accounts (masked) and payees | → `{accounts:[…], payees:[…], trusted_contact:{display_name, phone_last4, status, effective_from} \| null}` |
 | `POST /customer/transfers` | Initiate a transfer from the app (channel APP) | Same body as `/transfers/assess` minus `customer_ref`/`channel`/`scenario_label` → `{transfer_ref, transfer_status, decision, hold_id?, message_key}`. This is a **customer-safe** response: no score, tier detail or reasons (ADR-013, SECURITY T-19). `message_key` selects the generic copy in [DESIGN.md](DESIGN.md) §6.3. The full `AssessmentResult` is still stored and visible to staff. 422 `INSUFFICIENT_BALANCE` if the amount exceeds the balance |
-| `GET /customer/transfers/{transfer_ref}` | Poll status | → `{transfer_status, decision, hold_status?, message_key}` |
+| `GET /customer/transfers/{transfer_ref}` | Poll status | → `{transfer_ref, transfer_status, decision, hold_id?, hold_status?, message_key, contact_asked?: {display_name, relationship}}`. `message_key` is one of `transfer.executed`, `transfer.warned`, `transfer.held`, `transfer.cancelled`. `contact_asked` is set once the trusted contact has been messaged (the hold screen's "We have messaged Arun (son)"). `POST /customer/transfers` returns the same shape |
 | `POST /customer/transfers/{transfer_ref}/warning-response` | Respond to a WARN | `{"action": "CONTINUE" \| "CANCEL"}` → 200 `{transfer_status}`. 409 if the transfer is not WARNED |
 | `POST /customer/transfers/{transfer_ref}/cancel` | Cancel a held transfer | → 200 `{transfer_status: "CANCELLED"}` |
 | `POST /customer/consents` | Grant or revoke a consent (FR-23) | `{"consent_type": "CALL_SIGNAL", "granted": true, "text_version": "call_signal_v1"}` → 201 |
@@ -206,7 +206,7 @@ Items:
 Sort: VERY_HIGH first, then `cooling_off_until` ascending.
 
 ### `GET /holds/{id}` (TELLER, OFFICER, ADMIN)
-Returns the full hold plus `assessments: [AssessmentResult…]` (history), `episode` (stages and `watch_history`), `contact_requests: [{channel, delivery_status, sent_at, opened_at, responded_at, response}]` (never tokens), and `report_id | null`.
+Returns the full hold plus `customer`, `transfer` (masked source account), `payee` (staff only: bank, IFSC, masked account, last 4 of the linked number), `assessments: [AssessmentResult…]` (history), `episode` (stages and `watch_history`), `trusted_contact` (masked, with `active`), `contact_requests: [{channel, delivery_status, delivery_error, sent_at, expires_at, opened_at, responded_at, response}]` (never tokens), `report_id | null`, and `audit` (the last 10 entries for the hold).
 
 ### `POST /holds/{id}/officer-decision` (OFFICER)
 ```json
@@ -220,10 +220,12 @@ Returns the full hold plus `assessments: [AssessmentResult…]` (history), `epis
 | CANCEL_TRANSFER | The hold becomes `CANCELLED` and the transfer `CANCELLED`. The episode becomes `CLOSED_CONFIRMED_RISK` |
 | KEEP_HOLDING | No state change. The note is audited |
 
+The officer may decide while the hold is `AWAITING_CONTACT` or `AWAITING_OFFICER` (FR-11: "trusted-contact confirmation **or** officer review"). The response is the updated hold detail (as `GET /holds/{id}`).
+
 Errors: 409 `INVALID_STATE_TRANSITION` if the hold is already resolved.
 
 ### `POST /holds/{id}/resend-contact` (TELLER, OFFICER)
-Expires earlier links and sends a new one. Returns 409 if there is no active contact or the hold is resolved.
+Expires earlier links and sends a new one. Returns 202 `{contact_request_id, status: "QUEUED"}`, 409 if there is no active contact or the hold is resolved, and 429 after 3 resends per hold per hour.
 
 ---
 

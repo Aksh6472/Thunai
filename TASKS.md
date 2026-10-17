@@ -29,10 +29,10 @@ The full specification of each task (steps, acceptance, tests) is in [IMPLEMENTA
 | T-032 | Design tokens and core components | WS4 | P0 | 3 | T-003 | M1 | | todo |
 | T-011 | Frontend auth | WS4 | P0 | 2 | T-003, T-010, T-032 | M1 | | todo |
 | T-012 | Event and call-signal ingestion | WS3 | P0 | 3 | T-008, T-010, T-026 | M2 | Claude | done — idempotent, per-customer lock, HMAC/Fernet on receipt; hero watch 15→40→63 via API |
-| T-013 | Transfer assessment orchestration | WS3+WS2 | P0 | 3 | T-012, T-025–T-029 | M2 | | todo |
-| T-014 | Hold lifecycle and officer decision | WS3 | P0 | 3 | T-013 | M2 | | todo |
-| T-016 | Notifier (console Must; Twilio/Telegram Should) | WS5 | P0 | 2 | T-005 | M2 | | todo |
-| T-015 | Trusted-contact requests and responses | WS3 | P0 | 3 | T-014, T-016 | M2 | | todo |
+| T-013 | Transfer assessment orchestration | WS3+WS2 | P0 | 3 | T-012, T-025–T-029 | M2 | Claude | done — fail-closed 503, idempotent, FRI timeout → info reason, snapshot replay test |
+| T-014 | Hold lifecycle and officer decision | WS3 | P0 | 3 | T-013 | M2 | Claude | done — transition table, officer decision (note 10–1000), lazy cooling-off expiry |
+| T-016 | Notifier (console Must; Twilio/Telegram Should) | WS5 | P0 | 2 | T-005 | M2 | Claude | done — console always + Twilio/Telegram via httpx, FAILED → console fallback |
+| T-015 | Trusted-contact requests and responses | WS3 | P0 | 3 | T-014, T-016 | M2 | Claude | done — single-use SHA-256 tokens, concurrent double submit → one 200 / one 410 |
 | T-024 | Scenario replayer | WS1 | P0 | 2.5 | T-012, T-013, T-023 | M2 | | todo |
 | T-021 | Demo control endpoints | WS1 | P0 | 2 | T-024, T-007 | M2 | | todo |
 | T-017 | Teller endpoints (checklist, script) | WS3 | P0 | 2.5 | T-013, T-014 | M2 | | todo |
