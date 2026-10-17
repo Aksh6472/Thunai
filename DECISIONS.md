@@ -109,6 +109,13 @@ Format: **Context → Decision → Alternatives → Consequences**. Status is `A
   6. **Cooling-off and trusted-contact activation** are env settings only (`THUNAI_COOLING_OFF_MINUTES`, `THUNAI_TRUSTED_CONTACT_ACTIVATION_HOURS`), not keys in `scoring_v1.yaml`, so there is one source of truth.
 - **Consequences:** effective NEW_PAYEE windows are < 3 h, < 25 h and < 169 h. This is disclosed here and in AI_DESIGN §6.1. Tuning seeds: none viewed.
 
+## ADR-021 Frontend additions: QR code, Playwright with installed Chrome, code splitting — Accepted (2026-10-17, T-032..T-044)
+- **Decision:**
+  1. `uqr@0.1.3` (MIT, zero dependencies) encodes the QR code for the console-message fallback (DEMO_SCRIPT's default). The matrix is drawn as SVG paths in React, so no `innerHTML` (SECURITY T-10).
+  2. `@playwright/test@1.56.1` for E2E. It drives the **installed Google Chrome** (`channel: 'chrome'`) because the bundled Chromium download stalled on the build machine; `PW_CHANNEL=chromium` switches back after `npx playwright install chromium`. E2E runs on ports 8020/5180 against `thunai_test`, with `THUNAI_ENV=test` (rate limits off, TESTING §2.4).
+  3. Staff and customer screens are lazy-loaded so the trusted-contact page loads ≈ 127 KB gzipped (DESIGN §2 budget: 150 KB excluding fonts) and never loads Recharts.
+- **Consequences:** two new dev/runtime dependencies, both pinned exactly.
+
 **Team approval (2026-10-17):** ADR-002 (fixed points table, no trained model), ADR-010 (no age in scoring), ADR-011 (72 h activation), ADR-012 (officer-only release at VERY_HIGH) and ADR-013 (generic customer message) were explicitly approved by the team.
 
 ---

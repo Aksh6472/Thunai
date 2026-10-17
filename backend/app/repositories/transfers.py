@@ -66,3 +66,18 @@ def contact_request_by_hash(session: Session, token_hash: str) -> ContactRequest
 
 def report_for_hold(session: Session, hold_id: uuid.UUID) -> FraudReport | None:
     return session.scalar(select(FraudReport).where(FraudReport.hold_id == hold_id))
+
+
+def recent_for_customer(
+    session: Session, customer_id: uuid.UUID, limit: int
+) -> list[tuple[Transfer, str]]:
+    from app.models import Payee
+
+    rows = session.execute(
+        select(Transfer, Payee.display_name)
+        .join(Payee, Payee.id == Transfer.payee_id)
+        .where(Transfer.customer_id == customer_id)
+        .order_by(Transfer.initiated_at.desc(), Transfer.id)
+        .limit(limit)
+    ).all()
+    return [(row[0], row[1]) for row in rows]

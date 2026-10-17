@@ -10,7 +10,7 @@ API_PORT := $(or $(call envval,THUNAI_API_PORT),8000)
 
 help:
 	@echo "make db | db-down | migrate | seed | dev | demo-reset | replay | test | lint | format"
-	@echo "make eval | bench | security | demo | e2e"
+	@echo "make demo | e2e | eval | bench | security"
 
 db:
 	docker compose up -d --wait db
@@ -62,10 +62,16 @@ format:
 	cd frontend && npm run -s format
 
 # ---- Added by later tasks; fail loudly until then (CLAUDE.md §11) ----
-demo:
-	@echo "Not implemented yet: T-047"; exit 1
-e2e:
-	@echo "Not implemented yet: T-044"; exit 1
+demo: frontend-env  # production-like local run (DEPLOYMENT.md §4): built SPA, 1 API worker, LAN-reachable
+	docker compose up -d --wait db
+	cd backend && uv run alembic upgrade head
+	cd frontend && npm run build
+	@trap 'kill 0' EXIT; \
+	(cd backend && uv run uvicorn app.main:app --host 0.0.0.0 --port $(API_PORT) --workers 1) & \
+	(cd frontend && npx vite preview --host 0.0.0.0 --port 5173) & \
+	wait
+e2e:  # Playwright against a test-DB stack on ports 8020/5180 (installed Chrome; PW_CHANNEL=chromium to override)
+	cd frontend && npx playwright test
 security:  # pip-audit, npm audit (prod deps), gitleaks over git history (Docker image, pinned)
 	cd backend && uv run pip-audit
 	cd frontend && npm audit --omit=dev

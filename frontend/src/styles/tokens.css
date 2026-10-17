@@ -15,6 +15,9 @@
   --color-tier-very-high: #b91c1c;
   --color-success: #15803d;
   --color-simulated: #6d28d9;
+  /* QR codes stay black on white in both themes so phones can scan them */
+  --color-qr-dark: #000000;
+  --color-qr-light: #ffffff;
 
   --font-sans: 'Inter', 'Noto Sans Tamil', system-ui, sans-serif;
   --radius-control: 6px;

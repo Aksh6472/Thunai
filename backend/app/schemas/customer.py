@@ -34,6 +34,14 @@ class CustomerContactOut(ResponseModel):
     effective_from: datetime
 
 
+class RecentTransferOut(ResponseModel):
+    transfer_ref: str
+    payee_name: str
+    amount_paise: int
+    transfer_status: str
+    initiated_at: datetime
+
+
 class CustomerOverview(ResponseModel):
     customer_ref: str
     display_name: str
@@ -42,6 +50,7 @@ class CustomerOverview(ResponseModel):
     payees: list[CustomerPayeeOut]
     trusted_contact: CustomerContactOut | None
     consents: dict[str, bool]
+    recent_transfers: list[RecentTransferOut]
 
 
 class ConsentIn(RequestModel):

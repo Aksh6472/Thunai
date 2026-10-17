@@ -22,6 +22,7 @@ from app.schemas.customer import (
     CustomerContactOut,
     CustomerOverview,
     CustomerPayeeOut,
+    RecentTransferOut,
     TrustedContactIn,
     TrustedContactOut,
 )
@@ -101,6 +102,16 @@ def overview(session: Session, ctx: Ctx, principal: Principal) -> CustomerOvervi
         if contact
         else None,
         consents=consents,
+        recent_transfers=[
+            RecentTransferOut(
+                transfer_ref=t.transfer_ref,
+                payee_name=payee_name,
+                amount_paise=t.amount_paise,
+                transfer_status=t.status.value,
+                initiated_at=t.initiated_at,
+            )
+            for t, payee_name in transfers.recent_for_customer(session, customer.id, 5)
+        ],
     )
 
 

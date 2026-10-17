@@ -26,8 +26,8 @@ The full specification of each task (steps, acceptance, tests) is in [IMPLEMENTA
 | T-009 | Staff and demo-customer seed | WS3 | P0 | 0.5 | T-008, T-010 | M1 | Claude | done — staff + cust.kamala/iqbal/meena; idempotent (truncate, insert) |
 | T-022 | Synthetic population generator | WS1 | P0 | 3 | T-008 | M1 | Claude | done — 50 customers, seed 42 deterministic (hash test), seeds in ~0.5 s |
 | T-023 | Scenario families (P1 and N1 first) | WS1 | P0 | 3 | T-022 | M1→M2 | Claude | done — 13 families; all seed-42 expectations pass through the API |
-| T-032 | Design tokens and core components | WS4 | P0 | 3 | T-003 | M1 | | todo |
-| T-011 | Frontend auth | WS4 | P0 | 2 | T-003, T-010, T-032 | M1 | | todo |
+| T-032 | Design tokens and core components | WS4 | P0 | 3 | T-003 | M1 | Claude | done — tokens, 20+ components, `formatINR(460000000)` = ₹46,00,000 (tested) |
+| T-011 | Frontend auth | WS4 | P0 | 2 | T-003, T-010, T-032 | M1 | Claude | done — session in memory + sessionStorage, RequireRole guards, 403 page (tested) |
 | T-012 | Event and call-signal ingestion | WS3 | P0 | 3 | T-008, T-010, T-026 | M2 | Claude | done — idempotent, per-customer lock, HMAC/Fernet on receipt; hero watch 15→40→63 via API |
 | T-013 | Transfer assessment orchestration | WS3+WS2 | P0 | 3 | T-012, T-025–T-029 | M2 | Claude | done — fail-closed 503, idempotent, FRI timeout → info reason, snapshot replay test |
 | T-014 | Hold lifecycle and officer decision | WS3 | P0 | 3 | T-013 | M2 | Claude | done — transition table, officer decision (note 10–1000), lazy cooling-off expiry |
@@ -40,17 +40,17 @@ The full specification of each task (steps, acceptance, tests) is in [IMPLEMENTA
 | T-020 | Audit log writer | WS6 | P1 | 1 | T-008 | M2 | Claude | done — `audit()` with scrub; append-only enforced by test |
 | T-019 | Read APIs: alerts, dashboard, customers | WS1 | P1 | 2.5 | T-013, T-014 | M2 | Claude | done — unified alert queue, summary, customers; ≤ 5 queries per list request (tested) |
 | T-040a | **Headless hero gate** (API-level P1 and N1) | All | P0 | 1.5 | T-012–T-029 | **M2** | Claude | done — AC-01..AC-10 and N1 pass headless (tests/scenarios) |
-| T-033 | Ops dashboard queue | WS4 | P0 | 3 | T-032, T-019, T-011 | M3 | | todo |
-| T-035 | Teller console | WS4 | P0 | 3 | T-032, T-017 | M3 | | todo |
-| T-034 | Hold detail and officer decision UI | WS4 | P0 | 4 | T-033, T-014, T-018 | M3 | | todo |
-| T-036 | Customer app simulator | WS5 | P0 | 4 | T-032, T-013, T-014 | M3 | | todo |
-| T-037 | Trusted-contact page | WS5 | P0 | 2.5 | T-032, T-015 | M3 | | todo |
-| T-039 | Demo control panel | WS5 | P1 | 2 | T-021, T-032 | M3 | | todo |
-| T-038 | i18n and native Tamil review | WS5 | P1 | 2 | T-028, T-017, T-036, T-037 | M3 | | todo |
-| T-040b | **UI hero gate** (DEMO_SCRIPT run-through) | All | P0 | 1.5 | M3 tasks | **M3** | | todo |
+| T-033 | Ops dashboard queue | WS4 | P0 | 3 | T-032, T-019, T-011 | M3 | Claude | done — KPI filters, tabs, 2 s polling with back-off, keyboard nav, empty/error states |
+| T-035 | Teller console | WS4 | P0 | 3 | T-032, T-017 | M3 | Claude | done — hotkeys 1–4 (aria-pressed), assertive VERY_HIGH alert, EN/TA script, report |
+| T-034 | Hold detail and officer decision UI | WS4 | P0 | 4 | T-033, T-014, T-018 | M3 | Claude | done — reasons, breakdown, timeline, watch chart, decision panel (note + confirm), report |
+| T-036 | Customer app simulator | WS5 | P0 | 4 | T-032, T-013, T-014 | M3 | Claude | done — phone frame, warning (3 s delay, tel:1930), hold, result, Tamil first |
+| T-037 | Trusted-contact page | WS5 | P0 | 2.5 | T-032, T-015 | M3 | Claude | done — standalone page, confirmation sheet, 404/410/409/network states, ≈127 KB gz |
+| T-039 | Demo control panel | WS5 | P1 | 2 | T-021, T-032 | M3 | Claude | done — scenarios, reset, speed, clock, console + QR, FRI simulator, run log |
+| T-038 | i18n and native Tamil review | WS5 | P1 | 2 | T-028, T-017, T-036, T-037 | M3 | Claude | partly done — all strings in en/ta with parity test; **native Tamil review NOT done** (needs a named reviewer) |
+| T-040b | **UI hero gate** (DEMO_SCRIPT run-through) | All | P0 | 1.5 | M3 tasks | **M3** | Claude | done (automated) — Playwright J1–J4 pass twice; a manual DEMO_SCRIPT run-through is still for the team |
 | T-042 | Engine test hardening (determinism, coverage) | WS2 | P1 | 1.5 | T-028 | M4 | | todo |
 | T-043 | API authorisation matrix and migration test | WS3 | P1 | 2 | T-010–T-021 | M4 | Claude | done — 42 routes × 6 principals (tests/integration/test_authz_matrix.py); migration round-trip in test_migrations.py |
-| T-044 | Playwright E2E (J1, J2, J4) | WS6 | P1 | 3 | T-040b | M4 | | todo |
+| T-044 | Playwright E2E (J1, J2, J4) | WS6 | P1 | 3 | T-040b | M4 | Claude | done — J1 hero, J2 app warning, J3 HIGH release, J4 genuine; 8/8 with --repeat-each=2 |
 | T-045 | Security checks | WS6 | P1 | 1.5 | T-043 | M4 | Claude | done — pip-audit clean, npm audit 0, gitleaks clean; checklist in reports/security/2026-10-17.md |
 | T-046 | Performance check (NFR-01) | WS3 | P1 | 1 | T-013 | M4 | Claude | done — `make bench`: p95 55.2 ms, p50 36.9 ms, 499 requests, concurrency 10 (dev laptop, 2026-10-17) |
 | T-030 | Evaluation harness | WS1 | P1 | 3 | T-024, T-013 | M4 | Claude | done — `make eval`; ~1.3 s/seed; Wilson CIs, per-family, modelled delay; NOT yet run on 100–299 (T-049) |
@@ -63,7 +63,7 @@ The full specification of each task (steps, acceptance, tests) is in [IMPLEMENTA
 | ID | Task | WS | Pri | Est (h) | Depends on | Status |
 |---|---|---|---|---|---|---|
 | T-041 | Real SMS / Telegram to the teammate's phone (**start the trial account at H+0**) | WS3 | P2 | 1.5 | T-016, T-037 | todo |
-| T-051 | Consent and trusted-contact screens in the customer app | WS5 | P2 | 2 | T-036 | todo |
+| T-051 | Consent and trusted-contact screens in the customer app | WS5 | P2 | 2 | T-036 | done — consent switches and trusted-contact form (72 h note) |
 | T-031 | LLM narrative with validator and fallback | WS2 | P2 | 3 | T-018 | todo |
 | T-048 | Hosted deployment (Render + Vercel) | WS6 | P2 | 2 | T-040b | todo |
 | T-060 | SSE live updates (FR-25) | WS3/WS4 | P3 | 3 | M4 | todo |
