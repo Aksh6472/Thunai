@@ -1,0 +1,83 @@
+/* Design tokens: DESIGN.md §7. The only place hex colours may appear. */
+@import 'tailwindcss';
+
+:root {
+  --color-bg: #f7f8fa;
+  --color-surface: #ffffff;
+  --color-text: #111827;
+  --color-text-muted: #4b5563;
+  --color-border: #e5e7eb;
+  --color-primary: #1d4ed8;
+  --color-focus: #2563eb;
+  --color-tier-low: #15803d;
+  --color-tier-medium: #b45309;
+  --color-tier-high: #c2410c;
+  --color-tier-very-high: #b91c1c;
+  --color-success: #15803d;
+  --color-simulated: #6d28d9;
+
+  --font-sans: 'Inter', 'Noto Sans Tamil', system-ui, sans-serif;
+  --radius-control: 6px;
+  --radius-card: 10px;
+  --radius-phone: 24px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0f1216;
+    --color-surface: #171b21;
+    --color-text: #e5e7eb;
+    --color-text-muted: #9ca3af;
+    --color-border: #2a3039;
+    --color-primary: #60a5fa;
+    --color-focus: #93c5fd;
+    --color-tier-low: #4ade80;
+    --color-tier-medium: #fbbf24;
+    --color-tier-high: #fb923c;
+    --color-tier-very-high: #f87171;
+    --color-success: #4ade80;
+    --color-simulated: #c4b5fd;
+  }
+}
+
+/* Expose tokens as Tailwind utilities, e.g. bg-surface, text-tier-high */
+@theme inline {
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-text: var(--color-text);
+  --color-text-muted: var(--color-text-muted);
+  --color-border: var(--color-border);
+  --color-primary: var(--color-primary);
+  --color-focus: var(--color-focus);
+  --color-tier-low: var(--color-tier-low);
+  --color-tier-medium: var(--color-tier-medium);
+  --color-tier-high: var(--color-tier-high);
+  --color-tier-very-high: var(--color-tier-very-high);
+  --color-success: var(--color-success);
+  --color-simulated: var(--color-simulated);
+  --font-sans: var(--font-sans);
+}
+
+html {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+:lang(ta) {
+  line-height: 1.7;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

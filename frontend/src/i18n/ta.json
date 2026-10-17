@@ -1,0 +1,13 @@
+{
+  "app.placeholder": "{product}: {screen} (விரைவில்)",
+  "screen.login": "உள்நுழைக",
+  "screen.ops": "செயல்பாட்டு டாஷ்போர்டு",
+  "screen.ops_hold": "நிறுத்த விவரம்",
+  "screen.ops_customer": "வாடிக்கையாளர் இடர் பார்வை",
+  "screen.teller": "காசாளர் கன்சோல்",
+  "screen.teller_hold": "கவுண்டரில் உள்ள வழக்கு",
+  "screen.customer": "வாடிக்கையாளர் செயலி",
+  "screen.trusted": "நம்பகமான தொடர்பு பாதுகாப்புச் சரிபார்ப்பு",
+  "screen.demo": "டெமோ கட்டுப்பாடு",
+  "screen.not_found": "பக்கம் கிடைக்கவில்லை"
+}

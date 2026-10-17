@@ -1,0 +1,33 @@
+# Kaaval AI — Risk Register
+
+Likelihood and impact are rated **L** (low), **M** (medium) or **H** (high). Review at every check-in ([ROADMAP.md](ROADMAP.md) §1). Add new risks at the bottom with the next id.
+
+| ID | Category | Description | L | I | Mitigation | Owner | Early warning sign |
+|---|---|---|---|---|---|---|---|
+| R-01 | Delivery | The MVP is not end to end by the deadline (WS3 is overloaded, ~34 h estimated) | H | H | Contracts frozen at H+2. The headless hero gate is at H+12. Rebalance WS3 tasks at kickoff (IMPLEMENTATION_PLAN §4). Scope-cut order (MILESTONES §7) | WS6 | G1 not met by H+8. More than 2 P0 tasks still `todo` at H+6 |
+| R-02 | Delivery | The exact deadline is unknown, so the plan is mistimed | M | H | Confirm the deadline at kickoff and fill in the ROADMAP header. The plan freezes at H+20 regardless | WS6 | Deadline still blank at H+1 |
+| R-03 | Delivery | The theme or problem statement doesn't fit "coercion at the bank" | M | H | Get the official text before coding. Map Kaaval to it, or adjust the framing (e.g., "AI for citizen safety", "fintech security") | WS6 | Rubric not read by H+1 |
+| R-04 | Technical | SMS doesn't reach the Indian phone (trial restrictions, international route filtering) | H | M | Test Twilio **and** Telegram at H+0–2. The console notifier plus QR fallback is rehearsed | WS3 | Test SMS not delivered within 2 min at H+2 |
+| R-05 | Technical | The phone can't reach the laptop (AP isolation at the venue) | M | M | Use the team's own hotspot. `cloudflared` tunnel as option B. QR fallback | WS6 | `/t/test` doesn't load on the phone at pre-flight |
+| R-06 | Technical | The trailing space in the project folder name breaks scripts and Docker | H | M | T-001 step 1: rename to `kaaval-ai` before any code | WS6 | Any "No such file or directory" error involving `Kaaval ` |
+| R-07 | Technical | Simulated-clock bugs (mixing wall-clock and sim time) cause wrong payee ages or expiry | M | H | A single `Clock` abstraction, the architecture test bans `datetime.now` in the domain, golden tests on time-dependent reasons | WS2 | Hero NEW_PAYEE reason shows a negative or huge age |
+| R-08 | Technical | Frontend/backend contract drift | M | M | Types generated from OpenAPI (`npm run gen:api`). The API_SPEC is updated in the same PR | WS4 | TS errors after `gen:api`. Runtime undefined fields |
+| R-09 | Technical | Assessment latency exceeds the target due to N+1 queries | L | M | ≤ 5 queries per request (counted in tests), `selectinload`, bench T-046 | WS3 | `test_read_apis` query-count failure. Bench p95 > 300 ms |
+| R-10 | Technical | Tamil rendering or translation errors on stage | M | M | Self-hosted Noto Sans Tamil. Native-speaker review (T-038). Parity test | WS5 | Boxes or tofu in the UI. The reviewer is not identified by H+12 |
+| R-11 | Technical | The LLM narrative fabricates a fact | M | M | Off by default, deterministic validator, template fallback, officer review. Not in the demo's critical path | WS2 | Validator rejects > 20% of the 20-case evaluation |
+| R-12 | Data | Synthetic results are mistaken for real-world performance, damaging credibility | M | H | A "SYNTHETIC" label on every metric, a disclaimer in reports, the honesty slide, held-out families | WS1 | Numbers appear on slides without a label or source file |
+| R-13 | Data | The generator is tuned until the metrics look good (circularity) | M | H | Seed split (tune 0–99, report 100–299), held-out families P6/N5, any post-hoc change disclosed in DECISIONS | WS1 | Weight changes after viewing the 100–299 results |
+| R-14 | Data | The case-pattern grounding is weak (few sources) | M | M | Code 10+ public cases into the DATA_SOURCES §3 table, with citations | WS1 | Fewer than 5 cases coded by H+12 |
+| R-15 | Product | The false-hold rate is too high on hard negatives (N4/N5) | M | M | Disclose it per family. Explain fast release by the trusted contact. Don't tune on the evaluation seeds | WS2 | N4/N5 false holds > 50% on the tuning seeds |
+| R-16 | Product | Judges dismiss it as "just rules, not AI" | M | H | Prepared answer (JUDGING Q1). Show the per-customer baselines and sequence detection. FR-26 calibration experiment if time allows | WS6 | Mentors raise it during check-ins |
+| R-17 | Product | A judge knows BioCatch or similar products and challenges the novelty | M | M | Honest differentiation table. Claim focus and integration, not invention | WS6 | — |
+| R-18 | Security | A secret (Twilio/Anthropic key, the teammate's phone number) is committed | M | H | `.gitignore`, gitleaks before push, placeholders only in `.env.example`, rotate on leak | WS6 | gitleaks finding. A key appears in a diff |
+| R-19 | Security | Trusted-contact token flaws (replay, enumeration) | L | H | Single-use conditional UPDATE, hashing, TTL, rate limit, uniform 404/410, tests | WS3 | Double-submit test is flaky |
+| R-20 | Security | Broken object-level authorisation on customer or teller endpoints | M | H | Service-level ownership checks, authorisation matrix test (T-043) | WS3 | Matrix test missing routes |
+| R-21 | Privacy | The design appears to surveil calls, causing ethical objections | M | M | No audio or content. The schema forbids extra fields. Consent records. A clear explanation in the demo | WS6 | Judges or mentors ask "are you recording calls?" |
+| R-22 | Privacy / legal | The hold mechanism is challenged as unlawful | M | M | Present it as dependent on the SOP and T&Cs (A-02). Cite precedents. Keep holds short, cancellable and human-reviewed | WS6 | — |
+| R-23 | Ethics | The language reads as accusatory (customer "victim", payee "fraudster") | L | M | Copy rules (DESIGN §6.1). Review all strings | WS5 | Any string containing "fraudster", "victim" or "blocked" |
+| R-24 | Delivery | The live demo fails on stage | M | H | Offline-capable stack, snapshot restore, backup video, rehearsed recovery (DEMO_SCRIPT §5) | WS6 | Any rehearsal over 3:00 or with an unrecovered failure |
+| R-25 | Delivery | A dependency's new major version breaks setup | L | M | Pin majors and commit the lockfiles. No upgrades during the hackathon | WS3/WS4 | Install errors on a teammate's machine |
+| R-27 | Product | The name "Kaaval AI" is confused with the TN Police "Kaaval Uthavi" app, so a late rename is needed | M | L | The display name lives in one constant on each side (ADR-015). Internal identifiers stay unchanged | WS6 | Judges or mentors mention Kaaval Uthavi |
+| R-26 | Delivery | Team members are blocked waiting for the backend | M | M | Build against the OpenAPI output and a thin fake client, deleted once the endpoints land | WS4/WS5 | Frontend idle time reported at check-ins |

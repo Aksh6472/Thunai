@@ -1,0 +1,13 @@
+{
+  "app.placeholder": "{product}: {screen} (coming soon)",
+  "screen.login": "Sign in",
+  "screen.ops": "Ops dashboard",
+  "screen.ops_hold": "Hold detail",
+  "screen.ops_customer": "Customer risk view",
+  "screen.teller": "Teller console",
+  "screen.teller_hold": "Case at counter",
+  "screen.customer": "Customer app",
+  "screen.trusted": "Trusted-contact safety check",
+  "screen.demo": "Demo control",
+  "screen.not_found": "Page not found"
+}
