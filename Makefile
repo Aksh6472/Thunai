@@ -10,7 +10,7 @@ API_PORT := $(or $(call envval,THUNAI_API_PORT),8000)
 
 help:
 	@echo "make db | db-down | migrate | seed | dev | demo-reset | replay | test | lint | format"
-	@echo "make demo | eval | e2e | security    (added by later tasks)"
+	@echo "make eval | demo | e2e | security"
 
 db:
 	docker compose up -d --wait db
@@ -47,6 +47,9 @@ demo-reset:  # needs the API running (make dev / make demo)
 replay:  # make replay SCENARIO=P1 SPEED=4320 (API running)
 	cd backend && uv run python -m sim.replay --scenario $(or $(SCENARIO),P1) --speed $(or $(SPEED),4320)
 
+eval:  # synthetic evaluation on held-out seeds 100–299 → reports/eval/ (uses TEST_DATABASE_URL)
+	cd backend && uv run python -m sim.evaluate --seeds 100-299 --out ../reports/eval/
+
 lint:
 	cd backend && uv run ruff check . && uv run ruff format --check . && uv run mypy
 	cd frontend && npm run -s lint && npm run -s typecheck && npm run -s format:check
@@ -58,8 +61,6 @@ format:
 # ---- Added by later tasks; fail loudly until then (CLAUDE.md §11) ----
 demo:
 	@echo "Not implemented yet: T-047"; exit 1
-eval:
-	@echo "Not implemented yet: T-030"; exit 1
 e2e:
 	@echo "Not implemented yet: T-044"; exit 1
 security:

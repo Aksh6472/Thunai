@@ -35,6 +35,7 @@ extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Path", "f
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "S105", "S106", "S311"]  # asserts, fake secrets, seeded RNG
 "sim/**" = ["S311"]  # seeded random.Random for reproducible synthetic data, never for security
+"sim/evaluate.py" = ["S311", "E501"]  # Markdown report template lines
 "migrations/versions/**" = ["E501"]
 
 [tool.mypy]

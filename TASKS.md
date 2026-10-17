@@ -53,7 +53,7 @@ The full specification of each task (steps, acceptance, tests) is in [IMPLEMENTA
 | T-044 | Playwright E2E (J1, J2, J4) | WS6 | P1 | 3 | T-040b | M4 | | todo |
 | T-045 | Security checks | WS6 | P1 | 1.5 | T-043 | M4 | | todo |
 | T-046 | Performance check (NFR-01) | WS3 | P1 | 1 | T-013 | M4 | | todo |
-| T-030 | Evaluation harness | WS1 | P1 | 3 | T-024, T-013 | M4 | | todo |
+| T-030 | Evaluation harness | WS1 | P1 | 3 | T-024, T-013 | M4 | Claude | done — `make eval`; ~1.3 s/seed; Wilson CIs, per-family, modelled delay; NOT yet run on 100–299 (T-049) |
 | T-049 | Run the evaluation and record the results | WS1 | P1 | 1 | T-030, M3 | M4 | | todo |
 | T-047 | Local demo runbook and snapshot | WS6 | P0 | 1.5 | T-040b | M4 | | todo |
 | T-050 | Rehearsals, backup video, slides, submission | WS6+All | P0 | 3 | T-047, T-049 | M5 | | todo |

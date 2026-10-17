@@ -236,6 +236,16 @@ def _insert_contact(session: Session, settings: Settings, customer: Customer, sp
     )
 
 
+def seed_database_url(database_url: str, settings: Settings, seed_value: int) -> SeedSummary:
+    """Seed a database by URL (used by the evaluation harness between seeds)."""
+    engine = make_engine(database_url)
+    try:
+        with make_session_factory(engine)() as session:
+            return seed(session, settings, seed_value)
+    finally:
+        engine.dispose()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Seed synthetic demo data (truncates first).")
     parser.add_argument("--seed", type=int, default=GOLDEN_SEED)
