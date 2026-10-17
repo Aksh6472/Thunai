@@ -1,0 +1,90 @@
+# Thunai scoring config, v1. Hand-set weights (ADR-002), not trained.
+# Source of truth for every number: AI_DESIGN.md §4–§6.
+# Changing anything here: bump `effective_date` (or `name`), update AI_DESIGN §6,
+# the golden tests, and add a DECISIONS.md changelog row (CLAUDE.md §12).
+# Money is in paise (₹1 = 100 paise).
+
+name: scoring_v1
+effective_date: 2026-10-17
+
+# §6.2 — lower bounds (inclusive). LOW is everything below `medium`.
+tiers:
+  medium: 30
+  high: 55
+  very_high: 75
+
+# §6.1 — points table
+points:
+  fd_premature_closure:
+    default: 15
+    habitual: 5                # premature_fd_closures_365d >= habitual_min_closures
+    habitual_min_closures: 2
+  funds_pooled: 10
+  new_payee:                   # payee age in WHOLE hours at most max_age_hours (ADR-020)
+    - {max_age_hours: 2, points: 20}
+    - {max_age_hours: 24, points: 15}
+    - {max_age_hours: 168, points: 8}
+  high_value_to_payee:
+    min_amount_paise: 20000000 # ₹2,00,000
+    bands:                     # multiple of median outbound, at least min_multiple
+      - {min_multiple: 10, points: 10}
+      - {min_multiple: 50, points: 15}
+      - {min_multiple: 100, points: 20}
+  balance_drain:
+    min_fraction_of_balance: 0.70
+    points: 5
+  stage_sequence:              # distinct stages in canonical order
+    - {min_stages: 3, points: 8}
+    - {min_stages: 4, points: 10}
+  fri_risk:                    # SIMULATED DoT FRI rating of the payee-linked number
+    medium: 10
+    high: 20
+    very_high: 30
+  long_call_unknown:           # consented flag, unknown caller
+    - {min_duration_min: 60, points: 8}
+    - {min_duration_min: 180, points: 15}
+  teller:
+    on_call: 8
+    distressed: 8
+    following_instructions: 10
+    mentions_authority: 15
+    cap: 30
+  trusted_contact_recently_changed: 10
+  established_payee:
+    min_payee_age_days: 90
+    min_prior_successful_transfers: 2
+    points: -25
+  matches_regular_pattern:
+    max_multiple_of_recurring: 1.5
+    points: -15
+  watch_new_payee_flat: 15     # §5.2: flat S3 value in the watch score
+
+# §6.3 — deterministic overrides
+overrides:
+  fri_very_high_floor_tier: HIGH
+  hold_floor_paise: 5000000    # ₹50,000: below this, decision is at most WARN
+
+# §4 — baseline
+baseline:
+  lookback_days: 180
+  min_qualifying_amount_paise: 100000          # ₹1,000
+  min_qualifying_transfers: 5
+  min_history_days: 30
+  population_default_median_paise: 2500000     # ₹25,000
+  fd_closure_lookback_days: 365
+
+# §5 — stage detection
+stages:
+  pooling_window_hours: 72
+  pooling_min_inbound_count: 2
+  pooling_min_sum_paise: 10000000              # ₹1,00,000
+  pooling_min_multiple_of_median: 5
+  min_high_value_paise: 20000000               # ₹2,00,000 (S4)
+  high_value_min_multiple_of_median: 10
+
+# Time windows (§5.2, §6.1, §11). Cooling-off and contact activation are env settings
+# (THUNAI_COOLING_OFF_MINUTES, THUNAI_TRUSTED_CONTACT_ACTIVATION_HOURS), not scoring config.
+windows:
+  episode_quiet_days: 7
+  call_freshness_minutes: 30
+  trusted_contact_changed_days: 7

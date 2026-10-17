@@ -1,0 +1,22 @@
+id: N2
+title: FD matures and is reinvested (genuine)
+label: genuine
+grounding: Hard negative (docs/DATA_SOURCES.md §4). A normal maturity is not a premature closure.
+description: An FD closes on its maturity date and the proceeds go to the customer's own account elsewhere.
+customer:
+  ref: CUST-0013
+  display_name: G. Natarajan (fictional)
+  median_outbound_rupees: 40000
+  accounts:
+    - {masked: XXXXXX1301, type: SAVINGS, balance_rupees: 150000}
+    - {masked: XXXXXX1309, type: FD, balance_rupees: 1000000, maturity: 2026-10-01}
+  payees:
+    - {ref: PAY-0013-01, name: Own account - Mylapore branch (fictional), age_days: 400, transfers: 3, amount_rupees: 200000, masked_account: XXXXXX9131}
+  trusted_contact: {name: Uma, relationship: spouse, phone: "+919800000113"}
+  consents: [TRUSTED_CONTACT_SHARING]
+steps:
+  - {day: 1, time: "10:00", kind: event, type: FD_CLOSED, account: XXXXXX1309, amount_rupees: 1000000,
+     payload: {maturity_date: "2026-10-01", proceeds_to_account: XXXXXX1301}}
+  - {day: 1, time: "15:00", kind: transfer, ref: TRF-N2-0001, from_account: XXXXXX1301, payee: PAY-0013-01,
+     amount_rupees: 1000000, rail: NEFT, channel: NETBANKING}
+expected: {decision: ALLOW, tier: LOW}

@@ -1,6 +1,6 @@
 # Thunai — Deployment and Operations
 
-> **Status:** nothing has been deployed yet. The commands below are the **target** procedure. They become valid once T-001 to T-005 and T-047 are done. Update this file if the real commands differ.
+> **Status (2026-10-17):** local setup, `make dev`, `make demo`, seeding, reset and snapshots work as written. Nothing has been deployed to a hosted environment yet (§6, T-048).
 
 **Primary demo = the local laptop** (works offline, no cold starts). The hosted deployment is a Should Have (FR-29) so judges can try it later. Never depend on it on stage.
 
@@ -21,7 +21,7 @@ Open:
 
 | URL | What it is |
 |---|---|
-| http://localhost:5173/login | The app (users `teller.priya`, `officer.rao`, `admin.demo`, `cust.kamala`, `cust.iqbal`, all with password `$THUNAI_SEED_PASSWORD`) |
+| http://localhost:5173/login | The app (users `teller.priya`, `officer.rao`, `admin.demo`, `cust.kamala`, `cust.iqbal`, `cust.meena`, all with password `$THUNAI_SEED_PASSWORD`) |
 | http://localhost:8000/docs | OpenAPI UI |
 | http://localhost:8000/api/v1/readyz | Readiness check |
 

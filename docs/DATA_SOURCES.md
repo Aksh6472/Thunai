@@ -8,7 +8,7 @@
 | Scenario families P1–P7, N1–N6 | **Synthetic**, *patterned on* public reports | `backend/sim/scenarios/*.yaml` (ours), with the grounding in §3 | Same licence as this repo. The news reports are cited, not copied | Demo and evaluation |
 | DoT FRI ratings | **Simulated** | The `fri_mock_ratings` table, seeded by us | — | The FRI signal in the demo |
 | Phone call-risk flag | **Simulated** | The replayer posts it to `/signals/call` | — | The call signal in the demo |
-| Fictional names | Synthetic | A hand-written list in `sim/names.py`, each with a "(fictional)" suffix | — | Display |
+| Fictional names | Synthetic | A hand-written list in `backend/sim/names.py`, each with a "(fictional)" suffix (the 13 scenario customers are named in their YAML) | — | Display |
 | Statistics in the pitch and PRD | Real, secondary | News and legal reporting (§2) | Cited with a link. No content is reproduced beyond short quotes | Problem evidence |
 | Tamil UI copy | Original (team-written and reviewed) | — | Repo licence | UI |
 
@@ -41,6 +41,10 @@ Each row is a **publicly reported case**, coded into Thunai's stage model. Fill 
 | 8 | Jodhpur, ₹1.85 Cr RTGS, then a ₹22 L NEFT flagged | Feb 2026 (article date) | — | — | — | RTGS and NEFT | Worried demeanour | Yes (PNB) | Partly recovered | P2 | [ETV Bharat](https://www.etvbharat.com/en/state/jodhpur-senior-citizen-duped-of-more-than-rs-1-dot-5-crore-through-digital-arrest-enn26022402537) |
 
 **Caution:** these are news reports. The amounts and details are as reported, not verified. The scenario YAML files take *structure and timing patterns* from them, never personal details.
+
+## 3a. How the synthetic data is built
+
+`backend/sim/generator.py` builds 50 customers for a seed: the 13 scenario customers from `backend/sim/scenarios/*.yaml` and background customers with log-normal medians (₹4,000–₹90,000), 2–12 payees with tenure and 20–365 days of routine debits and credits. Each customer's routine debits are constructed so that the baseline median equals the value stated in the scenario file, which keeps the seed-42 golden results reproducible. Everything uses `random.Random(seed)`; the global RNG is never used. Seed 42 replays the scenario steps exactly; other seeds scale amounts (×0.3–3), gaps (×0.5–1.5) and history length (20–365 days).
 
 ## 4. Hard-negative grounding
 

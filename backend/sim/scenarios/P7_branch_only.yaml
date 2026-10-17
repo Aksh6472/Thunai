@@ -1,0 +1,30 @@
+id: P7
+title: Branch only, teller is the only signal
+label: coercion
+grounding: >-
+  Hyderabad and Navi Mumbai branch interventions: no app or call signal, staff noticed the
+  customer's distress (docs/DATA_SOURCES.md §3 #2, #6).
+description: >-
+  FD broken, a new payee added at the branch and a large RTGS. No consented call signal and no FRI;
+  the teller's checklist escalates the hold.
+customer:
+  ref: CUST-0008
+  display_name: M. Abdul (fictional)
+  narrative: 80-year-old pensioner (narrative only)
+  median_outbound_rupees: 25000
+  accounts:
+    - {masked: XXXXXX0801, type: SAVINGS, balance_rupees: 80000}
+    - {masked: XXXXXX0809, type: FD, balance_rupees: 1100000, maturity: 2027-05-10}
+  trusted_contact: {name: Sameer, relationship: son, phone: "+919800000108"}
+  consents: [TRUSTED_CONTACT_SHARING]
+steps:
+  - {day: 1, time: "11:00", kind: event, type: FD_CLOSED, account: XXXXXX0809, amount_rupees: 1100000,
+     payload: {maturity_date: "2027-05-10", proceeds_to_account: XXXXXX0801}}
+  - {day: 2, time: "10:00", kind: event, type: PAYEE_ADDED,
+     payload: {payee_ref: PAY-0008-02, display_name: Customs Clearance Account (fictional), bank_name: Example Bank,
+               ifsc: EXMP0008802, masked_account: XXXXXX7108, channel: BRANCH}}
+  - {day: 2, time: "11:30", kind: transfer, ref: TRF-P7-0001, from_account: XXXXXX0801, payee: PAY-0008-02,
+     amount_rupees: 1150000, rail: RTGS, channel: BRANCH, target: true}
+  - {day: 2, time: "11:40", kind: teller, transfer_ref: TRF-P7-0001,
+     items: [ON_CALL, DISTRESSED, MENTIONS_AUTHORITY]}
+expected: {decision: HOLD, tier: HIGH, after_teller: VERY_HIGH}

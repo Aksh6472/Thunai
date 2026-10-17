@@ -20,7 +20,7 @@ This file is the persistent instruction set for Claude Code (and humans) working
 Thunai is a bank-side **coercion-risk engine**. It detects when a *genuine* customer is being pressured (for example, by "digital arrest" scammers) into transferring their savings. It tracks behaviour across days (FD broken → funds pooled → new payee → large transfer), fuses this with signals (simulated DoT FRI, a consented call flag, a teller checklist), and responds in tiers (allow / warn / cooling-off hold released by a trusted contact or an officer / hold plus teller script plus pre-filled 1930 report). Every decision is explained.
 
 - **MVP scope:** [PRD.md](PRD.md) §6 (Must items) and §8. **Out of scope:** PRD §11. Do not build out-of-scope features. If a request implies one, point it out and ask.
-- **Hackathon status:** documentation phase complete, implementation not started (as of 2026-10-17). Check [TASKS.md](TASKS.md) for the current state.
+- **Hackathon status (2026-10-17):** the MVP is implemented and tested (backend, engine, simulator, evaluation, all five UI surfaces, E2E). Open items need people or accounts (Tamil review, real SMS, hosting, rehearsal). Check [TASKS.md](TASKS.md) for the current state.
 
 ## 2. Repository structure (target; created by T-001 to T-003)
 

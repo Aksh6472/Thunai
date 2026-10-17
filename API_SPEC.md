@@ -78,8 +78,8 @@ Rate limiting is bypassed when `THUNAI_ENV=test` (unit and integration tests, an
  "decision": "ALLOW" | "WARN" | "HOLD",
  "tier": "LOW" | "MEDIUM" | "HIGH" | "VERY_HIGH",
  "score": 100, "raw_score": 115, "reasons": [Reason], "overrides_applied": ["FRI_VERY_HIGH_FLOOR"],
- "hold_id": "uuid" | null, "assessment_id": "uuid", "config_version": "scoring_v1@2026-10-17",
- "assessed_at": "…"}
+ "hold_id": "uuid" | null, "assessment_id": "uuid", "trigger": "INITIAL" | "TELLER_CHECKLIST",
+ "config_version": "scoring_v1@2026-10-17", "assessed_at": "…"}
 ```
 
 Enum values are exactly those in [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md).
@@ -96,7 +96,11 @@ Response 200:
 {"access_token": "eyJ…", "token_type": "bearer", "expires_in": 3600,
  "user": {"id": "…", "role": "TELLER", "display_name": "Priya (fictional)", "branch_code": "CHN001"}}
 ```
-Errors: 401 `INVALID_CREDENTIALS`, which is the same message for an unknown user or a wrong password. 429.
+For a CUSTOMER, `user` also carries `customer_ref` (e.g. `CUST-0007`); it is `null` for staff.
+
+Errors: 401 `INVALID_CREDENTIALS`, which is the same message for an unknown user or a wrong password. 429 after 10 attempts per minute per IP, or after 5 failures in 15 minutes for one username (even with the right password).
+
+A valid service key sent to a user route gets 403, and a valid JWT sent to a service route gets 403 (ARCHITECTURE §4.5). A wrong service key gets 401.
 
 ### `GET /auth/me` (any JWT)
 Returns the `user` object.
@@ -173,15 +177,18 @@ Errors: 404 (customer, account or payee), 409, 422, 503 `ASSESSMENT_UNAVAILABLE`
 ### `GET /transfers/{transfer_ref}` (service key, or OFFICER/TELLER)
 Returns the transfer status plus the latest `AssessmentResult`.
 
+### `POST /transfers/{transfer_ref}/warning-response` (service key)
+`{"action": "CONTINUE" | "CANCEL"}` → `{transfer_ref, transfer_status}`. Core banking relays the customer's choice on a WARN made in its own app (the customer-app equivalent is in §5). 409 if the transfer is not WARNED.
+
 ---
 
 ## 5. Customer app (role CUSTOMER; only the customer's own resources)
 
 | Method & path | Purpose | Request → Response |
 |---|---|---|
-| `GET /customer/overview` | Accounts (masked) and payees | → `{accounts:[…], payees:[…], trusted_contact:{display_name, phone_last4, status, effective_from} \| null}` |
+| `GET /customer/overview` | Accounts (masked), payees, contact, consents and recent transfers | → `{customer_ref, display_name, preferred_language, accounts:[…], payees:[…], trusted_contact:{display_name, relationship, phone_last4, status, effective_from} \| null, consents:{CALL_SIGNAL: bool, TRUSTED_CONTACT_SHARING: bool}, recent_transfers:[{transfer_ref, payee_name, amount_paise, transfer_status, initiated_at}]}` (last 5) |
 | `POST /customer/transfers` | Initiate a transfer from the app (channel APP) | Same body as `/transfers/assess` minus `customer_ref`/`channel`/`scenario_label` → `{transfer_ref, transfer_status, decision, hold_id?, message_key}`. This is a **customer-safe** response: no score, tier detail or reasons (ADR-013, SECURITY T-19). `message_key` selects the generic copy in [DESIGN.md](DESIGN.md) §6.3. The full `AssessmentResult` is still stored and visible to staff. 422 `INSUFFICIENT_BALANCE` if the amount exceeds the balance |
-| `GET /customer/transfers/{transfer_ref}` | Poll status | → `{transfer_status, decision, hold_status?, message_key}` |
+| `GET /customer/transfers/{transfer_ref}` | Poll status | → `{transfer_ref, transfer_status, decision, hold_id?, hold_status?, message_key, contact_asked?: {display_name, relationship}}`. `message_key` is one of `transfer.executed`, `transfer.warned`, `transfer.held`, `transfer.cancelled`. `contact_asked` is set once the trusted contact has been messaged (the hold screen's "We have messaged Arun (son)"). `POST /customer/transfers` returns the same shape |
 | `POST /customer/transfers/{transfer_ref}/warning-response` | Respond to a WARN | `{"action": "CONTINUE" \| "CANCEL"}` → 200 `{transfer_status}`. 409 if the transfer is not WARNED |
 | `POST /customer/transfers/{transfer_ref}/cancel` | Cancel a held transfer | → 200 `{transfer_status: "CANCELLED"}` |
 | `POST /customer/consents` | Grant or revoke a consent (FR-23) | `{"consent_type": "CALL_SIGNAL", "granted": true, "text_version": "call_signal_v1"}` → 201 |
@@ -202,7 +209,7 @@ Items:
 Sort: VERY_HIGH first, then `cooling_off_until` ascending.
 
 ### `GET /holds/{id}` (TELLER, OFFICER, ADMIN)
-Returns the full hold plus `assessments: [AssessmentResult…]` (history), `episode` (stages and `watch_history`), `contact_requests: [{channel, delivery_status, sent_at, opened_at, responded_at, response}]` (never tokens), and `report_id | null`.
+Returns the full hold plus `customer`, `transfer` (masked source account), `payee` (staff only: bank, IFSC, masked account, last 4 of the linked number), `assessments: [AssessmentResult…]` (history), `episode` (stages and `watch_history`), `trusted_contact` (masked, with `active`), `contact_requests: [{channel, delivery_status, delivery_error, sent_at, expires_at, opened_at, responded_at, response}]` (never tokens), `report_id | null`, and `audit` (the last 10 entries for the hold).
 
 ### `POST /holds/{id}/officer-decision` (OFFICER)
 ```json
@@ -216,17 +223,19 @@ Returns the full hold plus `assessments: [AssessmentResult…]` (history), `epis
 | CANCEL_TRANSFER | The hold becomes `CANCELLED` and the transfer `CANCELLED`. The episode becomes `CLOSED_CONFIRMED_RISK` |
 | KEEP_HOLDING | No state change. The note is audited |
 
+The officer may decide while the hold is `AWAITING_CONTACT` or `AWAITING_OFFICER` (FR-11: "trusted-contact confirmation **or** officer review"). The response is the updated hold detail (as `GET /holds/{id}`).
+
 Errors: 409 `INVALID_STATE_TRANSITION` if the hold is already resolved.
 
 ### `POST /holds/{id}/resend-contact` (TELLER, OFFICER)
-Expires earlier links and sends a new one. Returns 409 if there is no active contact or the hold is resolved.
+Expires earlier links and sends a new one. Returns 202 `{contact_request_id, status: "QUEUED"}`, 409 if there is no active contact or the hold is resolved, and 429 after 3 resends per hold per hour.
 
 ---
 
 ## 7. Teller
 
 ### `GET /teller/queue` (TELLER, OFFICER)
-Branch-channel transfers that are WARNED or HELD, plus active branch holds. Same item shape as `/holds`, plus `channel`.
+Branch-channel transfers that are WARNED or HELD, plus active branch holds. Same item shape as `/holds` (`id` is `null` and `status` is `"WARNED"` for a warned transfer without a hold). Sorted VERY_HIGH first, then holds before warnings, then oldest first.
 
 ### `POST /teller/transfers/{transfer_ref}/checklist` (TELLER, OFFICER)
 ```json
@@ -269,10 +278,13 @@ Response 201:
  "narrative_text": "…", "narrative_source": "TEMPLATE",
  "disclaimer": "Draft for officer review. Not submitted. File via 1930 or cybercrime.gov.in."}
 ```
-If the LLM fails, the response is still 201 with `narrative_source: "TEMPLATE"` and the response header `X-Thunai-LLM-Fallback: <reason_code>`.
+If a draft already exists for the hold, it is returned with 200. If the LLM fails or is disabled, the response is still 201 with `narrative_source: "TEMPLATE"` and the response header `X-Thunai-LLM-Fallback: <reason_code>` (`LLM_DISABLED`, `LLM_TIMEOUT`, `LLM_VALIDATION_FAILED`, …). `structured_fields` also carries `safety_hold: {placed_at, tier, contact_response}`.
+
+### `GET /reports/{id}` (TELLER, OFFICER, ADMIN)
+Returns the report (same shape as above).
 
 ### `PATCH /reports/{id}` (TELLER, OFFICER)
-`{"customer_reported": {"claimed_agency": "CBI", "scammer_numbers_given_by_customer": ["+91…"], "platform": "WhatsApp video"}, "narrative_text": "…", "status": "READY"}`. Editing `narrative_text` sets `narrative_source=EDITED`.
+`{"customer_reported": {"claimed_agency": "CBI", "scammer_numbers_given_by_customer": ["+91…"], "platform": "WhatsApp video", "notes": "…"}, "narrative_text": "…", "status": "DRAFT" | "READY"}`. Editing `narrative_text` sets `narrative_source=EDITED`. Updating only `customer_reported` on a TEMPLATE draft re-renders the template. `FILED_EXTERNALLY` is set only by mark-filed, and a filed report can't be edited (409).
 
 ### `POST /reports/{id}/mark-filed` (OFFICER)
 `{"acknowledgement_number": "…"}` (1–64 characters, `[A-Za-z0-9/-]`) sets the status to `FILED_EXTERNALLY`.
@@ -311,7 +323,9 @@ The token is consumed (single use). Response 200 `{"result_key": "RELEASED" | "S
 | `GET /alerts?kind=HOLD\|WARN\|WATCH&tier=&limit=&cursor=` | A unified, urgency-sorted queue (TELLER can read) |
 | `GET /customers?search=&limit=&cursor=` | Search by `external_ref` or display name |
 | `GET /customers/{id}/risk` | The current episode (stages, watch score, `watch_history`), the baseline, and recent assessments (TELLER can read) |
-| `GET /customers/{id}/timeline?days=14` | Events, signals, transfers and assessments in time order |
+| `GET /customers/{id}/timeline?days=14` | Events, signals, transfers and assessments in time order (`days` 1–90) |
+
+Alert items: `{kind: HOLD|WARN|WATCH, id, customer, tier, status, amount_paise?, channel?, transfer_ref?, hold_id?, contact_response?, top_reason?, watch_score?, created_at, cooling_off_until?}`. Urgency order: tier (VERY_HIGH first), then HOLD → WARN → WATCH, then least cooling-off time left, then newest. `GET /customers/{id}/risk` returns `{customer, preferred_language, accounts (masked), baseline, episode, trusted_contact (masked), recent_assessments}`.
 
 ---
 
@@ -320,9 +334,11 @@ The token is consumed (single use). Response 200 `{"result_key": "RELEASED" | "S
 | Method & path | Purpose |
 |---|---|
 | `GET /demo/scenarios` | `[{id: "P1", title, label, customer_ref, description, expected_decision}]` |
-| `POST /demo/reset` | Truncate the transactional tables, re-seed (seed 42) and reset `sim_state`. Target ≤ 10 s |
+| `POST /demo/reset` | Truncate the tables, re-seed (seed 42) and reset `sim_state` (clock frozen at 1 Oct 2026, 09:00 IST). Returns `{seconds, customers, seed, sim_now}`. Target ≤ 10 s (measured ≈ 0.5 s) |
 | `POST /demo/scenarios/{id}/run` | `{"speed": 4320}`, in simulated seconds per real second. 4320 makes 3 days ≈ 60 s. The run happens in the background replayer. Returns 202 `{run_id}` |
-| `GET /demo/clock` | `{sim_now, speed, running_scenario}` |
+| `GET /demo/clock` | `{sim_now, speed, running_scenario}` (any staff role, for the clock bar) |
+| `POST /demo/clock` | `{sim_now, speed, running_scenario}` (ADMIN or service key). The replayer re-anchors the simulated clock at each step; `speed` 0 freezes it |
+| `GET /demo/runs?limit=10` | Recent background runs: `[{run_id, scenario_id, speed, status: RUNNING\|DONE\|FAILED\|CANCELLED, started_at, lines, transfers, error}]` (the panel's log) |
 | `POST /demo/fri` | `{"linked_msisdn": "+91…", "rating": "HIGH"}`. Upserts a **simulated** FRI rating |
 | `GET /demo/console-messages?limit=20` | Recent console-notifier messages (the fallback when SMS is unavailable) |
 

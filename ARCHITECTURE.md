@@ -172,7 +172,7 @@ There is no model server. Scoring is an in-process function call (§4.2). The LL
 
 ### 4.7 Simulated time
 
-- `Clock` is a Protocol with `now()`. `RealClock` is used in production. `SimClock` reads `sim_state.sim_now`, which the replayer advances.
+- `Clock` is a Protocol with `now()`. `RealClock` is used in production. `SimClock` (demo mode) computes `sim_now + (wall time since it was set) × speed`, so the demo clock keeps moving between replayer steps. The replayer re-anchors it at each step through `POST /demo/clock` (speed 0 freezes it). The state lives in memory in the single API process and is persisted to `sim_state`, so it survives a restart.
 - Engine logic (payee age, windows, cooling-off) uses the timestamps on events and transfers plus `Clock.now()`. **Wall clock is used only for** token expiry, rate limits and the `received_at` / `created_at` columns.
 - Cooling-off expiry is evaluated lazily. Reading holds checks `cooling_off_until < clock.now()` and moves AWAITING_CONTACT to AWAITING_OFFICER. No scheduler is needed in the MVP.
 

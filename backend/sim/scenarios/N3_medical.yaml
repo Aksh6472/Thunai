@@ -1,0 +1,20 @@
+id: N3
+title: Medical emergency (genuine)
+label: genuine
+grounding: Hard negative (docs/DATA_SOURCES.md §4). New hospital payee, urgent IMPS, no FD.
+description: A hospital is added as a payee and ₹3 L is sent by IMPS half an hour later.
+customer:
+  ref: CUST-0014
+  display_name: J. Thomas (fictional)
+  median_outbound_rupees: 20000
+  accounts:
+    - {masked: XXXXXX1401, type: SAVINGS, balance_rupees: 600000}
+  trusted_contact: {name: Anita, relationship: sister, phone: "+919800000114"}
+  consents: [CALL_SIGNAL, TRUSTED_CONTACT_SHARING]
+steps:
+  - {day: 1, time: "08:30", kind: event, type: PAYEE_ADDED,
+     payload: {payee_ref: PAY-0014-02, display_name: City Hospital (fictional), bank_name: Example Bank,
+               ifsc: EXMP0014402, masked_account: XXXXXX7214, channel: APP}}
+  - {day: 1, time: "09:00", kind: transfer, ref: TRF-N3-0001, from_account: XXXXXX1401, payee: PAY-0014-02,
+     amount_rupees: 300000, rail: IMPS, channel: APP, on_warn: CONTINUE}
+expected: {decision: WARN, tier: MEDIUM}

@@ -1,0 +1,41 @@
+id: P2
+title: Split transfers to new payees
+label: coercion
+grounding: >-
+  Mulund, Mumbai (14–31 Jan 2026): a retired bank manager sent multiple RTGS transfers over 17 days
+  (docs/DATA_SOURCES.md §3 #4); Jodhpur (#8).
+description: >-
+  Savings pooled on day 1 while on long unknown calls, then transfers to a new payee on day 2 and
+  another new payee on day 6.
+customer:
+  ref: CUST-0002
+  display_name: V. Raghavan (fictional)
+  narrative: 62-year-old retired bank manager (narrative only)
+  median_outbound_rupees: 50000
+  accounts:
+    - {masked: XXXXXX0201, type: SAVINGS, balance_rupees: 300000}
+    - {masked: XXXXXX0202, type: SAVINGS, balance_rupees: 900000}
+    - {masked: XXXXXX0203, type: SAVINGS, balance_rupees: 800000}
+  payees:
+    - {ref: PAY-0002-01, name: Housing Society (fictional), age_days: 1200, transfers: 6, amount_rupees: 8000, masked_account: XXXXXX9021}
+  trusted_contact: {name: Divya, relationship: daughter, phone: "+919800000102"}
+  consents: [CALL_SIGNAL, TRUSTED_CONTACT_SHARING]
+steps:
+  - {day: 1, time: "10:00", kind: event, type: INTERNAL_TRANSFER_IN, account: XXXXXX0201, amount_rupees: 900000,
+     payload: {from_account: XXXXXX0202, to_account: XXXXXX0201}}
+  - {day: 1, time: "10:30", kind: event, type: INTERNAL_TRANSFER_IN, account: XXXXXX0201, amount_rupees: 800000,
+     payload: {from_account: XXXXXX0203, to_account: XXXXXX0201}}
+  - {day: 1, time: "19:00", kind: call, call_type: VOICE, duration_min: 200}
+  - {day: 2, time: "10:10", kind: event, type: PAYEE_ADDED,
+     payload: {payee_ref: PAY-0002-03, display_name: Account A (fictional), bank_name: Example Bank,
+               ifsc: EXMP0002301, masked_account: XXXXXX6601, channel: NETBANKING}}
+  - {day: 2, time: "11:25", kind: call, call_type: VOICE, duration_min: 200}
+  - {day: 2, time: "11:30", kind: transfer, ref: TRF-P2-0001, from_account: XXXXXX0201, payee: PAY-0002-03,
+     amount_rupees: 600000, rail: RTGS, channel: NETBANKING, target: true}
+  - {day: 6, time: "10:00", kind: event, type: PAYEE_ADDED,
+     payload: {payee_ref: PAY-0002-04, display_name: Account B (fictional), bank_name: Example Bank,
+               ifsc: EXMP0002302, masked_account: XXXXXX6602, channel: NETBANKING}}
+  - {day: 6, time: "10:55", kind: call, call_type: VOICE, duration_min: 190}
+  - {day: 6, time: "11:00", kind: transfer, ref: TRF-P2-0002, from_account: XXXXXX0201, payee: PAY-0002-04,
+     amount_rupees: 800000, rail: RTGS, channel: NETBANKING, target: true}
+expected: {decision: HOLD, tier: HIGH}

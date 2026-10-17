@@ -140,6 +140,7 @@ Header (name, masked accounts, language) · baseline card (median transfer, hist
 │ Score: 100 · VERY_HIGH (updated 2s ago)        │ [Generate report draft]           │
 └────────────────────────────────────────────────┴──────────────────────────────────┘
 ```
+- "What Thunai noticed" shows the top 5 engine reasons plus every applied teller observation.
 - Toggles are `aria-pressed` buttons and keys 1–4 toggle them. "Apply" re-scores. While the call is in flight, the toggles are disabled and show a spinner. On success, the reasons list animates in the new items.
 - A note under the "Customer said" field reads: "Recorded for the report. Thunai does not change the score based on what the customer says."
 - With no active case, the queue list of branch WARN/HOLD items shows, or the empty state "No branch transfers need attention."
@@ -147,7 +148,7 @@ Header (name, masked accounts, language) · baseline card (median transfer, hist
 ### 5.6 Customer app simulator (`/customer`)
 It renders inside a `PhoneFrame` (390×844, with rounded bezel art) centred on a neutral background. Screens:
 
-1. **Home:** balance cards (masked) and a "Send money" button.
+1. **Home:** balance cards (masked), a "Send money" button, the last 5 transfers (each opens its warning, hold or result screen) and a link to Safety settings (FR-23/24).
 2. **Send money:** payee select (existing payees, plus the scenario's new payee), amount (₹ formatted with the Indian grouping `46,00,000`), rail, and a "Continue" button. Validation: amount > 0 and ≤ the balance, and a payee is selected. Errors appear inline under the field.
 3. **Warning (MEDIUM):** see §6.3. Buttons stack in this order: **Call 1930** (primary, large), **Cancel transfer** (secondary), and **I understand, continue** (tertiary text button, which needs a 3-second read delay before it is enabled. That is a deliberate friction, and the countdown is shown).
 4. **Hold (HIGH/VERY_HIGH):** "Your transfer is paused for your safety." Shows who has been asked ("We have messaged Arun (son)"), what happens next, Call 1930, and Cancel transfer. It **does not** show the score or detailed reasons, because a scammer watching over video could use them to coach. It shows *one* generic line: "This transfer looks like patterns used in phone scams."

@@ -1,0 +1,33 @@
+id: P5
+title: Coached cover story
+label: coercion
+grounding: >-
+  Mangaluru: an elderly couple told to say the money was for buying land in Bengaluru
+  (docs/DATA_SOURCES.md §3 #3). Tests A-07: what the customer says is never scored.
+description: >-
+  Same behaviour as P1 without any call or FRI signal; at the counter the customer says it is for
+  a land purchase. The teller records that, and the score does not change.
+customer:
+  ref: CUST-0005
+  display_name: S. Shetty (fictional)
+  narrative: retired couple (narrative only)
+  median_outbound_rupees: 40000
+  accounts:
+    - {masked: XXXXXX0501, type: SAVINGS, balance_rupees: 100000}
+    - {masked: XXXXXX0509, type: FD, balance_rupees: 2500000, maturity: 2027-03-31}
+    - {masked: XXXXXX0502, type: SAVINGS, balance_rupees: 400000}
+  trusted_contact: {name: Ravi, relationship: son, phone: "+919800000105"}
+  consents: [TRUSTED_CONTACT_SHARING]
+steps:
+  - {day: 1, time: "10:00", kind: event, type: FD_CLOSED, account: XXXXXX0509, amount_rupees: 2500000,
+     payload: {maturity_date: "2027-03-31", proceeds_to_account: XXXXXX0501}}
+  - {day: 2, time: "11:00", kind: event, type: INTERNAL_TRANSFER_IN, account: XXXXXX0501, amount_rupees: 400000,
+     payload: {from_account: XXXXXX0502, to_account: XXXXXX0501}}
+  - {day: 3, time: "09:00", kind: event, type: PAYEE_ADDED,
+     payload: {payee_ref: PAY-0005-02, display_name: Land Registration Escrow (fictional), bank_name: Example Bank,
+               ifsc: EXMP0005502, masked_account: XXXXXX6905, channel: BRANCH}}
+  - {day: 3, time: "11:00", kind: transfer, ref: TRF-P5-0001, from_account: XXXXXX0501, payee: PAY-0005-02,
+     amount_rupees: 2900000, rail: RTGS, channel: BRANCH, target: true}
+  - {day: 3, time: "11:10", kind: teller, transfer_ref: TRF-P5-0001, items: [],
+     customer_said: Says it is for a land purchase in Bengaluru.}
+expected: {decision: HOLD, tier: VERY_HIGH, after_teller: VERY_HIGH}

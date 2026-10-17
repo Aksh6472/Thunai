@@ -1,0 +1,45 @@
+id: P1
+title: Classic digital arrest
+label: coercion
+grounding: >-
+  SBI Chandrayangutta, Hyderabad (Nov 2024): a retired couple about to RTGS ₹46 L after three days
+  of video "surveillance" (docs/DATA_SOURCES.md §3 #1); Moradabad FD-broken pattern (#5).
+description: >-
+  FD broken early on day 1, savings pooled on day 2 while on a long unknown video call, a new
+  "verification account" payee on day 3, then a ₹46 L RTGS at the branch two hours later.
+customer:
+  ref: CUST-0007
+  display_name: R. Kamala (fictional)
+  language: ta
+  login: cust.kamala
+  narrative: 72-year-old retired teacher in Chennai (narrative only; never stored or scored)
+  median_outbound_rupees: 40000
+  history_days: 180
+  accounts:
+    - {masked: XXXXXX2201, type: SAVINGS, balance_rupees: 100000}
+    - {masked: XXXXXX7710, type: FD, balance_rupees: 3500000, maturity: 2027-04-01}
+    - {masked: XXXXXX3302, type: SAVINGS, balance_rupees: 600000}
+    - {masked: XXXXXX4403, type: SAVINGS, balance_rupees: 500000}
+  payees:
+    - {ref: PAY-0007-01, name: TNEB Electricity (fictional), age_days: 900, transfers: 6, amount_rupees: 2500, masked_account: XXXXXX9071}
+    - {ref: PAY-0007-02, name: Arun - savings (fictional), age_days: 700, transfers: 4, amount_rupees: 40000, masked_account: XXXXXX9072}
+  trusted_contact: {name: Arun, relationship: son, language: ta, phone: "+919800000101", age_days: 400}
+  consents: [CALL_SIGNAL, TRUSTED_CONTACT_SHARING]
+fri:
+  - {msisdn: "+919800000193", rating: HIGH}
+steps:
+  - {day: 1, time: "10:05", kind: event, type: FD_CLOSED, account: XXXXXX7710, amount_rupees: 3500000,
+     payload: {maturity_date: "2027-04-01", proceeds_to_account: XXXXXX2201}}
+  - {day: 2, time: "11:00", kind: event, type: INTERNAL_TRANSFER_IN, account: XXXXXX2201, amount_rupees: 600000,
+     payload: {from_account: XXXXXX3302, to_account: XXXXXX2201}}
+  - {day: 2, time: "11:30", kind: event, type: INTERNAL_TRANSFER_IN, account: XXXXXX2201, amount_rupees: 500000,
+     payload: {from_account: XXXXXX4403, to_account: XXXXXX2201}}
+  - {day: 2, time: "18:40", kind: call, call_type: VIDEO, duration_min: 190}
+  - {day: 3, time: "09:05", kind: call, call_type: VIDEO, duration_min: 185}
+  - {day: 3, time: "09:12", kind: event, type: PAYEE_ADDED,
+     payload: {payee_ref: PAY-0007-03, display_name: Verification Account (fictional), bank_name: Example Bank,
+               ifsc: EXMP0001234, masked_account: XXXXXX4821, channel: APP, linked_msisdn: "+919800000193"}}
+  - {day: 3, time: "11:15", kind: call, call_type: VIDEO, duration_min: 315}
+  - {day: 3, time: "11:20", kind: transfer, ref: TRF-P1-0001, from_account: XXXXXX2201, payee: PAY-0007-03,
+     amount_rupees: 4600000, rail: RTGS, channel: BRANCH, target: true}
+expected: {decision: HOLD, tier: VERY_HIGH}
