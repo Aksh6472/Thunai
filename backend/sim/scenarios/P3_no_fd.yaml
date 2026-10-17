@@ -1,0 +1,32 @@
+id: P3
+title: Savings pooled, no FD
+label: coercion
+grounding: >-
+  Generic reported pattern: savings consolidated from several accounts, then a NEFT to a new payee
+  while the customer stays on a call (docs/DATA_SOURCES.md §3, PRD §2.1).
+description: Two internal transfers pool savings on day 1, a new payee and a NEFT on day 2.
+customer:
+  ref: CUST-0003
+  display_name: K. Selvi (fictional)
+  narrative: retired nurse (narrative only)
+  median_outbound_rupees: 30000
+  accounts:
+    - {masked: XXXXXX0301, type: SAVINGS, balance_rupees: 100000}
+    - {masked: XXXXXX0302, type: SAVINGS, balance_rupees: 400000}
+    - {masked: XXXXXX0303, type: SAVINGS, balance_rupees: 500000}
+  trusted_contact: {name: Karthik, relationship: nephew, phone: "+919800000103"}
+  consents: [CALL_SIGNAL, TRUSTED_CONTACT_SHARING]
+steps:
+  - {day: 1, time: "11:00", kind: event, type: INTERNAL_TRANSFER_IN, account: XXXXXX0301, amount_rupees: 400000,
+     payload: {from_account: XXXXXX0302, to_account: XXXXXX0301}}
+  - {day: 1, time: "11:40", kind: event, type: INTERNAL_TRANSFER_IN, account: XXXXXX0301, amount_rupees: 500000,
+     payload: {from_account: XXXXXX0303, to_account: XXXXXX0301}}
+  - {day: 1, time: "20:00", kind: call, call_type: VIDEO, duration_min: 240}
+  - {day: 2, time: "09:30", kind: call, call_type: VIDEO, duration_min: 150}
+  - {day: 2, time: "09:40", kind: event, type: PAYEE_ADDED,
+     payload: {payee_ref: PAY-0003-02, display_name: Case Settlement Account (fictional), bank_name: Example Bank,
+               ifsc: EXMP0003302, masked_account: XXXXXX6703, channel: NETBANKING}}
+  - {day: 2, time: "10:55", kind: call, call_type: VIDEO, duration_min: 230}
+  - {day: 2, time: "11:00", kind: transfer, ref: TRF-P3-0001, from_account: XXXXXX0301, payee: PAY-0003-02,
+     amount_rupees: 900000, rail: NEFT, channel: NETBANKING, target: true}
+expected: {decision: HOLD, tier: HIGH}

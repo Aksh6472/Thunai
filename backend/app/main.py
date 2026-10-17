@@ -5,6 +5,7 @@ from app.api.v1 import (
     auth,
     customer,
     dashboard,
+    demo,
     health,
     holds,
     ingest,
@@ -51,6 +52,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.console_notifier = ConsoleNotifier()
     app.state.real_notifier = make_real_notifier(settings)
     app.state.scripts = load_scripts()
+    app.state.scenarios = None  # loaded on first demo use
+    app.state.demo_runs = {}
 
     install_error_handlers(app)
     app.add_middleware(
@@ -78,6 +81,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     v1.include_router(teller.router)
     v1.include_router(reports.router)
     v1.include_router(dashboard.router)
+    v1.include_router(demo.router)
     app.include_router(v1)
 
     return app

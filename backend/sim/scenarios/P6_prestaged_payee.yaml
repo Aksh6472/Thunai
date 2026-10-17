@@ -1,0 +1,31 @@
+id: P6
+title: Pre-staged payee (held out)
+label: coercion
+held_out: true
+grounding: >-
+  Generator variant: the scammer has the payee added days before the transfer, to test the
+  "< 2 h new payee" assumption (AI_DESIGN §14). Held out of tuning entirely.
+description: FD broken day 1, payee added day 2, funds pooled day 3, RTGS on day 6.
+customer:
+  ref: CUST-0006
+  display_name: A. Fernandes (fictional)
+  narrative: retired engineer (narrative only)
+  median_outbound_rupees: 45000
+  accounts:
+    - {masked: XXXXXX0601, type: SAVINGS, balance_rupees: 200000}
+    - {masked: XXXXXX0609, type: FD, balance_rupees: 2000000, maturity: 2027-03-01}
+    - {masked: XXXXXX0602, type: SAVINGS, balance_rupees: 300000}
+  trusted_contact: {name: Maria, relationship: daughter, phone: "+919800000106"}
+  consents: [CALL_SIGNAL, TRUSTED_CONTACT_SHARING]
+steps:
+  - {day: 1, time: "10:00", kind: event, type: FD_CLOSED, account: XXXXXX0609, amount_rupees: 2000000,
+     payload: {maturity_date: "2027-03-01", proceeds_to_account: XXXXXX0601}}
+  - {day: 2, time: "15:00", kind: event, type: PAYEE_ADDED,
+     payload: {payee_ref: PAY-0006-02, display_name: Safe Custody Account (fictional), bank_name: Example Bank,
+               ifsc: EXMP0006602, masked_account: XXXXXX7006, channel: NETBANKING}}
+  - {day: 3, time: "16:00", kind: event, type: INTERNAL_TRANSFER_IN, account: XXXXXX0601, amount_rupees: 300000,
+     payload: {from_account: XXXXXX0602, to_account: XXXXXX0601}}
+  - {day: 6, time: "10:50", kind: call, call_type: VIDEO, duration_min: 200}
+  - {day: 6, time: "11:00", kind: transfer, ref: TRF-P6-0001, from_account: XXXXXX0601, payee: PAY-0006-02,
+     amount_rupees: 2400000, rail: RTGS, channel: BRANCH, target: true}
+expected: {decision: HOLD, tier: VERY_HIGH}

@@ -1,0 +1,19 @@
+id: N6
+title: Business current account (genuine)
+label: genuine
+grounding: Hard negative (docs/DATA_SOURCES.md §4). Frequent large RTGS is normal for this customer.
+description: A regular ₹12 L RTGS to a long-standing supplier from a current account.
+customer:
+  ref: CUST-0017
+  display_name: Kumar Steel Traders (fictional)
+  median_outbound_rupees: 800000
+  accounts:
+    - {masked: XXXXXX1701, type: CURRENT, balance_rupees: 4000000}
+  payees:
+    - {ref: PAY-0017-01, name: Steel Supplier (fictional), age_days: 600, transfers: 20, amount_rupees: 1000000, masked_account: XXXXXX9171}
+  trusted_contact: {name: Ramesh, relationship: partner, phone: "+919800000117"}
+  consents: [TRUSTED_CONTACT_SHARING]
+steps:
+  - {day: 1, time: "11:00", kind: transfer, ref: TRF-N6-0001, from_account: XXXXXX1701, payee: PAY-0017-01,
+     amount_rupees: 1200000, rail: RTGS, channel: NETBANKING}
+expected: {decision: ALLOW, tier: LOW}

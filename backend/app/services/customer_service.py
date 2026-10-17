@@ -174,24 +174,47 @@ def warning_response(
 ) -> TransferStatusOut:
     customer = me(session, principal)
     transfer = _own_transfer(session, customer, ref, for_update=True)
+    return apply_warning_response(
+        session, ctx, transfer, body.action, ActorType.CUSTOMER, str(customer.id)
+    )
+
+
+def apply_warning_response(
+    session: Session,
+    ctx: Ctx,
+    transfer: Transfer,
+    action: str,
+    actor_type: ActorType,
+    actor_id: str,
+) -> TransferStatusOut:
+    """FR-10: the customer's choice on a WARN (directly, or relayed by core banking)."""
     if transfer.status is not TransferStatus.WARNED:
         raise InvalidStateTransition("This transfer is not waiting for a warning response.")
-    if body.action == "CONTINUE":
+    if action == "CONTINUE":
         transfer_ops.execute(session, transfer, ctx.clock.now(), ctx.cfg)
-        action = "WARNING_ACKNOWLEDGED_CONTINUE"
     else:
         transfer_ops.cancel(transfer, CancelledReason.CUSTOMER_CANCELLED)
-        action = "WARNING_ACKNOWLEDGED_CANCEL"
     audit(
         session,
-        action,
+        f"WARNING_ACKNOWLEDGED_{action}",
         entity_type="transfer",
         entity_id=transfer.transfer_ref,
-        actor_type=ActorType.CUSTOMER,
-        actor_id=customer.id,
+        actor_type=actor_type,
+        actor_id=actor_id,
     )
     session.commit()
     return TransferStatusOut(transfer_ref=transfer.transfer_ref, transfer_status=transfer.status)
+
+
+def relay_warning_response(
+    session: Session, ctx: Ctx, ref: str, body: WarningResponseIn
+) -> TransferStatusOut:
+    transfer = transfers.by_ref(session, ref, for_update=True)
+    if transfer is None:
+        raise NotFound("transfer")
+    return apply_warning_response(
+        session, ctx, transfer, body.action, ActorType.SERVICE, "core-banking"
+    )
 
 
 def cancel(session: Session, ctx: Ctx, principal: Principal, ref: str) -> TransferStatusOut:

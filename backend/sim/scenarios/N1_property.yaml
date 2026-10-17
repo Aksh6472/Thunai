@@ -1,0 +1,29 @@
+id: N1
+title: Property instalment (genuine)
+label: genuine
+grounding: Hard negative (docs/DATA_SOURCES.md §4). A large payment to an established builder payee.
+description: >-
+  FD broken and funds pooled, then ₹40 L to a builder paid ₹5 L every quarter for two years.
+  Behaviour looks like stages S1–S2, but the payee relationship is long and regular.
+customer:
+  ref: CUST-0012
+  display_name: Mr. Iqbal (fictional)
+  login: cust.iqbal
+  narrative: business owner buying a flat (narrative only)
+  median_outbound_rupees: 500000
+  accounts:
+    - {masked: XXXXXX1201, type: SAVINGS, balance_rupees: 500000}
+    - {masked: XXXXXX1202, type: SAVINGS, balance_rupees: 500000}
+    - {masked: XXXXXX1209, type: FD, balance_rupees: 3000000, maturity: 2027-02-01}
+  payees:
+    - {ref: PAY-0012-01, name: Sri Balaji Builders (fictional), age_days: 730, transfers: 8, amount_rupees: 500000, masked_account: XXXXXX9121}
+  trusted_contact: {name: Farah, relationship: spouse, phone: "+919800000112"}
+  consents: [CALL_SIGNAL, TRUSTED_CONTACT_SHARING]
+steps:
+  - {day: 1, time: "10:00", kind: event, type: FD_CLOSED, account: XXXXXX1209, amount_rupees: 3000000,
+     payload: {maturity_date: "2027-02-01", proceeds_to_account: XXXXXX1201}}
+  - {day: 2, time: "10:00", kind: event, type: INTERNAL_TRANSFER_IN, account: XXXXXX1201, amount_rupees: 500000,
+     payload: {from_account: XXXXXX1202, to_account: XXXXXX1201}}
+  - {day: 3, time: "11:20", kind: transfer, ref: TRF-N1-0001, from_account: XXXXXX1201, payee: PAY-0012-01,
+     amount_rupees: 4000000, rail: RTGS, channel: NETBANKING}
+expected: {decision: ALLOW, tier: LOW}

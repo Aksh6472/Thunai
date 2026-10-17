@@ -74,7 +74,8 @@ def test_sim_talks_http_only(path: Path) -> None:
     imports = _imports(path)
     bad = sorted(m for m in imports if _matches(m, SIM_FORBIDDEN))
     assert not bad, f"{path.name} imports {bad}"
-    allowed = SIM_ALLOWED_APP_IMPORTS.get(path.name, ())
+    # ARCHITECTURE §3: any sim module may read configuration through app.core.settings.
+    allowed = (*SIM_ALLOWED_APP_IMPORTS.get(path.name, ()), "app.core.settings")
     app_imports = sorted(m for m in imports if _matches(m, ("app",)) and not _matches(m, allowed))
     assert not app_imports, f"{path.name} may not import {app_imports}"
 

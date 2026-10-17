@@ -177,6 +177,9 @@ Errors: 404 (customer, account or payee), 409, 422, 503 `ASSESSMENT_UNAVAILABLE`
 ### `GET /transfers/{transfer_ref}` (service key, or OFFICER/TELLER)
 Returns the transfer status plus the latest `AssessmentResult`.
 
+### `POST /transfers/{transfer_ref}/warning-response` (service key)
+`{"action": "CONTINUE" | "CANCEL"}` → `{transfer_ref, transfer_status}`. Core banking relays the customer's choice on a WARN made in its own app (the customer-app equivalent is in §5). 409 if the transfer is not WARNED.
+
 ---
 
 ## 5. Customer app (role CUSTOMER; only the customer's own resources)
@@ -331,9 +334,11 @@ Alert items: `{kind: HOLD|WARN|WATCH, id, customer, tier, status, amount_paise?,
 | Method & path | Purpose |
 |---|---|
 | `GET /demo/scenarios` | `[{id: "P1", title, label, customer_ref, description, expected_decision}]` |
-| `POST /demo/reset` | Truncate the transactional tables, re-seed (seed 42) and reset `sim_state`. Target ≤ 10 s |
+| `POST /demo/reset` | Truncate the tables, re-seed (seed 42) and reset `sim_state` (clock frozen at 1 Oct 2026, 09:00 IST). Returns `{seconds, customers, seed, sim_now}`. Target ≤ 10 s (measured ≈ 0.5 s) |
 | `POST /demo/scenarios/{id}/run` | `{"speed": 4320}`, in simulated seconds per real second. 4320 makes 3 days ≈ 60 s. The run happens in the background replayer. Returns 202 `{run_id}` |
-| `GET /demo/clock` | `{sim_now, speed, running_scenario}` |
+| `GET /demo/clock` | `{sim_now, speed, running_scenario}` (any staff role, for the clock bar) |
+| `POST /demo/clock` | `{sim_now, speed, running_scenario}` (ADMIN or service key). The replayer re-anchors the simulated clock at each step; `speed` 0 freezes it |
+| `GET /demo/runs?limit=10` | Recent background runs: `[{run_id, scenario_id, speed, status: RUNNING\|DONE\|FAILED\|CANCELLED, started_at, lines, transfers, error}]` (the panel's log) |
 | `POST /demo/fri` | `{"linked_msisdn": "+91…", "rating": "HIGH"}`. Upserts a **simulated** FRI rating |
 | `GET /demo/console-messages?limit=20` | Recent console-notifier messages (the fallback when SMS is unavailable) |
 

@@ -1,0 +1,27 @@
+id: N5
+title: Overseas tuition (genuine, held out)
+label: genuine
+held_out: true
+grounding: Hard negative (docs/DATA_SOURCES.md §4). Held out of tuning entirely.
+description: FD broken and savings pooled to pay a child's university fees to a new payee.
+customer:
+  ref: CUST-0016
+  display_name: R. Iyer (fictional)
+  median_outbound_rupees: 80000
+  accounts:
+    - {masked: XXXXXX1601, type: SAVINGS, balance_rupees: 300000}
+    - {masked: XXXXXX1609, type: FD, balance_rupees: 1800000, maturity: 2027-08-01}
+    - {masked: XXXXXX1602, type: SAVINGS, balance_rupees: 400000}
+  trusted_contact: {name: Vikram, relationship: son, phone: "+919800000116"}
+  consents: [CALL_SIGNAL, TRUSTED_CONTACT_SHARING]
+steps:
+  - {day: 1, time: "10:00", kind: event, type: FD_CLOSED, account: XXXXXX1609, amount_rupees: 1800000,
+     payload: {maturity_date: "2027-08-01", proceeds_to_account: XXXXXX1601}}
+  - {day: 1, time: "14:00", kind: event, type: INTERNAL_TRANSFER_IN, account: XXXXXX1601, amount_rupees: 400000,
+     payload: {from_account: XXXXXX1602, to_account: XXXXXX1601}}
+  - {day: 2, time: "10:00", kind: event, type: PAYEE_ADDED,
+     payload: {payee_ref: PAY-0016-02, display_name: University of Example (fictional), bank_name: Example Bank,
+               ifsc: EXMP0016602, masked_account: XXXXXX7416, channel: NETBANKING}}
+  - {day: 2, time: "16:00", kind: transfer, ref: TRF-N5-0001, from_account: XXXXXX1601, payee: PAY-0016-02,
+     amount_rupees: 2000000, rail: RTGS, channel: NETBANKING}
+expected: {decision: HOLD, tier: HIGH}

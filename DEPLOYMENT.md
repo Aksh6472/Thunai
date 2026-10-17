@@ -21,7 +21,7 @@ Open:
 
 | URL | What it is |
 |---|---|
-| http://localhost:5173/login | The app (users `teller.priya`, `officer.rao`, `admin.demo`, `cust.kamala`, `cust.iqbal`, all with password `$THUNAI_SEED_PASSWORD`) |
+| http://localhost:5173/login | The app (users `teller.priya`, `officer.rao`, `admin.demo`, `cust.kamala`, `cust.iqbal`, `cust.meena`, all with password `$THUNAI_SEED_PASSWORD`) |
 | http://localhost:8000/docs | OpenAPI UI |
 | http://localhost:8000/api/v1/readyz | Readiness check |
 

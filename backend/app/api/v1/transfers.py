@@ -7,8 +7,13 @@ from app.api.deps import get_ctx, get_db, require_service_key, require_staff_or_
 from app.core.errors import ValidationFailed
 from app.core.security import Principal
 from app.domain.enums import Role
-from app.schemas.transfers import AssessmentResult, TransferAssessIn
-from app.services import assessment_service
+from app.schemas.transfers import (
+    AssessmentResult,
+    TransferAssessIn,
+    TransferStatusOut,
+    WarningResponseIn,
+)
+from app.services import assessment_service, customer_service
 from app.services.assessment_service import TransferRequest, to_result
 from app.services.context import Ctx
 
@@ -56,3 +61,15 @@ def get_transfer(
     session: Session = Depends(get_db),
 ) -> AssessmentResult:
     return assessment_service.get_result(session, principal, transfer_ref)
+
+
+@router.post("/{transfer_ref}/warning-response", response_model=TransferStatusOut)
+def relay_warning_response(
+    transfer_ref: str,
+    body: WarningResponseIn,
+    _: Principal = Depends(require_service_key),
+    session: Session = Depends(get_db),
+    ctx: Ctx = Depends(get_ctx),
+) -> TransferStatusOut:
+    """Core banking relays the customer's choice on a WARN made in its own app."""
+    return customer_service.relay_warning_response(session, ctx, transfer_ref, body)

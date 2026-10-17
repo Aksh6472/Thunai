@@ -1,0 +1,33 @@
+id: N4
+title: Wedding jewellery (genuine, expected friction)
+label: genuine
+grounding: >-
+  Hard negative (docs/DATA_SOURCES.md §4). Behaviour resembles coercion; an expected false hold
+  that the family releases quickly (JUDGING_STRATEGY.md §6).
+description: FD broken, funds pooled, a new jeweller payee and ₹8 L through the app the next day.
+customer:
+  ref: CUST-0015
+  display_name: Meena (fictional)
+  login: cust.meena
+  median_outbound_rupees: 25000
+  accounts:
+    - {masked: XXXXXX1501, type: SAVINGS, balance_rupees: 500000}
+    - {masked: XXXXXX1502, type: SAVINGS, balance_rupees: 400000}
+    - {masked: XXXXXX1509, type: FD, balance_rupees: 600000, maturity: 2027-06-01}
+  payees:
+    - {ref: PAY-0015-01, name: Grocery Store (fictional), age_days: 500, transfers: 12, amount_rupees: 6000, masked_account: XXXXXX9151}
+    # Added 72 minutes before the demo clock: used for the app-warning journey (J2).
+    - {ref: PAY-0015-09, name: Online Seller (fictional), age_days: 0.05, masked_account: XXXXXX9159}
+  trusted_contact: {name: Priya, relationship: sister, phone: "+919800000115"}
+  consents: [CALL_SIGNAL, TRUSTED_CONTACT_SHARING]
+steps:
+  - {day: 1, time: "10:00", kind: event, type: FD_CLOSED, account: XXXXXX1509, amount_rupees: 600000,
+     payload: {maturity_date: "2027-06-01", proceeds_to_account: XXXXXX1501}}
+  - {day: 2, time: "10:00", kind: event, type: INTERNAL_TRANSFER_IN, account: XXXXXX1501, amount_rupees: 400000,
+     payload: {from_account: XXXXXX1502, to_account: XXXXXX1501}}
+  - {day: 2, time: "15:20", kind: event, type: PAYEE_ADDED,
+     payload: {payee_ref: PAY-0015-05, display_name: Lakshmi Jewellers (fictional), bank_name: Example Bank,
+               ifsc: EXMP0015505, masked_account: XXXXXX7315, channel: APP}}
+  - {day: 3, time: "11:20", kind: transfer, ref: TRF-N4-0001, from_account: XXXXXX1501, payee: PAY-0015-05,
+     amount_rupees: 800000, rail: NEFT, channel: APP}
+expected: {decision: HOLD, tier: HIGH}

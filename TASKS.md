@@ -23,9 +23,9 @@ The full specification of each task (steps, acceptance, tests) is in [IMPLEMENTA
 | T-028 | Scoring and reasons EN/TA (golden tests first) | WS2 | P0 | 3 | T-026, T-027 | M1 | Claude | done — golden 115/80/5/60 pass; domain coverage 99% |
 | T-029 | Policy and overrides | WS2 | P0 | 1 | T-028 | M1 | Claude | done |
 | T-010 | Auth: login, JWT, RBAC, service key, rate limit | WS3 | P0 | 2.5 | T-005, T-008 | M1 | Claude | done — argon2id, HS256 pinned, RBAC deps, in-memory limiter, login audit |
-| T-009 | Staff and demo-customer seed | WS3 | P0 | 0.5 | T-008, T-010 | M1 | | todo |
-| T-022 | Synthetic population generator | WS1 | P0 | 3 | T-008 | M1 | | todo |
-| T-023 | Scenario families (P1 and N1 first) | WS1 | P0 | 3 | T-022 | M1→M2 | | todo |
+| T-009 | Staff and demo-customer seed | WS3 | P0 | 0.5 | T-008, T-010 | M1 | Claude | done — staff + cust.kamala/iqbal/meena; idempotent (truncate, insert) |
+| T-022 | Synthetic population generator | WS1 | P0 | 3 | T-008 | M1 | Claude | done — 50 customers, seed 42 deterministic (hash test), seeds in ~0.5 s |
+| T-023 | Scenario families (P1 and N1 first) | WS1 | P0 | 3 | T-022 | M1→M2 | Claude | done — 13 families; all seed-42 expectations pass through the API |
 | T-032 | Design tokens and core components | WS4 | P0 | 3 | T-003 | M1 | | todo |
 | T-011 | Frontend auth | WS4 | P0 | 2 | T-003, T-010, T-032 | M1 | | todo |
 | T-012 | Event and call-signal ingestion | WS3 | P0 | 3 | T-008, T-010, T-026 | M2 | Claude | done — idempotent, per-customer lock, HMAC/Fernet on receipt; hero watch 15→40→63 via API |
@@ -33,13 +33,13 @@ The full specification of each task (steps, acceptance, tests) is in [IMPLEMENTA
 | T-014 | Hold lifecycle and officer decision | WS3 | P0 | 3 | T-013 | M2 | Claude | done — transition table, officer decision (note 10–1000), lazy cooling-off expiry |
 | T-016 | Notifier (console Must; Twilio/Telegram Should) | WS5 | P0 | 2 | T-005 | M2 | Claude | done — console always + Twilio/Telegram via httpx, FAILED → console fallback |
 | T-015 | Trusted-contact requests and responses | WS3 | P0 | 3 | T-014, T-016 | M2 | Claude | done — single-use SHA-256 tokens, concurrent double submit → one 200 / one 410 |
-| T-024 | Scenario replayer | WS1 | P0 | 2.5 | T-012, T-013, T-023 | M2 | | todo |
-| T-021 | Demo control endpoints | WS1 | P0 | 2 | T-024, T-007 | M2 | | todo |
+| T-024 | Scenario replayer | WS1 | P0 | 2.5 | T-012, T-013, T-023 | M2 | Claude | done — CLI + in-process runner; P1 at 100000× replays in ~2 s |
+| T-021 | Demo control endpoints | WS1 | P0 | 2 | T-024, T-007 | M2 | Claude | done — reset ~0.5 s, run, runs log, clock, FRI, console messages |
 | T-017 | Teller endpoints (checklist, script) | WS3 | P0 | 2.5 | T-013, T-014 | M2 | Claude | done — escalate-only re-score, customer_said never scored, EN/TA script (TA pending review) |
 | T-018 | Report draft (template) | WS6 | P1 | 2 | T-014 | M2 | Claude | done — template narrative; structured fields from DB; mark-filed OFFICER only |
 | T-020 | Audit log writer | WS6 | P1 | 1 | T-008 | M2 | Claude | done — `audit()` with scrub; append-only enforced by test |
 | T-019 | Read APIs: alerts, dashboard, customers | WS1 | P1 | 2.5 | T-013, T-014 | M2 | Claude | done — unified alert queue, summary, customers; ≤ 5 queries per list request (tested) |
-| T-040a | **Headless hero gate** (API-level P1 and N1) | All | P0 | 1.5 | T-012–T-029 | **M2** | | todo |
+| T-040a | **Headless hero gate** (API-level P1 and N1) | All | P0 | 1.5 | T-012–T-029 | **M2** | Claude | done — AC-01..AC-10 and N1 pass headless (tests/scenarios) |
 | T-033 | Ops dashboard queue | WS4 | P0 | 3 | T-032, T-019, T-011 | M3 | | todo |
 | T-035 | Teller console | WS4 | P0 | 3 | T-032, T-017 | M3 | | todo |
 | T-034 | Hold detail and officer decision UI | WS4 | P0 | 4 | T-033, T-014, T-018 | M3 | | todo |

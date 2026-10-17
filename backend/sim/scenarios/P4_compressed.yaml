@@ -1,0 +1,31 @@
+id: P4
+title: Compressed into one day
+label: coercion
+grounding: >-
+  Several reports of same-day pressure; Jaipur (FD broken during a 5-hour video call,
+  docs/DATA_SOURCES.md §3 #7).
+description: FD broken, funds pooled, new payee and an app transfer, all within one morning.
+customer:
+  ref: CUST-0004
+  display_name: P. Mehta (fictional)
+  narrative: mid-career professional (narrative only)
+  median_outbound_rupees: 35000
+  accounts:
+    - {masked: XXXXXX0401, type: SAVINGS, balance_rupees: 50000}
+    - {masked: XXXXXX0409, type: FD, balance_rupees: 1200000, maturity: 2027-01-15}
+    - {masked: XXXXXX0402, type: SAVINGS, balance_rupees: 300000}
+  trusted_contact: {name: Neha, relationship: spouse, phone: "+919800000104"}
+  consents: [TRUSTED_CONTACT_SHARING]
+fri:
+  - {msisdn: "+919800000404", rating: MEDIUM}
+steps:
+  - {day: 1, time: "09:30", kind: event, type: FD_CLOSED, account: XXXXXX0409, amount_rupees: 1200000,
+     payload: {maturity_date: "2027-01-15", proceeds_to_account: XXXXXX0401}}
+  - {day: 1, time: "10:15", kind: event, type: INTERNAL_TRANSFER_IN, account: XXXXXX0401, amount_rupees: 300000,
+     payload: {from_account: XXXXXX0402, to_account: XXXXXX0401}}
+  - {day: 1, time: "11:00", kind: event, type: PAYEE_ADDED,
+     payload: {payee_ref: PAY-0004-02, display_name: Escrow Verification (fictional), bank_name: Example Bank,
+               ifsc: EXMP0004402, masked_account: XXXXXX6804, channel: APP, linked_msisdn: "+919800000404"}}
+  - {day: 1, time: "12:30", kind: transfer, ref: TRF-P4-0001, from_account: XXXXXX0401, payee: PAY-0004-02,
+     amount_rupees: 1500000, rail: NEFT, channel: APP, target: true}
+expected: {decision: HOLD, tier: VERY_HIGH}

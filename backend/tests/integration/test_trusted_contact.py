@@ -1,20 +1,18 @@
 """T-015: trusted-contact links (FR-12, AC-04..07, AC-12, SECURITY T-04/T-05)."""
 
 import asyncio
-from collections.abc import Iterator
 from datetime import timedelta
 
 import httpx
 import pytest
 from fastapi import FastAPI
-from sqlalchemy import Engine, text, update
+from sqlalchemy import update
 from sqlalchemy.orm import Session, sessionmaker
 
-from app.core.clock import FixedClock, wall_now
+from app.core.clock import wall_now
 from app.core.settings import Settings
 from app.domain.enums import Role
-from app.main import create_app
-from app.models import Base, ContactRequest
+from app.models import ContactRequest
 from tests.conftest import TEST_NOW
 from tests.scenario_helpers import (
     WEDDING_EVENTS,
@@ -214,16 +212,6 @@ async def test_resend_expires_old_link(
 
 
 # ---------- Concurrency: real separate connections, committed data ----------
-
-
-@pytest.fixture
-def committed_app(test_settings: Settings, migrated_engine: Engine) -> Iterator[FastAPI]:
-    application = create_app(test_settings)
-    application.state.clock = FixedClock(TEST_NOW)
-    yield application
-    tables = ", ".join(t.name for t in reversed(Base.metadata.sorted_tables))
-    with migrated_engine.begin() as conn:
-        conn.execute(text(f"TRUNCATE {tables} RESTART IDENTITY CASCADE"))
 
 
 async def test_concurrent_double_submit_gives_one_200_and_one_410(

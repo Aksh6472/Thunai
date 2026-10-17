@@ -108,3 +108,36 @@ async def client(app: FastAPI) -> AsyncIterator[httpx.AsyncClient]:
 @pytest.fixture
 def service_headers(test_settings: Settings) -> dict[str, str]:
     return {"X-Thunai-Service-Key": test_settings.service_api_key}
+
+
+@pytest.fixture
+def committed_app(test_settings: Settings, migrated_engine: Engine) -> Iterator[FastAPI]:
+    """An app on real, committed connections (concurrency, seeding). Tables are truncated after."""
+    from sqlalchemy import text
+
+    from app.models import Base
+
+    application = create_app(test_settings)
+    application.state.clock = FixedClock(TEST_NOW)
+    yield application
+    tables = ", ".join(t.name for t in reversed(Base.metadata.sorted_tables))
+    with migrated_engine.begin() as conn:
+        conn.execute(text(f"TRUNCATE {tables} RESTART IDENTITY CASCADE"))
+
+
+@pytest.fixture
+def demo_app(test_settings: Settings, migrated_engine: Engine) -> Iterator[FastAPI]:
+    """Demo-mode app with the real SimClock, seeded with seed 42. Truncated after."""
+    from sqlalchemy import text
+
+    from app.models import Base
+    from sim.seed import seed
+
+    application = create_app(test_settings)
+    with application.state.session_factory() as session:
+        seed(session, test_settings)
+    application.state.clock.reload()
+    yield application
+    tables = ", ".join(t.name for t in reversed(Base.metadata.sorted_tables))
+    with migrated_engine.begin() as conn:
+        conn.execute(text(f"TRUNCATE {tables} RESTART IDENTITY CASCADE"))
