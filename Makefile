@@ -6,11 +6,11 @@ envval = $(shell grep -E '^$(1)=' .env 2>/dev/null | head -1 | cut -d= -f2- | se
 API_PORT := $(or $(call envval,THUNAI_API_PORT),8000)
 
 .PHONY: help db db-down dev frontend-env test test-backend test-frontend lint format \
-        migrate seed demo demo-reset replay eval e2e security
+        migrate seed demo demo-reset replay bench eval e2e security
 
 help:
 	@echo "make db | db-down | migrate | seed | dev | demo-reset | replay | test | lint | format"
-	@echo "make eval | demo | e2e | security"
+	@echo "make eval | bench | security | demo | e2e"
 
 db:
 	docker compose up -d --wait db
@@ -47,6 +47,9 @@ demo-reset:  # needs the API running (make dev / make demo)
 replay:  # make replay SCENARIO=P1 SPEED=4320 (API running)
 	cd backend && uv run python -m sim.replay --scenario $(or $(SCENARIO),P1) --speed $(or $(SPEED),4320)
 
+bench:  # NFR-01 latency check against the running API (make dev / make demo)
+	cd backend && uv run python -m sim.bench --n 500 --concurrency 10
+
 eval:  # synthetic evaluation on held-out seeds 100–299 → reports/eval/ (uses TEST_DATABASE_URL)
 	cd backend && uv run python -m sim.evaluate --seeds 100-299 --out ../reports/eval/
 
@@ -63,5 +66,7 @@ demo:
 	@echo "Not implemented yet: T-047"; exit 1
 e2e:
 	@echo "Not implemented yet: T-044"; exit 1
-security:
-	@echo "Not implemented yet: T-045"; exit 1
+security:  # pip-audit, npm audit (prod deps), gitleaks over git history (Docker image, pinned)
+	cd backend && uv run pip-audit
+	cd frontend && npm audit --omit=dev
+	docker run --rm -v "$(CURDIR):/repo" zricethezav/gitleaks:v8.24.3 git /repo --no-banner --redact

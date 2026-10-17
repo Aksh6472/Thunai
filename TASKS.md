@@ -49,10 +49,10 @@ The full specification of each task (steps, acceptance, tests) is in [IMPLEMENTA
 | T-038 | i18n and native Tamil review | WS5 | P1 | 2 | T-028, T-017, T-036, T-037 | M3 | | todo |
 | T-040b | **UI hero gate** (DEMO_SCRIPT run-through) | All | P0 | 1.5 | M3 tasks | **M3** | | todo |
 | T-042 | Engine test hardening (determinism, coverage) | WS2 | P1 | 1.5 | T-028 | M4 | | todo |
-| T-043 | API authorisation matrix and migration test | WS3 | P1 | 2 | T-010–T-021 | M4 | | todo |
+| T-043 | API authorisation matrix and migration test | WS3 | P1 | 2 | T-010–T-021 | M4 | Claude | done — 42 routes × 6 principals (tests/integration/test_authz_matrix.py); migration round-trip in test_migrations.py |
 | T-044 | Playwright E2E (J1, J2, J4) | WS6 | P1 | 3 | T-040b | M4 | | todo |
-| T-045 | Security checks | WS6 | P1 | 1.5 | T-043 | M4 | | todo |
-| T-046 | Performance check (NFR-01) | WS3 | P1 | 1 | T-013 | M4 | | todo |
+| T-045 | Security checks | WS6 | P1 | 1.5 | T-043 | M4 | Claude | done — pip-audit clean, npm audit 0, gitleaks clean; checklist in reports/security/2026-10-17.md |
+| T-046 | Performance check (NFR-01) | WS3 | P1 | 1 | T-013 | M4 | Claude | done — `make bench`: p95 55.2 ms, p50 36.9 ms, 499 requests, concurrency 10 (dev laptop, 2026-10-17) |
 | T-030 | Evaluation harness | WS1 | P1 | 3 | T-024, T-013 | M4 | Claude | done — `make eval`; ~1.3 s/seed; Wilson CIs, per-family, modelled delay; NOT yet run on 100–299 (T-049) |
 | T-049 | Run the evaluation and record the results | WS1 | P1 | 1 | T-030, M3 | M4 | | todo |
 | T-047 | Local demo runbook and snapshot | WS6 | P0 | 1.5 | T-040b | M4 | | todo |
