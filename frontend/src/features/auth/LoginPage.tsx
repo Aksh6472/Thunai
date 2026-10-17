@@ -6,6 +6,7 @@ import { HOME, useAuth } from '../../app/auth'
 import { BANK_NAME } from '../../config/brand'
 import { DEMO_MODE } from '../../config/demo'
 import { BrandMark } from '../../components/BrandMark'
+import { ShieldIllustration } from '../../components/ShieldIllustration'
 import { Button } from '../../components/Button'
 import { Field, inputClass } from '../../components/Field'
 import { ErrorBanner } from '../../components/States'
@@ -61,24 +62,26 @@ export function LoginPage() {
 
   return (
     <main className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
-      <aside className="relative hidden overflow-hidden bg-brand p-12 text-brand-text lg:flex lg:flex-col lg:justify-between">
+      <aside className="relative m-4 hidden overflow-hidden rounded-[32px] bg-gradient-to-br from-lilac via-surface-2 to-blush p-12 lg:flex lg:flex-col lg:justify-between">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -right-32 -top-32 h-[480px] w-[480px] rounded-full bg-primary/25 blur-3xl"
+          className="pointer-events-none absolute -right-24 -top-24 h-[380px] w-[380px] rounded-full bg-accent/25 blur-3xl"
         />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -bottom-40 -left-24 h-[420px] w-[420px] rounded-full bg-accent/10 blur-3xl"
-        />
-        <BrandMark size="lg" />
-        <div className="relative max-w-[520px] space-y-8">
-          <h2 className="text-4xl font-bold leading-tight text-white">{t('login.tagline')}</h2>
+        <BrandMark size="lg" tagline={t('nav.tagline')} />
+        <div className="relative max-w-[540px] space-y-8">
+          <ShieldIllustration className="h-[190px] w-auto" />
+          <h2 className="text-[40px] font-extrabold leading-tight tracking-tight text-brand">
+            {t('login.tagline')}{' '}
+            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              {t('login.tagline_accent')}
+            </span>
+          </h2>
           <ul className="space-y-4">
             {POINTS.map((k) => (
-              <li key={k} className="flex gap-3 text-base">
+              <li key={k} className="flex gap-3 text-base text-text-muted">
                 <span
                   aria-hidden="true"
-                  className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-accent/15 text-sm font-bold text-accent"
+                  className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-surface text-sm font-bold text-primary shadow-sm"
                 >
                   ✓
                 </span>
@@ -87,15 +90,13 @@ export function LoginPage() {
             ))}
           </ul>
         </div>
-        <p className="relative text-sm text-brand-muted">
-          {t('login.footer', { bank: BANK_NAME })}
-        </p>
+        <p className="relative text-sm text-text-muted">{t('login.footer', { bank: BANK_NAME })}</p>
       </aside>
 
       <div className="flex items-center justify-center p-6">
         <form onSubmit={submit} noValidate className="w-full max-w-[420px] space-y-5">
           <div className="lg:hidden">
-            <BrandMark tone="light" />
+            <BrandMark />
           </div>
           <div className="space-y-1">
             <h1 className="text-2xl font-bold tracking-tight">{t('login.title')}</h1>
@@ -130,7 +131,7 @@ export function LoginPage() {
             {t('login.submit')}
           </Button>
           {DEMO_MODE && (
-            <div className="space-y-2 rounded-[var(--radius-card)] border border-border bg-surface p-4 shadow-[var(--shadow-card)]">
+            <div className="space-y-3 rounded-[var(--radius-card)] bg-surface p-5 shadow-[var(--shadow-card)]">
               <p className="text-sm font-semibold">{t('login.demo_accounts')}</p>
               <ul className="grid grid-cols-2 gap-2">
                 {DEMO_USERS.map((u) => (
@@ -138,7 +139,7 @@ export function LoginPage() {
                     <button
                       type="button"
                       aria-pressed={username === u.username}
-                      className={`w-full rounded-[var(--radius-control)] border px-3 py-2 text-left transition-colors ${username === u.username ? 'border-primary bg-primary/10' : 'border-border hover:bg-surface-2'}`}
+                      className={`w-full rounded-[14px] border px-3 py-2.5 text-left transition-colors ${username === u.username ? 'border-primary bg-lilac' : 'border-border hover:bg-surface-2'}`}
                       onClick={() => setUsername(u.username)}
                     >
                       <span className="block font-mono text-sm font-semibold text-primary">

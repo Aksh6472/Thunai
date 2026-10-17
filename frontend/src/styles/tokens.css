@@ -2,59 +2,42 @@
 @import 'tailwindcss';
 
 :root {
-  --color-bg: #f3f5f9;
+  /* Light only: soft lavender surfaces, violet primary (DESIGN §7). */
+  color-scheme: light;
+  --color-bg: #f6f5fb;
   --color-surface: #ffffff;
-  --color-surface-2: #f8fafc;
-  --color-text: #0f172a;
-  --color-text-muted: #475569;
-  --color-border: #e2e8f0;
-  --color-primary: #2f5bea;
-  --color-primary-strong: #1e40af;
-  --color-focus: #2563eb;
-  --color-brand: #0b1b33;
-  --color-brand-2: #13294b;
-  --color-brand-text: #e6ecf5;
-  --color-brand-muted: #94a3b8;
-  --color-accent: #f5a524;
+  --color-surface-2: #f6f3fe;
+  --color-text: #1c1a33;
+  --color-text-muted: #625f7e;
+  --color-border: #ece9f5;
+  --color-primary: #6c4cf5;
+  --color-primary-strong: #5233dc;
+  --color-focus: #6c4cf5;
+  /* Deep indigo for the strongest call to action and the phone bezel */
+  --color-brand: #1e1b4b;
+  --color-brand-2: #2e2a6b;
+  --color-brand-text: #ffffff;
+  --color-brand-muted: #c9c3f2;
+  /* Soft tints for hero banners and icon tiles */
+  --color-lilac: #efeafe;
+  --color-blush: #f8ecfb;
+  --color-accent: #b07cff;
   --color-tier-low: #15803d;
   --color-tier-medium: #b45309;
   --color-tier-high: #c2410c;
-  --color-tier-very-high: #b91c1c;
+  --color-tier-very-high: #c0263d;
   --color-success: #15803d;
-  --color-simulated: #6d28d9;
-  /* QR codes stay black on white in both themes so phones can scan them */
+  --color-simulated: #0e7490;
+  /* QR codes stay black on white so phones can scan them */
   --color-qr-dark: #000000;
   --color-qr-light: #ffffff;
 
   --font-sans: 'Inter', 'Noto Sans Tamil', system-ui, sans-serif;
-  --radius-control: 8px;
-  --radius-card: 14px;
-  --radius-phone: 28px;
-  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.05), 0 4px 16px rgb(15 23 42 / 0.05);
-  --shadow-raised: 0 10px 40px rgb(11 27 51 / 0.25);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #0b1220;
-    --color-surface: #121a2b;
-    --color-surface-2: #172036;
-    --color-text: #e5e9f0;
-    --color-text-muted: #9aa6b8;
-    --color-border: #243049;
-    --color-primary: #6b8cff;
-    --color-primary-strong: #93abff;
-    --color-focus: #93c5fd;
-    --color-brand: #070e1c;
-    --color-brand-2: #0f1a30;
-    --color-tier-low: #4ade80;
-    --color-tier-medium: #fbbf24;
-    --color-tier-high: #fb923c;
-    --color-tier-very-high: #f87171;
-    --color-success: #4ade80;
-    --color-simulated: #c4b5fd;
-    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3);
-  }
+  --radius-control: 12px;
+  --radius-card: 20px;
+  --radius-phone: 32px;
+  --shadow-card: 0 1px 3px rgb(76 56 160 / 0.04), 0 10px 30px rgb(76 56 160 / 0.06);
+  --shadow-raised: 0 20px 50px rgb(76 56 160 / 0.18);
 }
 
 /* Expose tokens as Tailwind utilities, e.g. bg-surface, text-tier-high */
@@ -72,6 +55,8 @@
   --color-brand-text: var(--color-brand-text);
   --color-brand-muted: var(--color-brand-muted);
   --color-accent: var(--color-accent);
+  --color-lilac: var(--color-lilac);
+  --color-blush: var(--color-blush);
   --color-focus: var(--color-focus);
   --color-tier-low: var(--color-tier-low);
   --color-tier-medium: var(--color-tier-medium);

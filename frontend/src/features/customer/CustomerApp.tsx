@@ -61,7 +61,7 @@ function CustomerAppScreens() {
 
   return (
     <PhoneFrame>
-      <header className="flex items-center justify-between gap-2 bg-gradient-to-r from-brand to-brand-2 px-4 py-3 text-white">
+      <header className="flex items-center justify-between gap-2 bg-gradient-to-r from-primary to-accent px-4 py-3 text-white">
         <span className="font-bold">{t('cust.app', { bank: BANK_NAME })}</span>
         <LanguageToggle value={lang} onChange={setLang} />
       </header>
@@ -92,7 +92,11 @@ function CustomerAppScreens() {
             <h2 className="text-[22px] font-bold tracking-tight">
               {t('cust.greeting', { name: overview.data.display_name })}
             </h2>
-            <div className="rounded-[var(--radius-card)] bg-gradient-to-br from-primary to-primary-strong p-5 text-white shadow-[var(--shadow-card)]">
+            <div className="relative overflow-hidden rounded-[var(--radius-card)] bg-gradient-to-br from-primary to-accent p-5 text-white shadow-[var(--shadow-raised)]">
+              <span
+                aria-hidden="true"
+                className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/15"
+              />
               <p className="text-sm text-white/80">{t('cust.total')}</p>
               <p className="text-[30px] font-bold tracking-tight tabular-nums">
                 {formatINR(overview.data.accounts.reduce((sum, a) => sum + a.balance_paise, 0))}
@@ -102,7 +106,7 @@ function CustomerAppScreens() {
               {overview.data.accounts.map((a) => (
                 <li
                   key={a.masked_number}
-                  className="flex items-center justify-between gap-3 rounded-[var(--radius-card)] border border-border bg-surface-2 px-4 py-3"
+                  className="flex items-center justify-between gap-3 rounded-[16px] bg-surface-2 px-4 py-3"
                 >
                   <span>
                     <span className="block text-sm font-semibold">{a.account_type}</span>

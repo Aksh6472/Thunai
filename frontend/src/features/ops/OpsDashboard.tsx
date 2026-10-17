@@ -3,8 +3,11 @@ import { Link, useNavigate } from 'react-router'
 
 import { useAlerts, useSummary, type AlertKind } from '../../api/hooks/ops'
 import type { AlertItem, Tier } from '../../api/types'
+import { useAuth } from '../../app/auth'
 import { HoldStatusChip } from '../../components/HoldStatusChip'
+import { Icon } from '../../components/Icon'
 import { KpiFilterButton } from '../../components/KpiFilterButton'
+import { ShieldIllustration } from '../../components/ShieldIllustration'
 import { Card, EmptyState, ErrorBanner, SkeletonRows } from '../../components/States'
 import { TierBadge } from '../../components/TierBadge'
 import { useT } from '../../i18n/lang'
@@ -44,6 +47,7 @@ export function alertHref(item: AlertItem): string {
 export function OpsDashboard() {
   const t = useT()
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [tab, setTab] = useState<Tab>('ALL')
   const [kpi, setKpi] = useState<Kpi>(null)
   const [selected, setSelected] = useState<string | null>(null)
@@ -91,26 +95,75 @@ export function OpsDashboard() {
   }
 
   const s = summary.data
+  const firstHold = (alerts.data?.items ?? []).find((i) => i.kind === 'HOLD')
   const toggle = (k: Exclude<Kpi, null>) => setKpi(kpi === k ? null : k)
   return (
-    <main className="mx-auto max-w-[1440px] space-y-5 p-4 md:p-6">
-      <div className="flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t('ops.title')}</h1>
-          <p className="text-sm text-text-muted">{t('ops.subtitle')}</p>
+    <main className="mx-auto max-w-[1440px] space-y-6 p-4 md:p-8 md:pt-4">
+      <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-lilac via-surface-2 to-blush px-6 py-8 md:px-10 md:py-10">
+        <span
+          aria-hidden="true"
+          className="absolute -right-10 -top-16 h-56 w-56 rounded-full bg-accent/20 blur-2xl"
+        />
+        <div className="relative grid items-center gap-6 md:grid-cols-[1.4fr_1fr]">
+          <div className="space-y-4">
+            <p className="text-sm font-semibold text-primary">
+              {t('ops.hero.hello', { name: user?.display_name ?? '' })}
+            </p>
+            <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-brand md:text-[40px]">
+              {t('ops.hero.title')}{' '}
+              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                {t('ops.hero.title_accent')}
+              </span>
+            </h1>
+            <p className="max-w-[560px] text-lg text-text-muted">
+              {t('ops.hero.body', { n: s?.awaiting_officer ?? 0 })}
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              {firstHold ? (
+                <Link
+                  to={alertHref(firstHold)}
+                  className="inline-flex min-h-12 items-center gap-2 rounded-full bg-brand px-6 font-semibold text-white shadow-[var(--shadow-raised)] hover:bg-brand-2"
+                >
+                  {t('ops.hero.cta')}
+                  <Icon name="arrow" className="h-4 w-4" />
+                </Link>
+              ) : null}
+              <span className="inline-flex items-center gap-3 rounded-full bg-surface/85 py-1.5 pl-1.5 pr-4 shadow-[var(--shadow-card)]">
+                <span className="grid h-9 w-9 place-items-center rounded-full bg-success/10 text-success">
+                  <Icon name="rupee" className="h-4 w-4" />
+                </span>
+                <span className="leading-tight">
+                  <span className="block text-xs text-text-muted">
+                    {t('ops.kpi.amount_on_hold_label')} · {t('app.synthetic')}
+                  </span>
+                  <span className="block font-bold tabular-nums">
+                    {s ? formatINR(s.amount_on_hold_paise) : '—'}
+                  </span>
+                </span>
+                <span className="sr-only">
+                  {s && t('ops.kpi.amount_on_hold', { amount: formatINR(s.amount_on_hold_paise) })}
+                </span>
+              </span>
+            </div>
+          </div>
+          <div className="relative hidden flex-col items-end gap-3 md:flex">
+            <ShieldIllustration className="h-[170px] w-auto" />
+            <p className="max-w-[260px] rounded-[18px] bg-surface/85 px-4 py-3 text-right text-sm italic text-text-muted shadow-[var(--shadow-card)] backdrop-blur">
+              {t('ops.hero.quote')}
+            </p>
+          </div>
         </div>
-        <span className="rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs font-bold tracking-wide text-text-muted">
-          {t('app.synthetic')}
-        </span>
-      </div>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+      </section>
+      <p className="sr-only">{t('ops.subtitle')}</p>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KpiFilterButton
           label={t('ops.kpi.awaiting_officer')}
           count={s?.awaiting_officer ?? 0}
           active={kpi === 'AWAITING_OFFICER'}
           onClick={() => toggle('AWAITING_OFFICER')}
           tone="very-high"
-          icon="◆"
+          icon="alert"
+          note={t('ops.kpi.note.officer')}
         />
         <KpiFilterButton
           label={t('ops.kpi.awaiting_contact')}
@@ -118,7 +171,8 @@ export function OpsDashboard() {
           active={kpi === 'AWAITING_CONTACT'}
           onClick={() => toggle('AWAITING_CONTACT')}
           tone="high"
-          icon="☎"
+          icon="phone"
+          note={t('ops.kpi.note.contact')}
         />
         <KpiFilterButton
           label={t('ops.kpi.warnings_today')}
@@ -126,7 +180,8 @@ export function OpsDashboard() {
           active={kpi === 'WARN'}
           onClick={() => toggle('WARN')}
           tone="medium"
-          icon="▲"
+          icon="shield"
+          note={t('ops.kpi.note.warn')}
         />
         <KpiFilterButton
           label={t('ops.kpi.watchlist')}
@@ -134,24 +189,14 @@ export function OpsDashboard() {
           active={kpi === 'WATCH'}
           onClick={() => toggle('WATCH')}
           tone="primary"
-          icon="◎"
+          icon="eye"
+          note={t('ops.kpi.note.watch')}
         />
-        <div className="col-span-2 flex min-h-20 flex-col justify-center rounded-[var(--radius-card)] bg-gradient-to-br from-brand to-brand-2 px-5 py-3 text-brand-text shadow-[var(--shadow-card)] md:col-span-1">
-          <span className="text-xs font-semibold uppercase tracking-[0.08em] text-brand-muted">
-            {t('ops.kpi.amount_on_hold_label')}
-          </span>
-          <span className="mt-1 text-2xl font-bold tabular-nums text-white">
-            {s ? formatINR(s.amount_on_hold_paise) : '—'}
-          </span>
-          <span className="sr-only">
-            {s && t('ops.kpi.amount_on_hold', { amount: formatINR(s.amount_on_hold_paise) })}
-          </span>
-        </div>
       </div>
       {(alerts.isError || summary.isError) && (
         <ErrorBanner message={t('app.reconnecting')} onRetry={() => void alerts.refetch()} />
       )}
-      <div className="grid items-start gap-5 lg:grid-cols-[3fr_2fr]">
+      <div className="grid items-start gap-6 lg:grid-cols-[3fr_2fr]">
         <Card
           title={t('ops.queue')}
           actions={
@@ -162,7 +207,7 @@ export function OpsDashboard() {
             ) : null
           }
         >
-          <div role="tablist" className="mb-3 flex gap-1 border-b border-border">
+          <div role="tablist" className="mb-4 inline-flex gap-1 rounded-full bg-surface-2 p-1">
             {TABS.map((tb) => (
               <button
                 key={tb.id}
@@ -172,7 +217,7 @@ export function OpsDashboard() {
                   setTab(tb.id)
                   setKpi(null)
                 }}
-                className={`-mb-px border-b-2 px-3 py-2 text-sm font-semibold ${tab === tb.id ? 'border-primary text-primary' : 'border-transparent text-text-muted'}`}
+                className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${tab === tb.id ? 'bg-surface text-primary shadow-sm' : 'text-text-muted hover:text-text'}`}
               >
                 {t(tb.key)}
               </button>
@@ -200,7 +245,7 @@ export function OpsDashboard() {
                   aria-selected={item.id === current?.id}
                   onClick={() => setSelected(item.id)}
                   onDoubleClick={() => navigate(alertHref(item))}
-                  className={`flex cursor-pointer flex-wrap items-center gap-x-3 gap-y-1 rounded-[var(--radius-control)] border-l-4 px-3 py-3 transition-colors ${ROW_EDGE[item.tier]} ${item.id === current?.id ? 'bg-primary/8' : 'hover:bg-surface-2'} ${fresh.has(item.id) ? 'animate-pulse' : ''}`}
+                  className={`flex cursor-pointer flex-wrap items-center gap-x-3 gap-y-1 rounded-[16px] border-l-4 px-4 py-3.5 transition-colors ${ROW_EDGE[item.tier]} ${item.id === current?.id ? 'bg-lilac' : 'hover:bg-surface-2'} ${fresh.has(item.id) ? 'animate-pulse' : ''}`}
                 >
                   <TierBadge tier={item.tier} size="sm" />
                   <span className="font-semibold">{item.customer.display_name}</span>
@@ -237,7 +282,7 @@ export function OpsDashboard() {
           )}
           <p className="mt-2 text-xs text-text-muted">{t('ops.keyboard_hint')}</p>
         </Card>
-        <div className="space-y-5 lg:sticky lg:top-20">
+        <div className="space-y-6 lg:sticky lg:top-6">
           <Card title={current ? t(`ops.kind.${current.kind}`) : undefined}>
             {current ? (
               <Preview item={current} />
@@ -280,14 +325,14 @@ function Preview({ item }: { item: AlertItem }) {
         {item.kind === 'HOLD' && item.hold_id && (
           <Link
             to={`/ops/holds/${item.hold_id}`}
-            className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-strong"
+            className="inline-flex min-h-10 items-center rounded-full bg-primary px-5 text-sm font-semibold text-white hover:bg-primary-strong"
           >
             {t('ops.preview.open')}
           </Link>
         )}
         <Link
           to={`/ops/customers/${item.customer.id}`}
-          className="inline-flex min-h-10 items-center rounded-[var(--radius-control)] border border-border px-4 text-sm font-semibold hover:bg-surface-2"
+          className="inline-flex min-h-10 items-center rounded-full border border-primary/30 px-5 text-sm font-semibold text-primary hover:bg-lilac"
         >
           {t('ops.preview.customer')}
         </Link>
