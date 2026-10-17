@@ -336,5 +336,6 @@
   "ops.kpi.note.warn": "Customer was cautioned",
   "ops.kpi.note.watch": "Pattern building",
   "ops.kpi.note.amount": "Synthetic data",
-  "login.tagline_accent": "before the savings leave."
+  "login.tagline_accent": "before the savings leave.",
+  "login.demo_autofill_hint": "Tap an account: the username and password are filled in for you. Then press Sign in."
 }

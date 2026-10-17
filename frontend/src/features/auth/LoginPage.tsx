@@ -4,7 +4,7 @@ import { Navigate, useNavigate, useSearchParams } from 'react-router'
 import { ApiError } from '../../api/client'
 import { HOME, useAuth } from '../../app/auth'
 import { BANK_NAME } from '../../config/brand'
-import { DEMO_MODE } from '../../config/demo'
+import { DEMO_AUTOFILL_PASSWORD, DEMO_MODE } from '../../config/demo'
 import { BrandMark } from '../../components/BrandMark'
 import { ShieldIllustration } from '../../components/ShieldIllustration'
 import { Button } from '../../components/Button'
@@ -140,7 +140,10 @@ export function LoginPage() {
                       type="button"
                       aria-pressed={username === u.username}
                       className={`w-full rounded-[14px] border px-3 py-2.5 text-left transition-colors ${username === u.username ? 'border-primary bg-lilac' : 'border-border hover:bg-surface-2'}`}
-                      onClick={() => setUsername(u.username)}
+                      onClick={() => {
+                        setUsername(u.username)
+                        if (DEMO_AUTOFILL_PASSWORD) setPassword(DEMO_AUTOFILL_PASSWORD)
+                      }}
                     >
                       <span className="block font-mono text-sm font-semibold text-primary">
                         {u.username}
@@ -150,7 +153,11 @@ export function LoginPage() {
                   </li>
                 ))}
               </ul>
-              <p className="text-xs text-text-muted">{t('login.demo_password_hint')}</p>
+              <p className="text-xs text-text-muted">
+                {t(
+                  DEMO_AUTOFILL_PASSWORD ? 'login.demo_autofill_hint' : 'login.demo_password_hint',
+                )}
+              </p>
             </div>
           )}
         </form>

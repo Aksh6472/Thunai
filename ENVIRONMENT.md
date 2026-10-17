@@ -47,6 +47,7 @@
 | `THUNAI_SIM_DEFAULT_SPEED` | no | `4320` | Simulated seconds per real second |
 | `VITE_API_BASE_URL` | frontend | `http://localhost:8000/api/v1` | API base for the SPA. For phone access, use the LAN IP |
 | `VITE_DEMO_MODE` | frontend | `true` | Shows the demo bar and the SIMULATED chips |
+| `VITE_DEMO_AUTOFILL_PASSWORD` | frontend | empty | Optional. When set (and demo mode is on), tapping a demo account on the login page also fills the password. **The one exception to rule 4:** it is bundled into public JS, so set it only to the synthetic seed password for local or LAN demos, never on a hosted deployment |
 
 ## 3. Generating secrets
 
