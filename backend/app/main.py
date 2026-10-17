@@ -1,7 +1,7 @@
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1 import auth, health
+from app.api.v1 import auth, health, ingest
 from app.core.branding import PRODUCT_NAME
 from app.core.clock import Clock, RealClock, SimClock
 from app.core.errors import install_error_handlers
@@ -51,6 +51,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     v1 = APIRouter(prefix=API_PREFIX)
     v1.include_router(health.router)
     v1.include_router(auth.router)
+    v1.include_router(ingest.router)
     app.include_router(v1)
 
     return app

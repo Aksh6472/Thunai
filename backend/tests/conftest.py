@@ -103,3 +103,8 @@ async def client(app: FastAPI) -> AsyncIterator[httpx.AsyncClient]:
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as c:
         yield c
+
+
+@pytest.fixture
+def service_headers(test_settings: Settings) -> dict[str, str]:
+    return {"X-Thunai-Service-Key": test_settings.service_api_key}
