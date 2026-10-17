@@ -1,12 +1,13 @@
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1 import health
+from app.api.v1 import auth, health
 from app.core.branding import PRODUCT_NAME
 from app.core.clock import Clock, RealClock, SimClock
 from app.core.errors import install_error_handlers
 from app.core.logging import configure_logging
 from app.core.middleware import RequestContextMiddleware
+from app.core.rate_limit import RateLimiter
 from app.core.scoring_config import load_scoring_config
 from app.core.settings import Settings, get_settings
 from app.db import make_engine, make_session_factory
@@ -30,6 +31,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     # Demo mode runs on simulated time so multi-day scenarios replay in seconds (ADR-008).
     clock: Clock = SimClock(session_factory) if settings.demo_mode else RealClock()
     app.state.clock = clock
+    app.state.rate_limiter = RateLimiter(enabled=settings.rate_limits_enabled)
 
     install_error_handlers(app)
     app.add_middleware(
@@ -48,6 +50,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     v1 = APIRouter(prefix=API_PREFIX)
     v1.include_router(health.router)
+    v1.include_router(auth.router)
     app.include_router(v1)
 
     return app

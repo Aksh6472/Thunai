@@ -22,7 +22,7 @@ The full specification of each task (steps, acceptance, tests) is in [IMPLEMENTA
 | T-026 | Stage tracker, episodes, watch score | WS2 | P0 | 3 | T-006, T-025 | M1 | Claude | done — hero watch 15/40/63 verified |
 | T-028 | Scoring and reasons EN/TA (golden tests first) | WS2 | P0 | 3 | T-026, T-027 | M1 | Claude | done — golden 115/80/5/60 pass; domain coverage 99% |
 | T-029 | Policy and overrides | WS2 | P0 | 1 | T-028 | M1 | Claude | done |
-| T-010 | Auth: login, JWT, RBAC, service key, rate limit | WS3 | P0 | 2.5 | T-005, T-008 | M1 | | todo |
+| T-010 | Auth: login, JWT, RBAC, service key, rate limit | WS3 | P0 | 2.5 | T-005, T-008 | M1 | Claude | done — argon2id, HS256 pinned, RBAC deps, in-memory limiter, login audit |
 | T-009 | Staff and demo-customer seed | WS3 | P0 | 0.5 | T-008, T-010 | M1 | | todo |
 | T-022 | Synthetic population generator | WS1 | P0 | 3 | T-008 | M1 | | todo |
 | T-023 | Scenario families (P1 and N1 first) | WS1 | P0 | 3 | T-022 | M1→M2 | | todo |
@@ -37,7 +37,7 @@ The full specification of each task (steps, acceptance, tests) is in [IMPLEMENTA
 | T-021 | Demo control endpoints | WS1 | P0 | 2 | T-024, T-007 | M2 | | todo |
 | T-017 | Teller endpoints (checklist, script) | WS3 | P0 | 2.5 | T-013, T-014 | M2 | | todo |
 | T-018 | Report draft (template) | WS6 | P1 | 2 | T-014 | M2 | | todo |
-| T-020 | Audit log writer | WS6 | P1 | 1 | T-008 | M2 | | todo |
+| T-020 | Audit log writer | WS6 | P1 | 1 | T-008 | M2 | Claude | done — `audit()` with scrub; append-only enforced by test |
 | T-019 | Read APIs: alerts, dashboard, customers | WS1 | P1 | 2.5 | T-013, T-014 | M2 | | todo |
 | T-040a | **Headless hero gate** (API-level P1 and N1) | All | P0 | 1.5 | T-012–T-029 | **M2** | | todo |
 | T-033 | Ops dashboard queue | WS4 | P0 | 3 | T-032, T-019, T-011 | M3 | | todo |

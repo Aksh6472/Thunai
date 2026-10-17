@@ -96,7 +96,11 @@ Response 200:
 {"access_token": "eyJ…", "token_type": "bearer", "expires_in": 3600,
  "user": {"id": "…", "role": "TELLER", "display_name": "Priya (fictional)", "branch_code": "CHN001"}}
 ```
-Errors: 401 `INVALID_CREDENTIALS`, which is the same message for an unknown user or a wrong password. 429.
+For a CUSTOMER, `user` also carries `customer_ref` (e.g. `CUST-0007`); it is `null` for staff.
+
+Errors: 401 `INVALID_CREDENTIALS`, which is the same message for an unknown user or a wrong password. 429 after 10 attempts per minute per IP, or after 5 failures in 15 minutes for one username (even with the right password).
+
+A valid service key sent to a user route gets 403, and a valid JWT sent to a service route gets 403 (ARCHITECTURE §4.5). A wrong service key gets 401.
 
 ### `GET /auth/me` (any JWT)
 Returns the `user` object.
