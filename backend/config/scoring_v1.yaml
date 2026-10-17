@@ -20,7 +20,7 @@ points:
     habitual: 5                # premature_fd_closures_365d >= habitual_min_closures
     habitual_min_closures: 2
   funds_pooled: 10
-  new_payee:                   # payee age strictly below max_age_hours
+  new_payee:                   # payee age in WHOLE hours at most max_age_hours (ADR-020)
     - {max_age_hours: 2, points: 20}
     - {max_age_hours: 24, points: 15}
     - {max_age_hours: 168, points: 8}

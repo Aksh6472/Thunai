@@ -98,6 +98,17 @@ Format: **Context → Decision → Alternatives → Consequences**. Status is `A
 - **Name check:** a quick web search (2026-10-17) found no fraud, banking or safety app called "Thunai". **This is not a trademark search.** Run one before any public launch.
 - **Consequences:** the empty dev database volume `kaaval_pgdata` was deleted and recreated as `thunai_pgdata`. Every developer must rename their `.env` keys (`KAAVAL_*` → `THUNAI_*`) and run `docker compose down -v` on any old `kaaval` stack. Git history keeps the old name.
 
+## ADR-020 Engine clarifications made during implementation — Accepted (2026-10-17, T-025..T-029)
+- **Context:** the hero example has the payee added at 09:12 and the RTGS at 11:20 (128 minutes), yet AI_DESIGN §6.4 gives NEW_PAYEE 20 points ("< 2 h") and a raw total of 115. The reason text in DATABASE_SCHEMA §7 also says "added 2 hours before". A few other details were unspecified.
+- **Decision:**
+  1. **Payee age is compared in whole hours** (floor of minutes ÷ 60): ≤ 2 h → 20, ≤ 24 h → 15, ≤ 168 h → 8. So 128 minutes counts as 2 hours, which keeps every documented number (115, 80, 60) consistent. No weight or threshold changed.
+  2. **Pooling evidence** shows only money moved in from the customer's own accounts (₹11 L for the hero). FD proceeds into the same account still count towards the "≥ 2 inbound transfers" rule.
+  3. **Call freshness:** an active-call observation (no `ended_at`) is trusted for 30 minutes after `observed_at`; the device re-reports during a long call. Only the latest observation counts.
+  4. **Teller cap:** when the four items exceed 30, the lowest-value items are trimmed last, so every observation stays visible and the reasons still sum exactly.
+  5. **Reason texts** (EN/TA) live in `app/domain/i18n/reason_texts.py`, not YAML, so the domain stays free of file I/O (CLAUDE.md §6). The teller script stays YAML (loaded by a service).
+  6. **Cooling-off and trusted-contact activation** are env settings only (`THUNAI_COOLING_OFF_MINUTES`, `THUNAI_TRUSTED_CONTACT_ACTIVATION_HOURS`), not keys in `scoring_v1.yaml`, so there is one source of truth.
+- **Consequences:** effective NEW_PAYEE windows are < 3 h, < 25 h and < 169 h. This is disclosed here and in AI_DESIGN §6.1. Tuning seeds: none viewed.
+
 **Team approval (2026-10-17):** ADR-002 (fixed points table, no trained model), ADR-010 (no age in scoring), ADR-011 (72 h activation), ADR-012 (officer-only release at VERY_HIGH) and ADR-013 (generic customer message) were explicitly approved by the team.
 
 ---
@@ -130,6 +141,7 @@ These are recorded here and in [JUDGING_STRATEGY.md](JUDGING_STRATEGY.md) §6:
 | Date | Version | Change | Seeds viewed before change |
 |---|---|---|---|
 | 2026-10-17 | scoring_v1 | Initial table (AI_DESIGN §6) | none |
+| 2026-10-17 | scoring_v1 | Clarification only (ADR-020): payee age compared in whole hours; cooling-off/activation moved to env. No weight or threshold changed, version unchanged | none |
 
 ## Incidents
 

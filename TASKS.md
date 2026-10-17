@@ -17,11 +17,11 @@ The full specification of each task (steps, acceptance, tests) is in [IMPLEMENTA
 | T-005 | Settings, logging, error envelope, `/readyz` | WS3 | P0 | 2 | T-002, T-004 | M1 | Claude | done — startup now loads the scoring config (fail closed) |
 | T-008 | ORM models and migration 0001 | WS3 | P0 | 3 | T-004, T-005 | M1 | Claude | done — adds `request_hash` columns and account/payee indexes (DATABASE_SCHEMA updated) |
 | T-007 | Clock abstraction | WS2 | P0 | 1 | T-005, T-008 | M1 | Claude | done — SimClock keeps time in memory (single worker), persisted to `sim_state` |
-| T-025 | Baseline computation | WS2 | P0 | 1.5 | T-006 | M1 | | todo |
-| T-027 | Signal adapters (FRI mock, call, teller cap) | WS2 | P0 | 1.5 | T-006 | M1 | | todo |
-| T-026 | Stage tracker, episodes, watch score | WS2 | P0 | 3 | T-006, T-025 | M1 | | todo |
-| T-028 | Scoring and reasons EN/TA (golden tests first) | WS2 | P0 | 3 | T-026, T-027 | M1 | | todo |
-| T-029 | Policy and overrides | WS2 | P0 | 1 | T-028 | M1 | | todo |
+| T-025 | Baseline computation | WS2 | P0 | 1.5 | T-006 | M1 | Claude | done — `compute_baseline`; the DB service comes with T-013 |
+| T-027 | Signal adapters (FRI mock, call, teller cap) | WS2 | P0 | 1.5 | T-006 | M1 | Claude | done — domain adapters; `MockFriClient` lands with T-013 |
+| T-026 | Stage tracker, episodes, watch score | WS2 | P0 | 3 | T-006, T-025 | M1 | Claude | done — hero watch 15/40/63 verified |
+| T-028 | Scoring and reasons EN/TA (golden tests first) | WS2 | P0 | 3 | T-026, T-027 | M1 | Claude | done — golden 115/80/5/60 pass; domain coverage 99% |
+| T-029 | Policy and overrides | WS2 | P0 | 1 | T-028 | M1 | Claude | done |
 | T-010 | Auth: login, JWT, RBAC, service key, rate limit | WS3 | P0 | 2.5 | T-005, T-008 | M1 | | todo |
 | T-009 | Staff and demo-customer seed | WS3 | P0 | 0.5 | T-008, T-010 | M1 | | todo |
 | T-022 | Synthetic population generator | WS1 | P0 | 3 | T-008 | M1 | | todo |

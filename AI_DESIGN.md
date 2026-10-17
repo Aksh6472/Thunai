@@ -150,6 +150,8 @@ The stage tracker counts how many **distinct stages appear in canonical order** 
 | `MATCHES_REGULAR_PATTERN` | Dampener | Payee has a recurring amount, and the transfer is ≤ 1.5× that amount | **−15** |
 | `BASELINE_LOW_CONFIDENCE` | Info | Baseline confidence is LOW | **0** |
 
+Payee age for `NEW_PAYEE` is measured in **whole hours** (128 minutes counts as 2 h), see ADR-020.
+
 `score = clamp(sum(points), 0, 100)`
 
 ### 6.2 Tiers and decisions
