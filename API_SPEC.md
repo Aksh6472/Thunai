@@ -232,7 +232,7 @@ Expires earlier links and sends a new one. Returns 202 `{contact_request_id, sta
 ## 7. Teller
 
 ### `GET /teller/queue` (TELLER, OFFICER)
-Branch-channel transfers that are WARNED or HELD, plus active branch holds. Same item shape as `/holds`, plus `channel`.
+Branch-channel transfers that are WARNED or HELD, plus active branch holds. Same item shape as `/holds` (`id` is `null` and `status` is `"WARNED"` for a warned transfer without a hold). Sorted VERY_HIGH first, then holds before warnings, then oldest first.
 
 ### `POST /teller/transfers/{transfer_ref}/checklist` (TELLER, OFFICER)
 ```json
@@ -275,10 +275,13 @@ Response 201:
  "narrative_text": "…", "narrative_source": "TEMPLATE",
  "disclaimer": "Draft for officer review. Not submitted. File via 1930 or cybercrime.gov.in."}
 ```
-If the LLM fails, the response is still 201 with `narrative_source: "TEMPLATE"` and the response header `X-Thunai-LLM-Fallback: <reason_code>`.
+If a draft already exists for the hold, it is returned with 200. If the LLM fails or is disabled, the response is still 201 with `narrative_source: "TEMPLATE"` and the response header `X-Thunai-LLM-Fallback: <reason_code>` (`LLM_DISABLED`, `LLM_TIMEOUT`, `LLM_VALIDATION_FAILED`, …). `structured_fields` also carries `safety_hold: {placed_at, tier, contact_response}`.
+
+### `GET /reports/{id}` (TELLER, OFFICER, ADMIN)
+Returns the report (same shape as above).
 
 ### `PATCH /reports/{id}` (TELLER, OFFICER)
-`{"customer_reported": {"claimed_agency": "CBI", "scammer_numbers_given_by_customer": ["+91…"], "platform": "WhatsApp video"}, "narrative_text": "…", "status": "READY"}`. Editing `narrative_text` sets `narrative_source=EDITED`.
+`{"customer_reported": {"claimed_agency": "CBI", "scammer_numbers_given_by_customer": ["+91…"], "platform": "WhatsApp video", "notes": "…"}, "narrative_text": "…", "status": "DRAFT" | "READY"}`. Editing `narrative_text` sets `narrative_source=EDITED`. Updating only `customer_reported` on a TEMPLATE draft re-renders the template. `FILED_EXTERNALLY` is set only by mark-filed, and a filed report can't be edited (409).
 
 ### `POST /reports/{id}/mark-filed` (OFFICER)
 `{"acknowledgement_number": "…"}` (1–64 characters, `[A-Za-z0-9/-]`) sets the status to `FILED_EXTERNALLY`.
@@ -317,7 +320,9 @@ The token is consumed (single use). Response 200 `{"result_key": "RELEASED" | "S
 | `GET /alerts?kind=HOLD\|WARN\|WATCH&tier=&limit=&cursor=` | A unified, urgency-sorted queue (TELLER can read) |
 | `GET /customers?search=&limit=&cursor=` | Search by `external_ref` or display name |
 | `GET /customers/{id}/risk` | The current episode (stages, watch score, `watch_history`), the baseline, and recent assessments (TELLER can read) |
-| `GET /customers/{id}/timeline?days=14` | Events, signals, transfers and assessments in time order |
+| `GET /customers/{id}/timeline?days=14` | Events, signals, transfers and assessments in time order (`days` 1–90) |
+
+Alert items: `{kind: HOLD|WARN|WATCH, id, customer, tier, status, amount_paise?, channel?, transfer_ref?, hold_id?, contact_response?, top_reason?, watch_score?, created_at, cooling_off_until?}`. Urgency order: tier (VERY_HIGH first), then HOLD → WARN → WATCH, then least cooling-off time left, then newest. `GET /customers/{id}/risk` returns `{customer, preferred_language, accounts (masked), baseline, episode, trusted_contact (masked), recent_assessments}`.
 
 ---
 

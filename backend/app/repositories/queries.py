@@ -166,3 +166,25 @@ def count(session: Session, stmt: Select[int]) -> int:
 
 def count_where(session: Session, *conditions: Any) -> Select[int]:
     return select(func.count()).select_from(Hold).where(and_(*conditions))
+
+
+def branch_queue(
+    session: Session, *, branch_code: str | None
+) -> list[tuple[Transfer, Customer, Hold | None]]:
+    """BRANCH-channel transfers that are WARNED or HELD (API_SPEC §7)."""
+    from app.domain.enums import Channel, TransferStatus
+
+    stmt = (
+        select(Transfer, Customer, Hold)
+        .join(Customer, Customer.id == Transfer.customer_id)
+        .outerjoin(Hold, Hold.transfer_id == Transfer.id)
+        .where(
+            Transfer.channel == Channel.BRANCH,
+            Transfer.status.in_([TransferStatus.WARNED, TransferStatus.HELD]),
+        )
+        .order_by(Transfer.decided_at.desc(), Transfer.id)
+        .limit(100)
+    )
+    if branch_code:
+        stmt = stmt.where(Customer.branch_code == branch_code)
+    return [(row[0], row[1], row[2]) for row in session.execute(stmt).all()]

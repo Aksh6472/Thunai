@@ -1,0 +1,50 @@
+# Teller guided script (FR-14, DESIGN §5.5). Fixed, reviewed content: never generated.
+# Tamil: DRAFT, PENDING NATIVE REVIEW (T-038, NFR-07). Set reviewed_by_native_speaker.ta to
+# true only after a named native speaker has reviewed every line (record the name in the PR).
+# Wording: protect, don't accuse. The "no digital arrest" line follows the Bengaluru Police
+# Commissioner's public statement (PTI, 24 Dec 2024; docs/DATA_SOURCES.md §2).
+
+reviewed_by_native_speaker:
+  en: true
+  ta: false
+
+steps:
+  - id: greet
+    en: >-
+      Greet the customer calmly by name and offer a seat. Say: "For your safety, large transfers
+      to a new payee are paused for a short check. This is routine and your money is safe."
+    ta: >-
+      வாடிக்கையாளரை பெயர் சொல்லி அமைதியாக வரவேற்று, அமர இடம் கொடுங்கள். சொல்லுங்கள்: "உங்கள்
+      பாதுகாப்பிற்காக, புதிய பெறுநருக்கான பெரிய பரிமாற்றங்கள் ஒரு சிறிய சரிபார்ப்புக்காக நிறுத்தி
+      வைக்கப்படுகின்றன. இது வழக்கமான நடைமுறை; உங்கள் பணம் பாதுகாப்பாக உள்ளது."
+  - id: no_digital_arrest
+    en: >-
+      Say gently: "There is no 'digital arrest' in Indian law. Police, CBI, ED or courts will
+      never ask you to transfer money or to stay on a video call."
+    ta: >-
+      மென்மையாகச் சொல்லுங்கள்: "இந்திய சட்டத்தில் 'டிஜிட்டல் கைது' என்று எதுவும் இல்லை.
+      காவல்துறை, சிபிஐ, அமலாக்கத்துறை அல்லது நீதிமன்றம் ஒருபோதும் பணம் அனுப்பவோ வீடியோ
+      அழைப்பில் இருக்கவோ சொல்லாது."
+  - id: ask_family
+    en: >-
+      Ask: "Shall we call your family together, on a number you already know?" If the customer
+      is on a call, politely ask them to end it before you continue.
+    ta: >-
+      கேளுங்கள்: "உங்களுக்கு ஏற்கனவே தெரிந்த எண்ணில், உங்கள் குடும்பத்தினரை நாம் சேர்ந்து
+      அழைக்கலாமா?" வாடிக்கையாளர் அழைப்பில் இருந்தால், தொடரும் முன் அதை முடிக்கும்படி மரியாதையாகக்
+      கேளுங்கள்.
+  - id: offer_1930
+    en: >-
+      Offer to call the Cyber Crime Helpline 1930 together, or to help file a complaint at
+      cybercrime.gov.in. Then generate the report draft.
+    ta: >-
+      சைபர் குற்ற உதவி எண் 1930-ஐ சேர்ந்து அழைக்கவோ, cybercrime.gov.in-இல் புகார் அளிக்க
+      உதவவோ முன்வாருங்கள். பின்னர் அறிக்கை வரைவை உருவாக்குங்கள்.
+  - id: do_not
+    en: >-
+      Do not argue, accuse or raise your voice, and do not process the transfer. If the customer
+      insists, call the branch officer: only an officer can release this hold.
+    ta: >-
+      வாதிடவோ, குற்றம் சாட்டவோ, குரலை உயர்த்தவோ வேண்டாம்; பரிமாற்றத்தைச் செயல்படுத்த வேண்டாம்.
+      வாடிக்கையாளர் வற்புறுத்தினால், கிளை அதிகாரியை அழையுங்கள்: அதிகாரி மட்டுமே இந்த நிறுத்தத்தை
+      விடுவிக்க முடியும்.

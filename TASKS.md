@@ -35,10 +35,10 @@ The full specification of each task (steps, acceptance, tests) is in [IMPLEMENTA
 | T-015 | Trusted-contact requests and responses | WS3 | P0 | 3 | T-014, T-016 | M2 | Claude | done — single-use SHA-256 tokens, concurrent double submit → one 200 / one 410 |
 | T-024 | Scenario replayer | WS1 | P0 | 2.5 | T-012, T-013, T-023 | M2 | | todo |
 | T-021 | Demo control endpoints | WS1 | P0 | 2 | T-024, T-007 | M2 | | todo |
-| T-017 | Teller endpoints (checklist, script) | WS3 | P0 | 2.5 | T-013, T-014 | M2 | | todo |
-| T-018 | Report draft (template) | WS6 | P1 | 2 | T-014 | M2 | | todo |
+| T-017 | Teller endpoints (checklist, script) | WS3 | P0 | 2.5 | T-013, T-014 | M2 | Claude | done — escalate-only re-score, customer_said never scored, EN/TA script (TA pending review) |
+| T-018 | Report draft (template) | WS6 | P1 | 2 | T-014 | M2 | Claude | done — template narrative; structured fields from DB; mark-filed OFFICER only |
 | T-020 | Audit log writer | WS6 | P1 | 1 | T-008 | M2 | Claude | done — `audit()` with scrub; append-only enforced by test |
-| T-019 | Read APIs: alerts, dashboard, customers | WS1 | P1 | 2.5 | T-013, T-014 | M2 | | todo |
+| T-019 | Read APIs: alerts, dashboard, customers | WS1 | P1 | 2.5 | T-013, T-014 | M2 | Claude | done — unified alert queue, summary, customers; ≤ 5 queries per list request (tested) |
 | T-040a | **Headless hero gate** (API-level P1 and N1) | All | P0 | 1.5 | T-012–T-029 | **M2** | | todo |
 | T-033 | Ops dashboard queue | WS4 | P0 | 3 | T-032, T-019, T-011 | M3 | | todo |
 | T-035 | Teller console | WS4 | P0 | 3 | T-032, T-017 | M3 | | todo |
