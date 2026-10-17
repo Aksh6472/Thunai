@@ -187,8 +187,6 @@ class Windows(_Frozen):
     episode_quiet_days: int = Field(gt=0)
     call_freshness_minutes: int = Field(gt=0)
     trusted_contact_changed_days: int = Field(gt=0)
-    trusted_contact_activation_hours: int = Field(ge=0)
-    cooling_off_minutes: int = Field(gt=0)
 
 
 class ScoringConfig(_Frozen):

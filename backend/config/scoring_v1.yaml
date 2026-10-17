@@ -82,10 +82,9 @@ stages:
   min_high_value_paise: 20000000               # ₹2,00,000 (S4)
   high_value_min_multiple_of_median: 10
 
-# Time windows (§5.2, §6.1, §6.3, §11)
+# Time windows (§5.2, §6.1, §11). Cooling-off and contact activation are env settings
+# (THUNAI_COOLING_OFF_MINUTES, THUNAI_TRUSTED_CONTACT_ACTIVATION_HOURS), not scoring config.
 windows:
   episode_quiet_days: 7
   call_freshness_minutes: 30
   trusted_contact_changed_days: 7
-  trusted_contact_activation_hours: 72
-  cooling_off_minutes: 240
