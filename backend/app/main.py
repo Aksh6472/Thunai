@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1 import health
 from app.core.branding import PRODUCT_NAME
+from app.core.clock import Clock, RealClock, SimClock
 from app.core.errors import install_error_handlers
 from app.core.logging import configure_logging
 from app.core.middleware import RequestContextMiddleware
@@ -24,7 +25,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.settings = settings
     app.state.scoring_config = scoring_config
     app.state.engine = engine
-    app.state.session_factory = make_session_factory(engine)
+    session_factory = make_session_factory(engine)
+    app.state.session_factory = session_factory
+    # Demo mode runs on simulated time so multi-day scenarios replay in seconds (ADR-008).
+    clock: Clock = SimClock(session_factory) if settings.demo_mode else RealClock()
+    app.state.clock = clock
 
     install_error_handlers(app)
     app.add_middleware(

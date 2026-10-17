@@ -1,4 +1,5 @@
 from collections.abc import AsyncIterator, Iterator
+from datetime import UTC, datetime
 
 import httpx
 import pytest
@@ -8,6 +9,7 @@ from fastapi import FastAPI
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from app.core.clock import FixedClock
 from app.core.settings import BACKEND_DIR, Settings, load_settings
 from app.db import make_engine
 from app.main import create_app
@@ -71,9 +73,18 @@ def db(migrated_engine: Engine) -> Iterator[Session]:
         connection.close()
 
 
+TEST_NOW = datetime(2026, 10, 3, 5, 50, tzinfo=UTC)  # 11:20 IST on hero day 3
+
+
 @pytest.fixture
-def app(test_settings: Settings, request: pytest.FixtureRequest) -> FastAPI:
+def clock() -> FixedClock:
+    return FixedClock(TEST_NOW)
+
+
+@pytest.fixture
+def app(test_settings: Settings, clock: FixedClock, request: pytest.FixtureRequest) -> FastAPI:
     application = create_app(test_settings)
+    application.state.clock = clock
     if "db" in request.fixturenames:
         # Route every request session through the test's rolled-back connection.
         session: Session = request.getfixturevalue("db")
