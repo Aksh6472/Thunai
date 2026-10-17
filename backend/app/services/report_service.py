@@ -1,5 +1,6 @@
 """Report drafts for 1930 / cybercrime.gov.in (FR-15). Never auto-submitted."""
 
+import logging
 import uuid
 from datetime import UTC, datetime, timedelta, timezone
 from typing import Any
@@ -19,7 +20,9 @@ from app.domain.enums import (
     TransferStatus,
 )
 from app.domain.money import format_inr
+from app.integrations.llm.base import Fact, NarrativeDrafter, NarrativeUnavailable
 from app.integrations.llm.template import render_narrative
+from app.integrations.llm.validator import validate
 from app.models import FraudReport, RiskEpisode
 from app.repositories import events, queries, transfers
 from app.schemas.reports import MarkFiledIn, ReportOut, ReportPatchIn
@@ -27,6 +30,7 @@ from app.services import hold_service
 from app.services.audit_service import audit
 from app.services.context import Ctx
 
+logger = logging.getLogger(__name__)
 IST = timezone(timedelta(hours=5, minutes=30))
 INCIDENT_CATEGORY = "Online Financial Fraud — impersonation / 'digital arrest' (suspected)"
 STAGE_TEXT = {
@@ -141,6 +145,46 @@ def build_facts(
     }
 
 
+def llm_facts(narrative_facts: dict[str, Any]) -> list[Fact]:
+    """Pseudonymised facts (AI_DESIGN §12.3): no names, phones or full account numbers."""
+    tx = narrative_facts["transaction"]
+    items = [
+        f"[CUSTOMER] requested a {tx['rail']} transfer of {format_inr(int(tx['amount_paise']))}.",
+        f"The request was made on {narrative_facts['initiated_at_display']} at the "
+        f"{narrative_facts['channel_display']}.",
+        f"Source account ending {str(tx['from_account_masked'])[-4:]}.",
+        f"Beneficiary account ending {str(tx['beneficiary_account_masked'])[-4:]} at "
+        f"{tx['beneficiary_bank']} (IFSC {tx['beneficiary_ifsc']}).",
+        f"The beneficiary was added {narrative_facts['payee_age_display']} before the request.",
+        f"Transfer status: {tx['status']}.",
+        *[f"{t['at_display']}: {t['what']}." for t in narrative_facts["timeline"]],
+    ]
+    reported = narrative_facts.get("customer_reported") or {}
+    if reported.get("claimed_agency"):
+        items.append(f'Customer said the caller claimed to be from "{reported["claimed_agency"]}".')
+    if reported.get("platform"):
+        items.append(f'Customer said contact was made through "{reported["platform"]}".')
+    return [Fact(id=f"F{i}", text=text) for i, text in enumerate(items, start=1)]
+
+
+def draft_with_llm(
+    drafter: NarrativeDrafter, narrative_facts: dict[str, Any]
+) -> tuple[str | None, str | None]:
+    """(narrative, None) on success; (None, reason) to fall back to the template (FR-21)."""
+    facts = llm_facts(narrative_facts)
+    try:
+        draft = drafter.draft(facts)
+    except NarrativeUnavailable as exc:
+        logger.info("llm.fallback", extra={"reason": exc.reason})
+        return None, exc.reason
+    problem = validate(draft, facts)
+    if problem is not None:
+        logger.warning("llm_validation_failed", extra={"reason": problem})  # never the content
+        return None, f"LLM_VALIDATION_FAILED_{problem}"
+    # Re-identify locally; the provider never saw the name.
+    return draft.narrative.replace("[CUSTOMER]", narrative_facts["customer_name"]), None
+
+
 def report_out(report: FraudReport) -> ReportOut:
     return ReportOut(
         id=str(report.id),
@@ -168,7 +212,12 @@ def create_or_get(
     narrative = render_narrative(facts["narrative_facts"])
     source = NarrativeSource.TEMPLATE
     if use_llm:
-        fallback = "LLM_DISABLED" if not ctx.settings.llm_enabled else "LLM_NOT_CONFIGURED"
+        if not ctx.settings.llm_enabled or ctx.drafter is None:
+            fallback = "LLM_DISABLED"
+        else:
+            drafted, fallback = draft_with_llm(ctx.drafter, facts["narrative_facts"])
+            if drafted is not None:
+                narrative, source = drafted, NarrativeSource.LLM
     staff_id = uuid.UUID(principal.id)
     report = FraudReport(
         hold_id=hold.id,

@@ -4,7 +4,7 @@
 
 **A coercion-risk engine for banks.** It protects genuine customers who are being pressured, by "digital arrest" and impersonation scammers, into transferring their own savings.
 
-> **Status (2026-10-17): planning and documentation complete. Implementation has not started.** Nothing below has been built or measured yet. Commands describe the target setup defined in [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md). All data is **synthetic**. The DoT FRI and phone call signals are **simulated**.
+> **Status (2026-10-17): MVP built and tested end to end.** Backend, risk engine, simulator, evaluation harness and all five UI surfaces work against the real API; the hero scenario passes headless and in a browser. All data is **synthetic and fictional**. The DoT FRI and phone call signals are **simulated**. The engine is deterministic and hand-weighted, **not trained**. See [Current implementation status](#current-implementation-status) for what is and isn't verified.
 
 ---
 
@@ -55,7 +55,7 @@ Python 3.12 · FastAPI · Pydantic 2 · SQLAlchemy 2 · Alembic · PostgreSQL 16
 
 Python 3.12 with [uv](https://docs.astral.sh/uv/), Node.js 22 LTS, Docker with Compose v2, and Git. The project folder path must contain **no spaces** (rename it to `thunai`).
 
-## Installation and local development (target, valid after T-001 to T-004)
+## Installation and local development
 
 ```bash
 git clone <repo-url> thunai && cd thunai
@@ -66,7 +66,9 @@ make seed                     # 50 synthetic customers, seed 42
 make dev                      # API http://localhost:8000 · UI http://localhost:5173
 ```
 
-Demo logins: `teller.priya`, `officer.rao`, `admin.demo`, `cust.kamala`, `cust.iqbal`. The password for all of them is the value of `THUNAI_SEED_PASSWORD` in your `.env`.
+Demo logins: `teller.priya`, `officer.rao`, `admin.demo`, `cust.kamala`, `cust.iqbal`, `cust.meena`. The password for all of them is the value of `THUNAI_SEED_PASSWORD` in your `.env`.
+
+**Run the demo.** Sign in as `admin.demo` → `/demo` → **Run P1** (classic digital arrest) and watch `/ops`, `/teller` and the console message / QR code for the trusted-contact link. Or from a terminal with the API running: `make replay SCENARIO=P1 SPEED=4320`. `make demo-reset` restores seed 42 in about half a second. The full script is [DEMO_SCRIPT.md](DEMO_SCRIPT.md).
 
 ## Environment configuration
 
@@ -76,13 +78,14 @@ See [ENVIRONMENT.md](ENVIRONMENT.md) and [.env.example](.env.example). Never com
 
 ```bash
 make lint          # ruff, mypy, oxlint, tsc, prettier
-make test          # pytest + vitest
-make e2e           # Playwright
-make eval          # synthetic evaluation → reports/eval/
+make test          # pytest (backend) + vitest (frontend)
+make e2e           # Playwright: hero, app warning, HIGH release, genuine (uses installed Chrome)
+make eval          # synthetic evaluation on held-out seeds 100–299 → reports/eval/
+make bench         # NFR-01 latency check against the running API
 make security      # pip-audit, npm audit, gitleaks
 ```
 
-The strategy and release gates are in [TESTING.md](TESTING.md).
+The strategy and release gates are in [TESTING.md](TESTING.md). `make test`, `make e2e` and `make eval` all use the `thunai_test` database, so run them one at a time.
 
 ## Deployment
 
@@ -90,12 +93,18 @@ The primary demo runs locally (`make demo`) and works offline. The optional host
 
 ## Current implementation status
 
-| Area | Status |
+| Area | Status (2026-10-17) |
 |---|---|
-| Product definition, architecture, API, schema, AI design, security, test plan, demo plan | Documented (this repo) |
-| Code | Not started (first task: **T-001**) |
-| Evaluation results | **None yet.** No metrics may be quoted until `make eval` has run (T-049) |
-| Performance | Not measured (T-046) |
+| Risk engine (baseline, stages, episodes, scoring, policy) | Done. Golden examples pass exactly: hero raw 115 → VERY_HIGH; behaviour-only 80; N1 = 5 → ALLOW; N4 = 60 → HIGH. Domain coverage 99% |
+| API (ingestion, assessment, holds, trusted contact, teller, reports, dashboard, demo) | Done. 42 routes; authorisation matrix tested for every route × role |
+| Simulator | 13 scenario families (P1–P7, N1–N6), 50-customer generator, replayer, in-app demo runner |
+| UI | Ops dashboard, hold detail, customer view, teller console, customer app, trusted-contact page, demo panel. Playwright J1–J4 pass on two consecutive runs |
+| Performance | `make bench`: p95 **55.2 ms**, p50 36.9 ms for 499 assessments at concurrency 10 on the dev laptop (NFR-01 target 300 ms) |
+| Security checks | pip-audit, npm audit and gitleaks clean; checklist in [reports/security/2026-10-17.md](reports/security/2026-10-17.md) |
+| Evaluation results (**synthetic**, held-out seeds 100–299, [reports/eval/20261017T141000Z.md](reports/eval/20261017T141000Z.md)) | Interception **96.9%** (1357/1400; 95% CI 95.9–97.7%), target ≥ 90%: **met**. False hold on genuine ≥ ₹2 L **30.8%** (367/1190; 95% CI 28.3–33.5%), target ≤ 5%: **missed**, almost entirely the expected-friction families N4 wedding (87.0%) and N5 tuition (96.5%, held out); N1, N2, N3, N6 and background 0%. Genuine warning rate 17.0%. Modelled added delay for genuine holds: median 11.3 min (a model, not a measurement). Explanation coverage 100%. *Synthetic data generated from public case patterns. Not evidence of real-world performance.* No weights were changed after viewing these seeds |
+| LLM report narrative (FR-21, optional) | Built behind `THUNAI_LLM_ENABLED` (off by default) with a deterministic validator and template fallback; tested only with fakes. The live-model evaluation (AI_DESIGN §12.6) has **not** been run |
+
+**Not done (needs people or accounts):** native-speaker review of the Tamil strings (T-038; every Tamil string is a draft), real SMS/Telegram to a phone (T-041), hosted deployment (T-048), rehearsals, backup video and slides (T-050), and GitHub branch protection.
 
 ## Limitations and future work
 

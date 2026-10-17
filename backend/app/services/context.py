@@ -11,6 +11,7 @@ from app.core.rate_limit import RateLimiter
 from app.core.settings import Settings
 from app.domain.config import ScoringConfig
 from app.integrations.fri.base import FriClient
+from app.integrations.llm.base import NarrativeDrafter
 from app.integrations.notifier.base import Notifier
 from app.integrations.notifier.console import ConsoleNotifier
 
@@ -29,5 +30,6 @@ class Ctx:
     real_notifier: Notifier | None
     session_factory: sessionmaker[Session]
     limiter: RateLimiter
+    drafter: NarrativeDrafter | None = None
     # Runs work after the response (FastAPI BackgroundTasks); inline by default.
     schedule: Callable[..., None] = field(default=_run_now)

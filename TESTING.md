@@ -2,7 +2,7 @@
 
 **What we test hardest:** the parts that decide people's money (scoring, policy, hold transitions, contact tokens, authorisation) and the parts the demo depends on (hero flow end to end). We do not chase a coverage number outside `app/domain/`.
 
-> **Status:** no tests exist yet. Every result in this document is a **gate to meet**, not a result achieved.
+> **Status (2026-10-17):** the suites in §2–§5 exist and pass (pytest backend incl. the authorisation matrix and golden scenarios; Vitest components; Playwright J1–J4 twice). RG-1–RG-6, RG-8 and RG-9 are met; RG-7 is met once the evaluation numbers are copied verbatim into the README; RG-10 (offline run with Wi-Fi off) and RG-11 (native Tamil review) still need a person. E2E uses the installed Chrome by default (ADR-021). Don't run `make test`, `make e2e` and `make eval` at the same time: they share `thunai_test`.
 
 ## 1. Test pyramid and locations
 

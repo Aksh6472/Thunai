@@ -24,11 +24,23 @@ from app.core.scoring_config import load_scoring_config
 from app.core.settings import Settings, get_settings
 from app.db import make_engine, make_session_factory
 from app.integrations.fri.mock import MockFriClient
+from app.integrations.llm.base import NarrativeDrafter
 from app.integrations.notifier.console import ConsoleNotifier
 from app.integrations.notifier.factory import make_real_notifier
 from app.services.teller_service import load_scripts
 
 API_PREFIX = "/api/v1"
+
+
+def make_drafter(settings: Settings) -> NarrativeDrafter | None:
+    """FR-21: only when THUNAI_LLM_ENABLED=true (settings require the key then)."""
+    if not settings.llm_enabled or not settings.anthropic_api_key:
+        return None
+    from app.integrations.llm.claude import ClaudeNarrativeDrafter
+
+    return ClaudeNarrativeDrafter(
+        settings.anthropic_api_key, settings.llm_model, settings.llm_timeout_seconds
+    )
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -51,6 +63,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.fri_client = MockFriClient(timeout_ms=settings.fri_timeout_ms)  # SIMULATED
     app.state.console_notifier = ConsoleNotifier()
     app.state.real_notifier = make_real_notifier(settings)
+    app.state.narrative_drafter = make_drafter(settings)
     app.state.scripts = load_scripts()
     app.state.scenarios = None  # loaded on first demo use
     app.state.demo_runs = {}

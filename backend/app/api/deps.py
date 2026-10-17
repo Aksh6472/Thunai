@@ -132,5 +132,6 @@ def get_ctx(request: Request, background: BackgroundTasks) -> Ctx:
         real_notifier=state.real_notifier,
         session_factory=state.session_factory,
         limiter=state.rate_limiter,
+        drafter=state.narrative_drafter,
         schedule=background.add_task,
     )

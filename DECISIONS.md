@@ -149,6 +149,7 @@ These are recorded here and in [JUDGING_STRATEGY.md](JUDGING_STRATEGY.md) §6:
 |---|---|---|---|
 | 2026-10-17 | scoring_v1 | Initial table (AI_DESIGN §6) | none |
 | 2026-10-17 | scoring_v1 | Clarification only (ADR-020): payee age compared in whole hours; cooling-off/activation moved to env. No weight or threshold changed, version unchanged | none |
+| 2026-10-17 | scoring_v1 | No change. Held-out evaluation run on seeds 100–299 (reports/eval/20261017T141000Z.md): false-hold target missed (30.8%, driven by N4/N5). Any future retune must be done on seeds 0–99 and disclosed here | 100–299 viewed (report only) |
 
 ## Incidents
 

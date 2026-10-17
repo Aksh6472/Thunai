@@ -6,7 +6,7 @@ envval = $(shell grep -E '^$(1)=' .env 2>/dev/null | head -1 | cut -d= -f2- | se
 API_PORT := $(or $(call envval,THUNAI_API_PORT),8000)
 
 .PHONY: help db db-down dev frontend-env test test-backend test-frontend lint format \
-        migrate seed demo demo-reset replay bench eval e2e security
+        migrate seed demo demo-reset replay snapshot restore-snapshot bench eval e2e security
 
 help:
 	@echo "make db | db-down | migrate | seed | dev | demo-reset | replay | test | lint | format"
@@ -52,6 +52,12 @@ bench:  # NFR-01 latency check against the running API (make dev / make demo)
 
 eval:  # synthetic evaluation on held-out seeds 100–299 → reports/eval/ (uses TEST_DATABASE_URL)
 	cd backend && uv run python -m sim.evaluate --seeds 100-299 --out ../reports/eval/
+
+snapshot:  # synthetic demo data only (DEPLOYMENT §3); the file is git-ignored
+	docker compose exec -T db pg_dump -U thunai thunai > reports/demo-snapshot.sql
+
+restore-snapshot:
+	docker compose exec -T db psql -q -U thunai thunai < reports/demo-snapshot.sql
 
 lint:
 	cd backend && uv run ruff check . && uv run ruff format --check . && uv run mypy

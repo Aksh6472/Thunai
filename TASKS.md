@@ -48,14 +48,14 @@ The full specification of each task (steps, acceptance, tests) is in [IMPLEMENTA
 | T-039 | Demo control panel | WS5 | P1 | 2 | T-021, T-032 | M3 | Claude | done — scenarios, reset, speed, clock, console + QR, FRI simulator, run log |
 | T-038 | i18n and native Tamil review | WS5 | P1 | 2 | T-028, T-017, T-036, T-037 | M3 | Claude | partly done — all strings in en/ta with parity test; **native Tamil review NOT done** (needs a named reviewer) |
 | T-040b | **UI hero gate** (DEMO_SCRIPT run-through) | All | P0 | 1.5 | M3 tasks | **M3** | Claude | done (automated) — Playwright J1–J4 pass twice; a manual DEMO_SCRIPT run-through is still for the team |
-| T-042 | Engine test hardening (determinism, coverage) | WS2 | P1 | 1.5 | T-028 | M4 | | todo |
+| T-042 | Engine test hardening (determinism, coverage) | WS2 | P1 | 1.5 | T-028 | M4 | Claude | done — determinism + snapshot round-trip tests, domain coverage 99%, architecture test |
 | T-043 | API authorisation matrix and migration test | WS3 | P1 | 2 | T-010–T-021 | M4 | Claude | done — 42 routes × 6 principals (tests/integration/test_authz_matrix.py); migration round-trip in test_migrations.py |
 | T-044 | Playwright E2E (J1, J2, J4) | WS6 | P1 | 3 | T-040b | M4 | Claude | done — J1 hero, J2 app warning, J3 HIGH release, J4 genuine; 8/8 with --repeat-each=2 |
 | T-045 | Security checks | WS6 | P1 | 1.5 | T-043 | M4 | Claude | done — pip-audit clean, npm audit 0, gitleaks clean; checklist in reports/security/2026-10-17.md |
 | T-046 | Performance check (NFR-01) | WS3 | P1 | 1 | T-013 | M4 | Claude | done — `make bench`: p95 55.2 ms, p50 36.9 ms, 499 requests, concurrency 10 (dev laptop, 2026-10-17) |
 | T-030 | Evaluation harness | WS1 | P1 | 3 | T-024, T-013 | M4 | Claude | done — `make eval`; ~1.3 s/seed; Wilson CIs, per-family, modelled delay; NOT yet run on 100–299 (T-049) |
-| T-049 | Run the evaluation and record the results | WS1 | P1 | 1 | T-030, M3 | M4 | | todo |
-| T-047 | Local demo runbook and snapshot | WS6 | P0 | 1.5 | T-040b | M4 | | todo |
+| T-049 | Run the evaluation and record the results | WS1 | P1 | 1 | T-030, M3 | M4 | Claude | done — reports/eval/20261017T141000Z.md; interception 96.9% (met), false hold 30.8% (missed: N4/N5); copied to README verbatim |
+| T-047 | Local demo runbook and snapshot | WS6 | P0 | 1.5 | T-040b | M4 | Claude | done — `make demo`, `make snapshot` / `make restore-snapshot`, pre-flight in DEPLOYMENT §7; offline (Wi-Fi off) run not yet rehearsed |
 | T-050 | Rehearsals, backup video, slides, submission | WS6+All | P0 | 3 | T-047, T-049 | M5 | | todo |
 
 ## 2. Should / Could backlog (only after the M3 gate)
@@ -64,7 +64,7 @@ The full specification of each task (steps, acceptance, tests) is in [IMPLEMENTA
 |---|---|---|---|---|---|---|
 | T-041 | Real SMS / Telegram to the teammate's phone (**start the trial account at H+0**) | WS3 | P2 | 1.5 | T-016, T-037 | todo |
 | T-051 | Consent and trusted-contact screens in the customer app | WS5 | P2 | 2 | T-036 | done — consent switches and trusted-contact form (72 h note) |
-| T-031 | LLM narrative with validator and fallback | WS2 | P2 | 3 | T-018 | todo |
+| T-031 | LLM narrative with validator and fallback | WS2 | P2 | 3 | T-018 | done — validator + template fallback, mocked tests; live LLM evaluation (AI_DESIGN §12.6) not run |
 | T-048 | Hosted deployment (Render + Vercel) | WS6 | P2 | 2 | T-040b | todo |
 | T-060 | SSE live updates (FR-25) | WS3/WS4 | P3 | 3 | M4 | todo |
 | T-061 | Logistic-regression calibration experiment (FR-26), report only | WS1/WS2 | P3 | 3 | T-030 | todo |
