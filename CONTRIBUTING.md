@@ -1,4 +1,4 @@
-# Contributing to Kaaval AI
+# Contributing to Thunai
 
 ## 1. Branching
 

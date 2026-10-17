@@ -1,4 +1,4 @@
-# CLAUDE.md — Kaaval AI Engineering Guide
+# CLAUDE.md — Thunai Engineering Guide
 
 This file is the persistent instruction set for Claude Code (and humans) working in this repo. Read it at the start of every session. If anything here conflicts with a request, say so before acting.
 
@@ -17,7 +17,7 @@ This file is the persistent instruction set for Claude Code (and humans) working
 
 ## 1. Project purpose and scope
 
-Kaaval AI is a bank-side **coercion-risk engine**. It detects when a *genuine* customer is being pressured (for example, by "digital arrest" scammers) into transferring their savings. It tracks behaviour across days (FD broken → funds pooled → new payee → large transfer), fuses this with signals (simulated DoT FRI, a consented call flag, a teller checklist), and responds in tiers (allow / warn / cooling-off hold released by a trusted contact or an officer / hold plus teller script plus pre-filled 1930 report). Every decision is explained.
+Thunai is a bank-side **coercion-risk engine**. It detects when a *genuine* customer is being pressured (for example, by "digital arrest" scammers) into transferring their savings. It tracks behaviour across days (FD broken → funds pooled → new payee → large transfer), fuses this with signals (simulated DoT FRI, a consented call flag, a teller checklist), and responds in tiers (allow / warn / cooling-off hold released by a trusted contact or an officer / hold plus teller script plus pre-filled 1930 report). Every decision is explained.
 
 - **MVP scope:** [PRD.md](PRD.md) §6 (Must items) and §8. **Out of scope:** PRD §11. Do not build out-of-scope features. If a request implies one, point it out and ask.
 - **Hackathon status:** documentation phase complete, implementation not started (as of 2026-10-17). Check [TASKS.md](TASKS.md) for the current state.
@@ -25,7 +25,7 @@ Kaaval AI is a bank-side **coercion-risk engine**. It detects when a *genuine* c
 ## 2. Repository structure (target; created by T-001 to T-003)
 
 ```text
-kaaval-ai/
+thunai/
 ├── backend/
 │   ├── pyproject.toml, uv.lock, alembic.ini
 │   ├── config/scoring_v1.yaml        # versioned weights/thresholds (AI_DESIGN §6)
@@ -48,7 +48,7 @@ kaaval-ai/
 │   ├── src/components/ · src/features/{ops,teller,customer,trusted,demo,auth}/
 │   ├── src/i18n/{en,ta}.json · src/styles/tokens.css · src/lib/format.ts
 │   └── e2e/                          # Playwright
-├── infra/db/init.sql                 # creates kaaval_test
+├── infra/db/init.sql                 # creates thunai_test
 ├── reports/eval/                     # evaluation outputs (md committed, json ignored)
 ├── docs/                             # USER_FLOWS, DATA_SOURCES, COMPETITOR_ANALYSIS, MILESTONES
 ├── docker-compose.yml · Makefile · .env.example
@@ -63,7 +63,7 @@ These come from [TECH_STACK.md](TECH_STACK.md). **Do not change a major version,
 - **DB:** PostgreSQL 16.
 - **Frontend:** Node ≥ 22, React 19, TypeScript 5.9 (`strict`; pinned below 6 for openapi-typescript), Vite 8, React Router 8, TanStack Query 5, Tailwind 4 plus CSS-variable tokens, Recharts 3 (ADR-017), openapi-typescript. i18n is our own small `t()` function.
 - **Tests:** pytest, Vitest + RTL, Playwright. **Quality:** ruff, mypy, oxlint, Prettier.
-- **Optional:** the `anthropic` SDK (FR-21, model `claude-opus-5-5` via `KAAVAL_LLM_MODEL`). Twilio and Telegram through httpx.
+- **Optional:** the `anthropic` SDK (FR-21, model `claude-opus-5-5` via `THUNAI_LLM_MODEL`). Twilio and Telegram through httpx.
 
 ## 4. Coding conventions
 
@@ -84,7 +84,7 @@ These come from [TECH_STACK.md](TECH_STACK.md). **Do not change a major version,
 - Every user-visible string goes through `t()`, with keys present in both `en.json` and `ta.json`.
 - Use Tailwind with token-based classes. No hard-coded hex colours outside `tokens.css`.
 
-**Product and bank names (ADR-015):** never hard-code "Kaaval AI" or "Example Bank" in user-facing text. Use `PRODUCT_NAME` / `BANK_NAME` from `backend/app/core/branding.py` or `frontend/src/config/brand.ts`, or `{product}` / `{bank}` placeholders in i18n strings. The bank is always the fictional "Example Bank". A rename may happen, because TN Police have an app called "Kaaval Uthavi".
+**Product and bank names (ADR-015):** never hard-code "Thunai" or "Example Bank" in user-facing text. Use `PRODUCT_NAME` / `BANK_NAME` from `backend/app/core/branding.py` or `frontend/src/config/brand.ts`, or `{product}` / `{bank}` placeholders in i18n strings. The bank is always the fictional "Example Bank". The product was renamed from "Kaaval AI" to Thunai on 2026-10-17 (ADR-019), to avoid confusion with the TN Police "Kaaval Uthavi" app.
 
 ## 5. Naming conventions
 

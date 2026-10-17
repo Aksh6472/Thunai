@@ -1,4 +1,4 @@
-# Kaaval AI — Implementation Plan
+# Thunai — Implementation Plan
 
 > **Timing basis.** The team reported a 24–48 h hackathon. **The exact deadline is not yet confirmed.** All times below are hours from kickoff (H+0). The plan makes the **MVP complete and frozen by H+20**, so it fits a 24 h event. If the event is 48 h, the extra time goes to Should Have items ([ROADMAP.md](ROADMAP.md) §3), not to scope creep.
 
@@ -39,7 +39,7 @@ With 5 people, merge WS5 into WS4 and WS6 into the team lead's role.
 - *Files:* the root folder, `.gitignore`, `.gitattributes`, `Makefile`, `docker-compose.yml` (stub), `backend/`, `frontend/`, `reports/.gitkeep`.
 - *Depends on:* none.
 - *Steps:*
-  1. **Rename the project folder to `kaaval-ai`.** The current name `Kaaval ` contains a trailing space, which breaks unquoted shell paths, Docker volume mounts and some tools.
+  1. **Rename the project folder to `thunai`.** The original name `Kaaval ` contained a trailing space, which breaks unquoted shell paths, Docker volume mounts and some tools. *(Done 2026-10-17: renamed to `kaaval-ai`, then to `thunai` with the product rename, ADR-019.)*
   2. `git init -b main`, add the docs, make the first commit.
   3. Create the GitHub repo and branch protection on `main` (PR required, one review).
   4. Write a `.gitignore` covering `.env`, `.venv`, `node_modules`, `dist`, `reports/eval/*.json` (keep `.md`), `playwright-report`, `__pycache__`.
@@ -71,9 +71,9 @@ With 5 people, merge WS5 into WS4 and WS6 into the team lead's role.
 
 **T-004 Local Postgres and env loading**
 - *Objective:* `docker compose up -d db` gives a working database, and the backend reads `.env`.
-- *Files:* `docker-compose.yml` (the `postgres:16-alpine` service, a healthcheck, the `kaaval_test` DB created by an init script `infra/db/init.sql`), `.env.example` (already exists; keep it in sync).
+- *Files:* `docker-compose.yml` (the `postgres:16-alpine` service, a healthcheck, the `thunai_test` DB created by an init script `infra/db/init.sql`), `.env.example` (already exists; keep it in sync).
 - *Depends on:* T-001.
-- *Steps:* write the compose service with a named volume, an init script that creates `kaaval_test`, and port 5432.
+- *Steps:* write the compose service with a named volume, an init script that creates `thunai_test`, and port 5432.
 - *Acceptance:* `psql` connects to both databases.
 - *Tests:* `/readyz` reports `db: ok` after T-005.
 - *DoD:* generic.
@@ -83,14 +83,14 @@ With 5 people, merge WS5 into WS4 and WS6 into the team lead's role.
 
 **T-005 Settings, logging and error envelope**
 - *Objective:* Cross-cutting backend infrastructure.
-- *Files:* `app/core/settings.py` (pydantic-settings, every variable in [ENVIRONMENT.md](ENVIRONMENT.md)), `app/core/logging.py` (JSON logs, request-id middleware, PII masking filter), `app/core/errors.py` (the `KaavalError` hierarchy and handlers that produce the API_SPEC §2.1 envelope), `app/api/v1/health.py` (`/readyz`), body size limit middleware.
+- *Files:* `app/core/settings.py` (pydantic-settings, every variable in [ENVIRONMENT.md](ENVIRONMENT.md)), `app/core/logging.py` (JSON logs, request-id middleware, PII masking filter), `app/core/errors.py` (the `ThunaiError` hierarchy and handlers that produce the API_SPEC §2.1 envelope), `app/api/v1/health.py` (`/readyz`), body size limit middleware.
 - *Depends on:* T-002, T-004.
 - *Steps:*
   1. Define a typed `Settings` class.
   2. Validate at startup: required secrets present, placeholder secrets refused in production, and `DEMO_MODE` refused in production.
   3. Add the request-id middleware.
   4. Add the exception handlers, so that no stack trace is ever returned.
-- *Acceptance:* a missing `KAAVAL_JWT_SECRET` makes startup fail with a clear message. A 404 route returns the envelope.
+- *Acceptance:* a missing `THUNAI_JWT_SECRET` makes startup fail with a clear message. A 404 route returns the envelope.
 - *Tests:* `tests/unit/test_settings.py`, `tests/integration/test_errors.py`, a log-masking test.
 - *DoD:* generic.
 - *Priority / Effort / Owner:* P0 · 2 h · WS3.
@@ -109,7 +109,7 @@ With 5 people, merge WS5 into WS4 and WS6 into the team lead's role.
 - *Objective:* Injectable time, so multi-day scenarios can run in seconds.
 - *Files:* `app/core/clock.py` (`Clock` Protocol, `RealClock`, `SimClock` backed by `sim_state`), a dependency in `app/api/deps.py`.
 - *Depends on:* T-005, T-008 (for `sim_state`).
-- *Steps:* `SimClock.now()` reads `sim_state.sim_now`. The replayer advances it via an internal service function. In demo mode the clock is selected by `KAAVAL_DEMO_MODE`.
+- *Steps:* `SimClock.now()` reads `sim_state.sim_now`. The replayer advances it via an internal service function. In demo mode the clock is selected by `THUNAI_DEMO_MODE`.
 - *Acceptance:* the domain never calls `datetime.now()` (grep test).
 - *Tests:* `tests/unit/test_clock.py`. The architecture test asserts there is no `datetime.now(` in `app/domain`.
 - *DoD:* generic.
@@ -135,7 +135,7 @@ With 5 people, merge WS5 into WS4 and WS6 into the team lead's role.
 - *Files:* `backend/sim/seed.py` (the staff part).
 - *Depends on:* T-008, T-010 (for the password hasher).
 - *Steps:*
-  1. Create `teller.priya` (TELLER), `officer.rao` (OFFICER) and `admin.demo` (ADMIN), plus customer logins `cust.kamala` and `cust.iqbal`, all with the password from `KAAVAL_SEED_PASSWORD`.
+  1. Create `teller.priya` (TELLER), `officer.rao` (OFFICER) and `admin.demo` (ADMIN), plus customer logins `cust.kamala` and `cust.iqbal`, all with the password from `THUNAI_SEED_PASSWORD`.
   2. Make the seed idempotent.
 - *Acceptance:* every user can log in.
 - *Tests:* covered by the T-010 tests.
@@ -227,7 +227,7 @@ With 5 people, merge WS5 into WS4 and WS6 into the team lead's role.
 - *Depends on:* T-014, T-016.
 - *Steps:*
   1. Generate a token with `secrets.token_urlsafe(32)` and store its SHA-256.
-  2. Build the link from `KAAVAL_PUBLIC_WEB_URL/t/{token}`.
+  2. Build the link from `THUNAI_PUBLIC_WEB_URL/t/{token}`.
   3. Implement the activation check (`effective_from <= clock.now()`).
   4. Consume tokens with a conditional UPDATE.
   5. Apply the response matrix (API_SPEC §9).
@@ -247,8 +247,8 @@ With 5 people, merge WS5 into WS4 and WS6 into the team lead's role.
   2. Write `ConsoleNotifier`, which stores messages in memory (a ring buffer of 50) and logs a masked line.
   3. Write `TwilioNotifier` (httpx POST to the Messages API with a 5 s timeout).
   4. Write `TelegramNotifier` (`sendMessage`).
-  5. Select with `KAAVAL_NOTIFIER`. If a real channel fails, fall back to console and set `delivery_status=FAILED` with the error code.
-- *Acceptance:* with `KAAVAL_NOTIFIER=console`, the hero hold produces a message containing a working link.
+  5. Select with `THUNAI_NOTIFIER`. If a real channel fails, fall back to console and set `delivery_status=FAILED` with the error code.
+- *Acceptance:* with `THUNAI_NOTIFIER=console`, the hero hold produces a message containing a working link.
 - *Tests:* unit tests with httpx `MockTransport` for Twilio and Telegram (success, 4xx, timeout).
 - *DoD:* generic.
 - *Priority / Effort / Owner:* P0 (console) / P2 (real) · 2 h · WS3.
@@ -431,7 +431,7 @@ With 5 people, merge WS5 into WS4 and WS6 into the team lead's role.
 - *Files:* `sim/evaluate.py` (CLI `python -m sim.evaluate --seeds 100-299 --out reports/eval/`), `sim/metrics.py`.
 - *Depends on:* T-024, T-013.
 - *Steps:*
-  1. For each seed, reset an isolated DB schema or the `kaaval_test` DB.
+  1. For each seed, reset an isolated DB schema or the `thunai_test` DB.
   2. Run every family at infinite speed through `ASGITransport` (no network).
   3. Read the decisions and the `scenario_label`.
   4. Compute the PRD §9 metrics, Wilson intervals, per-family tables and the modelled contact delay (AI_DESIGN §8).
@@ -451,7 +451,7 @@ With 5 people, merge WS5 into WS4 and WS6 into the team lead's role.
   3. Run the validator (numbers and dates must be in the facts, the deny-list).
   4. Re-identify locally.
   5. Fall back to the template on any failure.
-  6. Set the header `X-Kaaval-LLM-Fallback`.
+  6. Set the header `X-Thunai-LLM-Fallback`.
 - *Acceptance:* with the LLM disabled, behaviour is identical to T-018. With a mocked client returning a fabricated amount, the validator rejects it and the template is used.
 - *Tests:* `tests/unit/test_llm_validator.py`, `tests/integration/test_report_llm_fallback.py` (mocked; **no real API calls in tests**).
 - *DoD:* generic. The LLM evaluation (AI_DESIGN §12.6) has run, or is listed as not run.
@@ -626,7 +626,7 @@ With 5 people, merge WS5 into WS4 and WS6 into the team lead's role.
 
 **T-047 Local demo runbook and snapshot** — Write the `make demo` sequence, a `pg_dump` snapshot after seeding (`reports/demo-snapshot.sql`, which contains synthetic data only), a pre-flight checklist ([DEPLOYMENT.md](DEPLOYMENT.md) §7), and a check that the build works offline with Wi-Fi off. *Depends on:* T-040. · P0 · 1.5 h · WS6.
 
-**T-048 Hosted deployment (Should)** — Render (API and Postgres) plus Vercel (SPA), with environment variables set, `KAAVAL_DEMO_MODE=true` (the hosted instance is a demo), a CORS allow-list, and a smoke test. *Depends on:* T-040. · P2 · 2 h · WS6.
+**T-048 Hosted deployment (Should)** — Render (API and Postgres) plus Vercel (SPA), with environment variables set, `THUNAI_DEMO_MODE=true` (the hosted instance is a demo), a CORS allow-list, and a smoke test. *Depends on:* T-040. · P2 · 2 h · WS6.
 
 ### Phase 11 — Demo preparation and final verification
 

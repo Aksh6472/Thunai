@@ -1,4 +1,4 @@
-# Kaaval AI — Judging Strategy
+# Thunai — Judging Strategy
 
 > **Theme 1: Real-Time AI for Critical Decisions. Category: Citizen scam/fraud defense** (protect people and route reports to 1930 / cybercrime.gov.in).
 > The weights below are the **team's planning weights**. The official rubric is not confirmed yet (A-08). When it arrives, re-map this table. Nothing here guarantees a result.
@@ -30,13 +30,13 @@
 
 ## 3. Differentiation, honestly stated
 
-| Existing approach | What it does well | What Kaaval adds |
+| Existing approach | What it does well | What Thunai adds |
 |---|---|---|
 | Bank FRM / transaction monitoring (FICO, Feedzai, Clari5, etc.) | Real-time anomaly scoring at scale | Coercion-specific **sequence** logic across days, and an explained, **intervention-oriented** workflow (cooling-off plus trusted contact plus teller script). *Many vendors may have APP-scam models. We claim focus, not invention* |
-| BioCatch Scams360 (2025) | Behavioural biometrics in digital sessions, including active-call detection | **Branch counter parity**, **multi-day financial staging**, a **family release** loop and India-specific **1930/FRI** steps. Kaaval is complementary and could consume such a signal |
-| RBI MuleHunter.AI | Detects mule (receiver) accounts | Kaaval protects the **sender at the moment of payment**. The two are complementary |
-| DoT FRI / PhonePe Protect | Number-level risk, UPI blocking | Kaaval fuses FRI with behaviour, so it isn't a single-signal block |
-| Truecaller Family Protection, Android scam detection | Phone-side call alerts to family | Kaaval sees the **money movement** and acts at the bank |
+| BioCatch Scams360 (2025) | Behavioural biometrics in digital sessions, including active-call detection | **Branch counter parity**, **multi-day financial staging**, a **family release** loop and India-specific **1930/FRI** steps. Thunai is complementary and could consume such a signal |
+| RBI MuleHunter.AI | Detects mule (receiver) accounts | Thunai protects the **sender at the moment of payment**. The two are complementary |
+| DoT FRI / PhonePe Protect | Number-level risk, UPI blocking | Thunai fuses FRI with behaviour, so it isn't a single-signal block |
+| Truecaller Family Protection, Android scam detection | Phone-side call alerts to family | Thunai sees the **money movement** and acts at the bank |
 | Manual staff intervention | Works when someone notices | Makes noticing consistent, structured and auditable |
 
 Our claim is: *"In our research we did not find a product that publicly combines these five elements for Indian banks."* We **don't** claim "nobody does this".
@@ -51,9 +51,9 @@ Our claim is: *"In our research we did not find a product that publicly combines
 
 | # | Question | Answer |
 |---|---|---|
-| Q1 | "Where's the AI? This is rules." | "Kaaval learns each customer's normal behaviour, and the scoring is relative to *their* baseline. It recognises a multi-day sequence and fuses several signals. We deliberately kept the fusion weights transparent, because a bank must explain every hold and real labelled coercion data isn't public. Training on our synthetic data would mostly learn our generator. The reason contract lets a learned model drop in once a bank provides labelled cases." |
+| Q1 | "Where's the AI? This is rules." | "Thunai learns each customer's normal behaviour, and the scoring is relative to *their* baseline. It recognises a multi-day sequence and fuses several signals. We deliberately kept the fusion weights transparent, because a bank must explain every hold and real labelled coercion data isn't public. Training on our synthetic data would mostly learn our generator. The reason contract lets a learned model drop in once a bank provides labelled cases." |
 | Q2 | "Your data is synthetic. How do we know it works?" | "Correct, and we label it everywhere. The scenarios come from publicly reported case patterns, including hard negatives. We tuned on one set of seeds and report on separate held-out seeds and two held-out families. That shows the engine behaves as designed, not real-world accuracy. The next step is shadow mode on a bank's anonymised data." |
-| Q3 | "How do you get the payee's phone number for FRI on an RTGS?" | "You often can't for account-to-account transfers, so FRI is an **optional** signal in Kaaval, not a dependency. Where a number is available (UPI/VPA payees, intra-bank beneficiaries, DIP-side mapping), it adds points. Without it, the hero case still scores 80 and is **held on behaviour alone**." **Say this proactively in the pitch** (DEMO_SCRIPT 1:30–1:50) |
+| Q3 | "How do you get the payee's phone number for FRI on an RTGS?" | "You often can't for account-to-account transfers, so FRI is an **optional** signal in Thunai, not a dependency. Where a number is available (UPI/VPA payees, intra-bank beneficiaries, DIP-side mapping), it adds points. Without it, the hero case still scores 80 and is **held on behaviour alone**." **Say this proactively in the pitch** (DEMO_SCRIPT 1:30–1:50) |
 | Q4 | "Can a bank legally hold a customer's money?" | "That's the key open question. The Supreme Court asked RBI in Aug 2026 for an SOP that reportedly includes temporary debit holds. Our hold is short, explained, cancellable by the customer and reviewed by a human. We'd align with the final SOP." *(Background only, not on slides unless the primary sources have been opened and confirmed: US FINRA Rule 2165 and Georgia HB 945 trusted-contact hold regimes.)* |
 | Q5 | "Scammers will tell victims to say it's for property." | "That's why the score ignores what the customer *says*. The teller's note is recorded but never scored. One of our test families is exactly this cover story." |
 | Q6 | "Scammers will make the victim change the trusted contact." | "A new contact only becomes active after 72 hours, and a recent change itself raises the risk." |

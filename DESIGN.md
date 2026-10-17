@@ -1,4 +1,4 @@
-# Kaaval AI — UI/UX Design Specification
+# Thunai — UI/UX Design Specification
 
 This document specifies five surfaces, each built around one primary workflow:
 
@@ -20,7 +20,7 @@ The dashboard is **action-oriented**. Every number on it links to a queue item. 
 2. **Reasons before scores.** Plain-language reasons are the headline. The numeric score is secondary, and tiers are always text plus an icon, never colour alone.
 3. **One next action.** Each screen has one obvious primary action: Call 1930, Respond, Apply checklist, Release/Cancel.
 4. **Senior-first for customer surfaces.** Large type, high contrast, Tamil first when that is the preferred language, and no jargon.
-5. **Honest demo.** Simulated data and signals carry a visible `SIMULATED` chip when `KAAVAL_DEMO_MODE=true`.
+5. **Honest demo.** Simulated data and signals carry a visible `SIMULATED` chip when `THUNAI_DEMO_MODE=true`.
 6. **Fast under pressure.** Tellers and officers can work entirely from the keyboard. The critical information is above the fold at 1366×768.
 
 ## 2. Personas and accessibility needs
@@ -56,7 +56,7 @@ Accessibility target: **WCAG 2.1 AA** across the app, and checked manually on th
 /demo                      Demo control                     ADMIN
 ```
 
-- **Staff top bar** (all staff routes): Kaaval logo · links allowed by role (Ops, Teller, Demo) · `DemoClockBar` (demo mode only: simulated date/time, speed, running scenario) · user menu (name, role, Logout).
+- **Staff top bar** (all staff routes): Thunai logo · links allowed by role (Ops, Teller, Demo) · `DemoClockBar` (demo mode only: simulated date/time, speed, running scenario) · user menu (name, role, Logout).
 - **After login**, users land on TELLER → `/teller`, OFFICER → `/ops`, ADMIN → `/demo`, CUSTOMER → `/customer`.
 - **Unauthorised route:** show a 403 page with a "Go to your home" link.
 
@@ -72,7 +72,7 @@ These are summarised here. Full flows and edge cases are in [docs/USER_FLOWS.md]
 ## 5. Screen inventory and layouts
 
 ### 5.1 Login (`/login`)
-- A centred card, 400 px wide: logo, the title "Kaaval AI", username and password fields, a primary button "Sign in".
+- A centred card, 400 px wide: logo, the title "Thunai", username and password fields, a primary button "Sign in".
 - In demo mode, a helper panel lists the demo accounts (usernames only; passwords come from the README/env).
 - Errors: an inline banner, "Username or password is incorrect" (generic).
 - Loading: a button spinner with the button disabled.
@@ -93,8 +93,8 @@ These are summarised here. Full flows and edge cases are in [docs/USER_FLOWS.md]
 └─────────────────────────────────────────────┴───────────────────────────────────┘
 ```
 - The queue polls every 2 s. New rows slide in with a highlight. Arrow keys move the selection and Enter opens the case.
-- **Empty state:** "No customers need attention right now." with a secondary line: "Kaaval is monitoring 50 customers (synthetic)."
-- **Error state:** an inline banner "Can't reach Kaaval server — retrying" while the last data stays visible and dimmed.
+- **Empty state:** "No customers need attention right now." with a secondary line: "Thunai is monitoring 50 customers (synthetic)."
+- **Error state:** an inline banner "Can't reach Thunai server — retrying" while the last data stays visible and dimmed.
 
 ### 5.3 Hold detail / decision screen (`/ops/holds/:id`)
 
@@ -129,7 +129,7 @@ Header (name, masked accounts, language) · baseline card (median transfer, hist
 ┌ ALERT BANNER (VERY_HIGH, assertive live region) ─────────────────────────────────┐
 │ ⚠ Pause before processing: R. Kamala — ₹46,00,000 RTGS is on safety hold         │
 ├ Left (55%) ───────────────────────────────────┬ Right (45%) ─────────────────────┤
-│ WHAT KAAVAL NOTICED (top 5 reasons, plain)     │ GUIDED SCRIPT   [தமிழ் | English] │
+│ WHAT THUNAI NOTICED (top 5 reasons, plain)     │ GUIDED SCRIPT   [தமிழ் | English] │
 │                                                │ 1. Greet calmly…                  │
 │ WHAT YOU OBSERVE (tap or press 1–4)            │ 2. "There is no 'digital arrest'  │
 │ [1 On a call now] [2 Seems distressed]         │     in Indian law…"               │
@@ -141,7 +141,7 @@ Header (name, masked accounts, language) · baseline card (median transfer, hist
 └────────────────────────────────────────────────┴──────────────────────────────────┘
 ```
 - Toggles are `aria-pressed` buttons and keys 1–4 toggle them. "Apply" re-scores. While the call is in flight, the toggles are disabled and show a spinner. On success, the reasons list animates in the new items.
-- A note under the "Customer said" field reads: "Recorded for the report. Kaaval does not change the score based on what the customer says."
+- A note under the "Customer said" field reads: "Recorded for the report. Thunai does not change the score based on what the customer says."
 - With no active case, the queue list of branch WARN/HOLD items shows, or the empty state "No branch transfers need attention."
 
 ### 5.6 Customer app simulator (`/customer`)
@@ -157,7 +157,7 @@ It renders inside a `PhoneFrame` (390×844, with rounded bezel art) centred on a
 ### 5.7 Trusted-contact page (`/t/:token`) — mobile-first, standalone layout (no staff chrome)
 
 ```text
-Kaaval · [Bank name] safety check                         [தமிழ் | EN]
+Thunai · [Bank name] safety check                         [தமிழ் | EN]
 ------------------------------------------------------------------
 Kamala's transfer of ₹46,00,000 is paused for safety.
 Please CALL HER NOW on the number you know (not a number anyone gives you).

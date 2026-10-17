@@ -11,7 +11,7 @@ function renderAt(path: string) {
 describe('route shell', () => {
   it('renders the login placeholder at /login', () => {
     renderAt('/login')
-    expect(screen.getByRole('heading', { name: /Kaaval AI: Sign in/ })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /Thunai: Sign in/ })).toBeInTheDocument()
   })
 
   it.each([

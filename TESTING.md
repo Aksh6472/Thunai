@@ -1,4 +1,4 @@
-# Kaaval AI — Testing Strategy
+# Thunai — Testing Strategy
 
 **What we test hardest:** the parts that decide people's money (scoring, policy, hold transitions, contact tokens, authorisation) and the parts the demo depends on (hero flow end to end). We do not chase a coverage number outside `app/domain/`.
 
@@ -9,7 +9,7 @@
 | Layer | Tool | Location | Runs against |
 |---|---|---|---|
 | Unit (pure domain, simulator, frontend helpers) | pytest, Vitest | `backend/tests/unit/`, `backend/tests/sim/`, `frontend/src/**/*.test.ts(x)` | No DB, no network |
-| Integration / API | pytest + httpx `ASGITransport` | `backend/tests/integration/` | The real Postgres `kaaval_test` DB |
+| Integration / API | pytest + httpx `ASGITransport` | `backend/tests/integration/` | The real Postgres `thunai_test` DB |
 | Scenario (golden end-to-end at the API level) | pytest | `backend/tests/scenarios/` | The real DB, with replay at infinite speed |
 | Architecture / policy | pytest (`ast` import inspection) | `backend/tests/test_architecture.py`, `test_no_protected_features.py` | Source code |
 | Frontend component | Vitest + React Testing Library | `frontend/src/**` | A fake API client |

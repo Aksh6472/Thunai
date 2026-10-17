@@ -1,4 +1,4 @@
-# Kaaval AI — Task Backlog
+# Thunai — Task Backlog
 
 The full specification of each task (steps, acceptance, tests) is in [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) §3. This file is the **live tracker**. Update `Status` and `Assignee` as work moves.
 
@@ -12,7 +12,7 @@ The full specification of each task (steps, acceptance, tests) is in [IMPLEMENTA
 | T-001 | Repo bootstrap (rename folder, git, Makefile) | WS6 | P0 | 0.5 | — | M0 | Claude | done — GitHub remote and branch protection not set up yet |
 | T-002 | Backend scaffold | WS3 | P0 | 1 | T-001 | M0 | Claude | done |
 | T-003 | Frontend scaffold | WS4 | P0 | 1.5 | T-001 | M0 | Claude | done (ADR-017) |
-| T-004 | Local Postgres and env | WS3 | P0 | 0.5 | T-001 | M0 | Claude | done — `make db` healthy on port 5433; `kaaval` and `kaaval_test` reachable via psycopg |
+| T-004 | Local Postgres and env | WS3 | P0 | 0.5 | T-001 | M0 | Claude | done — `make db` healthy on port 5433; `thunai` and `thunai_test` reachable via psycopg |
 | T-006 | Scoring config YAML and loader | WS2 | P0 | 1 | T-002 | M0 | | todo |
 | T-005 | Settings, logging, error envelope, `/readyz` | WS3 | P0 | 2 | T-002, T-004 | M1 | | todo |
 | T-008 | ORM models and migration 0001 | WS3 | P0 | 3 | T-004, T-005 | M1 | | todo |

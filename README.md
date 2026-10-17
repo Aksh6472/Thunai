@@ -1,4 +1,4 @@
-# Kaaval AI
+# Thunai
 
 *Hackathon: Theme 1, Real-Time AI for Critical Decisions · Category: Citizen scam/fraud defense.*
 
@@ -53,12 +53,12 @@ Python 3.12 · FastAPI · Pydantic 2 · SQLAlchemy 2 · Alembic · PostgreSQL 16
 
 ## Prerequisites
 
-Python 3.12 with [uv](https://docs.astral.sh/uv/), Node.js 22 LTS, Docker with Compose v2, and Git. The project folder path must contain **no spaces** (rename it to `kaaval-ai`).
+Python 3.12 with [uv](https://docs.astral.sh/uv/), Node.js 22 LTS, Docker with Compose v2, and Git. The project folder path must contain **no spaces** (rename it to `thunai`).
 
 ## Installation and local development (target, valid after T-001 to T-004)
 
 ```bash
-git clone <repo-url> kaaval-ai && cd kaaval-ai
+git clone <repo-url> thunai && cd thunai
 cp .env.example .env          # generate secrets: see ENVIRONMENT.md §3
 make db                       # Postgres in Docker
 make migrate                  # Alembic migrations
@@ -66,7 +66,7 @@ make seed                     # 50 synthetic customers, seed 42
 make dev                      # API http://localhost:8000 · UI http://localhost:5173
 ```
 
-Demo logins: `teller.priya`, `officer.rao`, `admin.demo`, `cust.kamala`, `cust.iqbal`. The password for all of them is the value of `KAAVAL_SEED_PASSWORD` in your `.env`.
+Demo logins: `teller.priya`, `officer.rao`, `admin.demo`, `cust.kamala`, `cust.iqbal`. The password for all of them is the value of `THUNAI_SEED_PASSWORD` in your `.env`.
 
 ## Environment configuration
 

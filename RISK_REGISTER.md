@@ -1,4 +1,4 @@
-# Kaaval AI — Risk Register
+# Thunai — Risk Register
 
 Likelihood and impact are rated **L** (low), **M** (medium) or **H** (high). Review at every check-in ([ROADMAP.md](ROADMAP.md) §1). Add new risks at the bottom with the next id.
 
@@ -6,10 +6,10 @@ Likelihood and impact are rated **L** (low), **M** (medium) or **H** (high). Rev
 |---|---|---|---|---|---|---|---|
 | R-01 | Delivery | The MVP is not end to end by the deadline (WS3 is overloaded, ~34 h estimated) | H | H | Contracts frozen at H+2. The headless hero gate is at H+12. Rebalance WS3 tasks at kickoff (IMPLEMENTATION_PLAN §4). Scope-cut order (MILESTONES §7) | WS6 | G1 not met by H+8. More than 2 P0 tasks still `todo` at H+6 |
 | R-02 | Delivery | The exact deadline is unknown, so the plan is mistimed | M | H | Confirm the deadline at kickoff and fill in the ROADMAP header. The plan freezes at H+20 regardless | WS6 | Deadline still blank at H+1 |
-| R-03 | Delivery | The theme or problem statement doesn't fit "coercion at the bank" | M | H | Get the official text before coding. Map Kaaval to it, or adjust the framing (e.g., "AI for citizen safety", "fintech security") | WS6 | Rubric not read by H+1 |
+| R-03 | Delivery | The theme or problem statement doesn't fit "coercion at the bank" | M | H | Get the official text before coding. Map Thunai to it, or adjust the framing (e.g., "AI for citizen safety", "fintech security") | WS6 | Rubric not read by H+1 |
 | R-04 | Technical | SMS doesn't reach the Indian phone (trial restrictions, international route filtering) | H | M | Test Twilio **and** Telegram at H+0–2. The console notifier plus QR fallback is rehearsed | WS3 | Test SMS not delivered within 2 min at H+2 |
 | R-05 | Technical | The phone can't reach the laptop (AP isolation at the venue) | M | M | Use the team's own hotspot. `cloudflared` tunnel as option B. QR fallback | WS6 | `/t/test` doesn't load on the phone at pre-flight |
-| R-06 | Technical | The trailing space in the project folder name breaks scripts and Docker | H | M | T-001 step 1: rename to `kaaval-ai` before any code | WS6 | Any "No such file or directory" error involving `Kaaval ` |
+| R-06 | Technical | The trailing space in the project folder name breaks scripts and Docker | H | M | T-001 step 1: rename to `thunai` before any code | WS6 | Any "No such file or directory" error involving `Kaaval ` |
 | R-07 | Technical | Simulated-clock bugs (mixing wall-clock and sim time) cause wrong payee ages or expiry | M | H | A single `Clock` abstraction, the architecture test bans `datetime.now` in the domain, golden tests on time-dependent reasons | WS2 | Hero NEW_PAYEE reason shows a negative or huge age |
 | R-08 | Technical | Frontend/backend contract drift | M | M | Types generated from OpenAPI (`npm run gen:api`). The API_SPEC is updated in the same PR | WS4 | TS errors after `gen:api`. Runtime undefined fields |
 | R-09 | Technical | Assessment latency exceeds the target due to N+1 queries | L | M | ≤ 5 queries per request (counted in tests), `selectinload`, bench T-046 | WS3 | `test_read_apis` query-count failure. Bench p95 > 300 ms |
@@ -29,5 +29,5 @@ Likelihood and impact are rated **L** (low), **M** (medium) or **H** (high). Rev
 | R-23 | Ethics | The language reads as accusatory (customer "victim", payee "fraudster") | L | M | Copy rules (DESIGN §6.1). Review all strings | WS5 | Any string containing "fraudster", "victim" or "blocked" |
 | R-24 | Delivery | The live demo fails on stage | M | H | Offline-capable stack, snapshot restore, backup video, rehearsed recovery (DEMO_SCRIPT §5) | WS6 | Any rehearsal over 3:00 or with an unrecovered failure |
 | R-25 | Delivery | A dependency's new major version breaks setup | L | M | Pin majors and commit the lockfiles. No upgrades during the hackathon | WS3/WS4 | Install errors on a teammate's machine |
-| R-27 | Product | The name "Kaaval AI" is confused with the TN Police "Kaaval Uthavi" app, so a late rename is needed | M | L | The display name lives in one constant on each side (ADR-015). Internal identifiers stay unchanged | WS6 | Judges or mentors mention Kaaval Uthavi |
+| R-27 | Product | **Closed 2026-10-17.** The original name "Kaaval AI" could be confused with the TN Police "Kaaval Uthavi" app. The product was renamed to Thunai (ADR-019) | — | — | The display name lives in one constant on each side (ADR-015), so any future rename is cheap | WS6 | — |
 | R-26 | Delivery | Team members are blocked waiting for the backend | M | M | Build against the OpenAPI output and a thin fake client, deleted once the endpoints land | WS4/WS5 | Frontend idle time reported at check-ins |

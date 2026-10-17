@@ -1,4 +1,4 @@
-# Kaaval AI — Technology Stack
+# Thunai — Technology Stack
 
 **Selection principle:** use the smallest stack that (1) the team already knows (Python, SQL, React, Node), (2) can produce a reliable offline demo in 24–48 h, and (3) can grow into a production system without a rewrite. Nothing is here because it is popular.
 

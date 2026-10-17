@@ -1,4 +1,4 @@
-# Kaaval AI — Database Schema
+# Thunai — Database Schema
 
 - **Engine:** PostgreSQL 16
 - **ORM:** SQLAlchemy 2.0, typed `Mapped[]` models in `backend/app/models/`
@@ -98,7 +98,7 @@ There is deliberately **no age, gender, address or ID number** ([AI_DESIGN.md](A
 | bank_name | TEXT | NOT NULL |
 | ifsc | TEXT | NOT NULL, CHECK `^[A-Z]{4}0[A-Z0-9]{6}$` |
 | masked_account | TEXT | NOT NULL |
-| linked_msisdn_hmac | TEXT | NULL (HMAC-SHA256 of an E.164 number with `KAAVAL_HMAC_KEY`). See A-03 |
+| linked_msisdn_hmac | TEXT | NULL (HMAC-SHA256 of an E.164 number with `THUNAI_HMAC_KEY`). See A-03 |
 | linked_msisdn_last4 | TEXT | NULL |
 | added_at | TIMESTAMPTZ | NOT NULL |
 | added_channel | TEXT | CHECK IN (`APP`,`BRANCH`,`NETBANKING`) |
@@ -112,12 +112,12 @@ Index: `(customer_id, added_at DESC)`.
 | customer_id | UUID | FK, NOT NULL |
 | display_name | TEXT | NOT NULL |
 | relationship | TEXT | NOT NULL (free text, ≤ 40 chars) |
-| phone_ciphertext | TEXT | NOT NULL (Fernet, key `KAAVAL_PII_ENCRYPTION_KEY`) |
+| phone_ciphertext | TEXT | NOT NULL (Fernet, key `THUNAI_PII_ENCRYPTION_KEY`) |
 | phone_last4 | TEXT | NOT NULL |
 | telegram_chat_id_ciphertext | TEXT | NULL (demo Telegram channel) |
 | preferred_language | TEXT | CHECK IN (`en`,`ta`) |
 | registered_at | TIMESTAMPTZ | NOT NULL |
-| effective_from | TIMESTAMPTZ | NOT NULL (= registered_at + `KAAVAL_TRUSTED_CONTACT_ACTIVATION_HOURS`) |
+| effective_from | TIMESTAMPTZ | NOT NULL (= registered_at + `THUNAI_TRUSTED_CONTACT_ACTIVATION_HOURS`) |
 | status | TEXT | CHECK IN (`PENDING_ACTIVATION`,`ACTIVE`,`REVOKED`) |
 
 There is a partial UNIQUE index on `(customer_id) WHERE status <> 'REVOKED'`: one contact per customer in the MVP. A contact is "active" at time *t* when `status <> 'REVOKED' AND effective_from <= t`. The status column is refreshed lazily.
@@ -282,7 +282,7 @@ A VERY_HIGH hold still notifies the trusted contact, but it starts in `AWAITING_
 | channel | TEXT | CHECK IN (`CONSOLE`,`SMS`,`TELEGRAM`) |
 | delivery_status | TEXT | CHECK IN (`QUEUED`,`SENT`,`FAILED`) |
 | delivery_error | TEXT | NULL (provider error code only) |
-| expires_at | TIMESTAMPTZ | NOT NULL (wall clock + `KAAVAL_CONTACT_TOKEN_TTL_MINUTES`) |
+| expires_at | TIMESTAMPTZ | NOT NULL (wall clock + `THUNAI_CONTACT_TOKEN_TTL_MINUTES`) |
 | opened_at | TIMESTAMPTZ | NULL |
 | responded_at | TIMESTAMPTZ | NULL |
 | response | TEXT | NULL (same values as `holds.contact_response`) |

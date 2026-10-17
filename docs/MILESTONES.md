@@ -1,11 +1,11 @@
-# Kaaval AI — Milestones and Completion Gates
+# Thunai — Milestones and Completion Gates
 
 A gate **passes only when every check is true and demonstrated**: on screen, by a command's output, or with a test run link. "It works on my machine" is not a pass. If a gate fails at its check-in, the team must either (a) cut scope from the list in §7 or (b) extend the window **by taking time from a later Should item**, never from M5.
 
 ## G0 — Contracts frozen (target H+2)
 
 - [ ] The repo exists, everyone has pushed one commit, and `main` is protected.
-- [ ] The project folder has been renamed to `kaaval-ai` (no trailing space).
+- [ ] The project folder has been renamed to `thunai` (no trailing space).
 - [ ] `make db` starts Postgres. `GET /api/v1/healthz` returns 200. The frontend `npm run dev` shows the route placeholders.
 - [ ] The team has read and agreed [API_SPEC.md](../API_SPEC.md), [DATABASE_SCHEMA.md](../DATABASE_SCHEMA.md) and the [AI_DESIGN.md](../AI_DESIGN.md) §6 scoring table. Any changes have been made in the docs.
 - [ ] `backend/config/scoring_v1.yaml` matches the AI_DESIGN §6 table.

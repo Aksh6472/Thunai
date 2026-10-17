@@ -1,4 +1,4 @@
-# Kaaval AI — Competitor and Alternatives Analysis
+# Thunai — Competitor and Alternatives Analysis
 
 > Researched on 2026-10-17 from public sources. Vendor performance figures are **vendor claims**, not independent validation. Items marked *(verify)* still need a primary source.
 
@@ -16,23 +16,23 @@
 | Human safeguards | Alert bank staff (SBI Hyderabad, Mangaluru, Navi Mumbai cases) | Branch | Intuition | Yes | Informal | **Yes** | Ad hoc ("come back with a family member") | Ad hoc 1930 calls |
 | Regulatory precedents (**background only; keep off slides unless the primary sources are opened and confirmed**) | FINRA Rule 2165 / 4512 (US: trusted contact person and temporary holds); Georgia HB 945 (2026: bank holds for 65+ with trusted-contact notice); UK proposals for payment delays | Policy | — | Yes | — | — | **Yes** (trusted contact) | — |
 
-**Framing for the pitch:** the victim is a genuine customer, so login, device and OTP checks all pass. The Indian tools we reviewed watch the **scammer's number** (FRI), the **receiving account** (MuleHunter.AI) or the **call** (Truecaller, Google, DeepVerif.AI). Kaaval watches the **victim's own abnormal money movement across days**. Say: *"we did not find a tool that does this"*. Don't say "nobody does", because BioCatch Scams360 targets authorised-push-payment scams within digital sessions.
+**Framing for the pitch:** the victim is a genuine customer, so login, device and OTP checks all pass. The Indian tools we reviewed watch the **scammer's number** (FRI), the **receiving account** (MuleHunter.AI) or the **call** (Truecaller, Google, DeepVerif.AI). Thunai watches the **victim's own abnormal money movement across days**. Say: *"we did not find a tool that does this"*. Don't say "nobody does", because BioCatch Scams360 targets authorised-push-payment scams within digital sessions.
 
-## 2. Gaps Kaaval targets
+## 2. Gaps Thunai targets
 
-1. **Cross-day financial staging.** The public material we reviewed for session biometrics focuses on in-session behaviour, and transaction monitoring focuses on per-transaction anomaly. Kaaval scores the *liquidate → pool → new payee → transfer* sequence explicitly.
-2. **Branch parity.** Many of the reported saves happened at the counter, through staff intuition. Kaaval gives tellers a structured signal and a script.
+1. **Cross-day financial staging.** The public material we reviewed for session biometrics focuses on in-session behaviour, and transaction monitoring focuses on per-transaction anomaly. Thunai scores the *liquidate → pool → new payee → transfer* sequence explicitly.
+2. **Branch parity.** Many of the reported saves happened at the counter, through staff intuition. Thunai gives tellers a structured signal and a script.
 3. **An automated human intervention.** A cooling-off hold plus a pre-registered trusted contact mirrors what worked in practice ("come back with a family member"). The US trusted-contact regimes are a precedent.
 4. **India-specific steps.** FRI as a fused signal, and a pre-filled 1930 / cybercrime.gov.in report.
 5. **Privacy posture.** No call audio, unlike call-content approaches, which conflict with Android's restrictions on call recording and with privacy expectations.
 
 ## 3. Where competitors are stronger (be honest)
 
-- BioCatch and the FRM vendors are proven at bank scale, with real data, device intelligence and consortium networks. Kaaval is a prototype on synthetic data.
-- Phone-side tools act *before* the victim reaches the bank, which can be earlier than Kaaval.
-- MuleHunter-class tools can stop money at the receiving end, even after Kaaval misses.
+- BioCatch and the FRM vendors are proven at bank scale, with real data, device intelligence and consortium networks. Thunai is a prototype on synthetic data.
+- Phone-side tools act *before* the victim reaches the bank, which can be earlier than Thunai.
+- MuleHunter-class tools can stop money at the receiving end, even after Thunai misses.
 
-**Positioning:** Kaaval is a **coercion-specific decision and intervention layer** that can sit on top of a bank's existing FRM. It consumes signals (FRI, device call flags, even BioCatch-type scores) and owns the *workflow*: hold, family, teller, report.
+**Positioning:** Thunai is a **coercion-specific decision and intervention layer** that can sit on top of a bank's existing FRM. It consumes signals (FRI, device call flags, even BioCatch-type scores) and owns the *workflow*: hold, family, teller, report.
 
 ## 4. Sources
 

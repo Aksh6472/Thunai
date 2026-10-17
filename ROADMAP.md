@@ -1,4 +1,4 @@
-# Kaaval AI — Roadmap
+# Thunai — Roadmap
 
 > **Theme 1: Real-Time AI for Critical Decisions. Category: Citizen scam/fraud defense.** Deadline: 24–48 h hackathon, **exact time still to be filled in**. The **feature freeze at H+20 stands regardless.** If the event is 48 h, use §3.
 

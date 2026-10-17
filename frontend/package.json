@@ -1,5 +1,5 @@
 {
-  "name": "kaaval-frontend",
+  "name": "thunai-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,7 +12,7 @@
     "test": "vitest",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "gen:api": "openapi-typescript ${KAAVAL_OPENAPI_URL:-http://localhost:8000/openapi.json} -o src/api/schema.d.ts"
+    "gen:api": "openapi-typescript ${THUNAI_OPENAPI_URL:-http://localhost:8000/openapi.json} -o src/api/schema.d.ts"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",

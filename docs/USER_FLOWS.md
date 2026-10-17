@@ -1,4 +1,4 @@
-# Kaaval AI — User Flows and Edge Cases
+# Thunai — User Flows and Edge Cases
 
 The screens are in [DESIGN.md](../DESIGN.md) §5, the endpoints in [API_SPEC.md](../API_SPEC.md) and the states in [DATABASE_SCHEMA.md](../DATABASE_SCHEMA.md) §3.13.
 
@@ -8,7 +8,7 @@ The screens are in [DESIGN.md](../DESIGN.md) §5, the endpoints in [API_SPEC.md]
 sequenceDiagram
   autonumber
   participant SIM as Core-banking sim
-  participant K as Kaaval API
+  participant K as Thunai API
   participant OPS as Officer (/ops)
   participant TEL as Teller (/teller)
   participant TC as Trusted contact (phone)

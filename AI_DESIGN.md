@@ -1,4 +1,4 @@
-# Kaaval AI — AI and Risk-Engine Design
+# Thunai — AI and Risk-Engine Design
 
 > **Honesty statement.** As of this document, **no model has been trained, validated or deployed.** The MVP risk engine is a **deterministic, explainable scoring system**. It sits on top of **per-customer statistical baselines** and a **multi-day sequence (stage) tracker**, and its weights are set by hand from documented case patterns. All evaluation numbers will come from **synthetic data**. They show that the engine behaves as designed on documented patterns. They are **not** evidence of real-world accuracy. The only generative-AI component (FR-21) drafts report text. It **never** makes or influences a decision.
 
@@ -23,7 +23,7 @@ The engine targets **coercion of a genuine sender**. That is an *authorised* pay
 | Policy | Deterministic rules mapping tier to action, with overrides | No | Consequential actions must be predictable and reviewable |
 | Report narrative (FR-21) | LLM (Claude) | Pre-trained, used for inference only | Saves officer time on prose. It is validated against facts and has a template fallback |
 
-**What we will say to judges:** "Kaaval learns each customer's normal behaviour and detects a multi-day coercion *sequence*. Today it fuses signals with transparent, hand-set weights, because a bank must explain every hold and real labelled coercion data is not public. The architecture lets us swap in a learned model once a bank provides labelled cases, behind the same explanation contract."
+**What we will say to judges:** "Thunai learns each customer's normal behaviour and detects a multi-day coercion *sequence*. Today it fuses signals with transparent, hand-set weights, because a bank must explain every hold and real labelled coercion data is not public. The architecture lets us swap in a learned model once a bank provides labelled cases, behind the same explanation contract."
 
 ## 3. Inputs and outputs
 
@@ -236,9 +236,9 @@ These are **assumptions** (A-05), not measurements. The response is drawn from a
 
 ## 9. Confidence and uncertainty handling
 
-- Kaaval produces a **score and tier, not a probability**, so it never claims "93% likely coerced".
+- Thunai produces a **score and tier, not a probability**, so it never claims "93% likely coerced".
 - A low-confidence baseline is surfaced as a reason. Officers see "limited history" next to the amount multiple.
-- Simulated signals are tagged `source: "SIMULATED"` in evidence and shown with a "Simulated" chip in the UI whenever `KAAVAL_DEMO_MODE=true`.
+- Simulated signals are tagged `source: "SIMULATED"` in evidence and shown with a "Simulated" chip in the UI whenever `THUNAI_DEMO_MODE=true`.
 - Missing signals contribute 0, never negative points. Absence of evidence never lowers the risk, except through the two dampeners that rest on positive evidence of an established relationship.
 
 ## 10. Latency and cost
@@ -266,11 +266,11 @@ The LLM drafts **only** the free-text "incident description" section of the repo
 
 ### 12.2 Provider and model
 
-- Anthropic Claude via the official `anthropic` Python SDK. The default model is `claude-opus-5-5` (configurable through `KAAVAL_LLM_MODEL`), with low effort because the task is short and templated.
-- Timeout `KAAVAL_LLM_TIMEOUT_SECONDS` (default 10), SDK `max_retries=1`.
+- Anthropic Claude via the official `anthropic` Python SDK. The default model is `claude-opus-5-5` (configurable through `THUNAI_LLM_MODEL`), with low effort because the task is short and templated.
+- Timeout `THUNAI_LLM_TIMEOUT_SECONDS` (default 10), SDK `max_retries=1`.
 - Use structured output (`output_config.format` with a JSON schema) so the response is guaranteed-valid JSON.
 - Enable server-side refusal fallbacks as described in the SDK docs. **The implementer must follow the current SDK documentation and not guess parameter names.**
-- Disabled by default: `KAAVAL_LLM_ENABLED=false`. Tests never call the real API.
+- Disabled by default: `THUNAI_LLM_ENABLED=false`. Tests never call the real API.
 
 ### 12.3 Privacy: pseudonymised input
 

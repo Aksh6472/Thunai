@@ -1,9 +1,9 @@
-# Kaaval AI — developer commands (CLAUDE.md §11). Run from the repo root.
-# Ports come from .env (KAAVAL_API_PORT / KAAVAL_DB_PORT) so they can avoid clashes with other projects.
+# Thunai — developer commands (CLAUDE.md §11). Run from the repo root.
+# Ports come from .env (THUNAI_API_PORT / THUNAI_DB_PORT) so they can avoid clashes with other projects.
 
 SHELL := /bin/bash
 envval = $(shell grep -E '^$(1)=' .env 2>/dev/null | head -1 | cut -d= -f2- | sed -E 's/[[:space:]]+\#.*$$//; s/[[:space:]]+$$//')
-API_PORT := $(or $(call envval,KAAVAL_API_PORT),8000)
+API_PORT := $(or $(call envval,THUNAI_API_PORT),8000)
 
 .PHONY: help db db-down dev frontend-env test test-backend test-frontend lint format \
         migrate seed demo demo-reset eval e2e security

@@ -1,4 +1,4 @@
-# Kaaval AI — Architecture Decision Records
+# Thunai — Architecture Decision Records
 
 Format: **Context → Decision → Alternatives → Consequences**. Status is `Accepted`, `Proposed`, `Superseded by ADR-xxx` or `Open`. Add new ADRs at the end. Never delete one; supersede it instead.
 
@@ -74,7 +74,7 @@ Format: **Context → Decision → Alternatives → Consequences**. Status is `A
 
 ## ADR-015 Product name in one config constant — Accepted (2026-10-17)
 - **Context:** the Tamil Nadu Police already publish an app called "Kaaval Uthavi", so the team may rename the product.
-- **Decision:** the display name lives in one constant per side: `backend/app/core/branding.py` (`PRODUCT_NAME`, `BANK_NAME`) and `frontend/src/config/brand.ts` (`PRODUCT_NAME`, `BANK_NAME`). Never hard-code "Kaaval AI" or "Example Bank" in UI copy, SMS templates, report drafts or API messages. Use the constant, or the `{product}` / `{bank}` placeholders in i18n strings. Internal identifiers (package names, env prefix `KAAVAL_`, DB name) stay as they are. A rename changes the display only.
+- **Decision:** the display name lives in one constant per side: `backend/app/core/branding.py` (`PRODUCT_NAME`, `BANK_NAME`) and `frontend/src/config/brand.ts` (`PRODUCT_NAME`, `BANK_NAME`). Never hard-code "Thunai" or "Example Bank" in UI copy, SMS templates, report drafts or API messages. Use the constant, or the `{product}` / `{bank}` placeholders in i18n strings. Internal identifiers (package names, env prefix `THUNAI_`, DB name) stay as they are. A rename changes the display only.
 - **Consequences:** a rename is a two-line change plus a docs search-and-replace.
 
 ## ADR-016 FRI is an optional signal — Accepted (2026-10-17)
@@ -89,8 +89,14 @@ Format: **Context → Decision → Alternatives → Consequences**. Status is `A
 
 ## ADR-018 Configurable host ports — Accepted (2026-10-17, T-004)
 - **Context:** on the lead developer's machine, other projects already occupy 5432 (Postgres) and 8000 (API).
-- **Decision:** `KAAVAL_DB_PORT` (compose host port) and `KAAVAL_API_PORT` (uvicorn) default to 5432 and 8000. Each developer may override them in their own `.env`. The URLs in `.env` must match.
+- **Decision:** `THUNAI_DB_PORT` (compose host port) and `THUNAI_API_PORT` (uvicorn) default to 5432 and 8000. Each developer may override them in their own `.env`. The URLs in `.env` must match.
 - **Consequences:** the docs keep the default ports in their examples. A local `.env` may differ.
+
+## ADR-019 Rename the product to Thunai (full rename) — Accepted (2026-10-17)
+- **Context:** the working name "Kaaval AI" was close to the TN Police app "Kaaval Uthavi" (OD-6, R-27).
+- **Decision:** the product is now **Thunai** (Tamil துணை, "companion, support"). The name reflects the trusted-contact idea: nobody faces a scammer alone. The team chose a **full rename**, not display-only. That covers the display name, the env prefix `KAAVAL_` → `THUNAI_`, the headers `X-Kaaval-*` → `X-Thunai-*`, the DB/user names `thunai` / `thunai_test`, the compose project `thunai`, the packages `thunai-backend` / `thunai-frontend`, and the repo folder `thunai`. This supersedes ADR-015's "internal identifiers stay as they are" clause. The single-constant rule for display names still applies.
+- **Name check:** a quick web search (2026-10-17) found no fraud, banking or safety app called "Thunai". **This is not a trademark search.** Run one before any public launch.
+- **Consequences:** the empty dev database volume `kaaval_pgdata` was deleted and recreated as `thunai_pgdata`. Every developer must rename their `.env` keys (`KAAVAL_*` → `THUNAI_*`) and run `docker compose down -v` on any old `kaaval` stack. Git history keeps the old name.
 
 **Team approval (2026-10-17):** ADR-002 (fixed points table, no trained model), ADR-010 (no age in scoring), ADR-011 (72 h activation), ADR-012 (officer-only release at VERY_HIGH) and ADR-013 (generic customer message) were explicitly approved by the team.
 
@@ -105,7 +111,7 @@ Format: **Context → Decision → Alternatives → Consequences**. Status is `A
 | OD-3 | Tamil review: the team will review it (T-038). The reviewer is still to be named in the PR | WS5 | H+6 | Resolved (owner) |
 | OD-4 | Whether to attempt the hosted deployment (T-048) for a 24 h event | WS6 | H+17 | Open |
 | OD-5 | Bank name in the UI: fictional "Example Bank" only | Team | — | **Resolved** |
-| OD-6 | Product rename (possible conflict with "Kaaval Uthavi"), handled by ADR-015 | Team | Before submission | Open |
+| OD-6 | Product rename (possible conflict with "Kaaval Uthavi") | Team | Before submission | **Resolved**: renamed to Thunai (ADR-019) |
 
 ## Known limitations
 

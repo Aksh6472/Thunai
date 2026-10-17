@@ -1,6 +1,6 @@
-# Kaaval AI — Security, Privacy and Responsible-Use
+# Thunai — Security, Privacy and Responsible-Use
 
-Kaaval AI makes **consequential decisions about people's money**. It can delay a transfer, involve a family member and prepare a cybercrime report. This document treats both security (protecting the system) and safety (protecting the people affected by the system) as requirements.
+Thunai makes **consequential decisions about people's money**. It can delay a transfer, involve a family member and prepare a cybercrime report. This document treats both security (protecting the system) and safety (protecting the people affected by the system) as requirements.
 
 > **MVP scope reminder.** The hackathon build uses only synthetic, fictional data. The controls marked **[MVP]** are implemented and tested. Those marked **[Prod]** are documented requirements for a real deployment and are not built.
 
@@ -24,7 +24,7 @@ Kaaval AI makes **consequential decisions about people's money**. It can delay a
 
 | ID | Adversary | Goal |
 |---|---|---|
-| ADV-1 | **The scammer** controlling the victim (on a video call) | Get the money out despite Kaaval: coach answers, swap the trusted contact, rush the release, impersonate the bank or a relative |
+| ADV-1 | **The scammer** controlling the victim (on a video call) | Get the money out despite Thunai: coach answers, swap the trusted contact, rush the release, impersonate the bank or a relative |
 | ADV-2 | An external attacker on the internet | Read or alter data, forge contact responses, abuse the API |
 | ADV-3 | A malicious or careless insider (teller/officer) | Release a hold improperly, snoop on customers |
 | ADV-4 | A compromised dependency or leaked secret | Code execution, token forgery |
@@ -45,8 +45,8 @@ Kaaval AI makes **consequential decisions about people's money**. It can delay a
 | T-10 | XSS through names, notes or narratives | ADV-2 | React escaping and no `dangerouslySetInnerHTML`. LLM output is rendered as plain text. CSP header `default-src 'self'` on the built SPA [MVP: set in `vite preview` / hosting config] | [MVP] |
 | T-11 | JWT forgery or theft | ADV-2/4 | HS256 with a ≥ 32-byte secret from env and a 60 min expiry. The algorithm is pinned on decode. The MVP stores the token in memory plus `sessionStorage` (an accepted demo risk). [Prod]: HttpOnly SameSite cookies, refresh rotation and an IdP (bank SSO) | [MVP] / [Prod] |
 | T-12 | Credential stuffing on login | ADV-2 | argon2id, 10/min/IP and 5 failures/15 min/username, a generic error message. [Prod]: MFA for staff | [MVP] |
-| T-13 | Service key leaked, so fake events are injected (**Tampering**) | ADV-4 | Key from env, constant-time compare, service routes are separate. [Prod]: mTLS between CBS and Kaaval, key rotation, IP allow-list | [MVP] / [Prod] |
-| T-14 | Simulated FRI or demo endpoints reachable in production | ADV-2 | `/demo/*` returns 403 unless `KAAVAL_DEMO_MODE=true`. Startup **refuses** `DEMO_MODE=true` when `KAAVAL_ENV=production` | [MVP] |
+| T-13 | Service key leaked, so fake events are injected (**Tampering**) | ADV-4 | Key from env, constant-time compare, service routes are separate. [Prod]: mTLS between CBS and Thunai, key rotation, IP allow-list | [MVP] / [Prod] |
+| T-14 | Simulated FRI or demo endpoints reachable in production | ADV-2 | `/demo/*` returns 403 unless `THUNAI_DEMO_MODE=true`. Startup **refuses** `DEMO_MODE=true` when `THUNAI_ENV=production` | [MVP] |
 | T-15 | Engine failure becomes a silent ALLOW (**Denial of service → fail-open**) | ADV-2 | Errors return 503. The caller's documented fallback is manual review for ≥ ₹2 L | [MVP] |
 | T-16 | Tampering with scoring weights | ADV-3/4 | Config in the repo (reviewed by PR), validated at startup, and its `config_version` stored on every assessment. No runtime edit endpoint in the MVP (FR-28 is Could) | [MVP] |
 | T-17 | Leaking data to the LLM provider | — | Off by default. Pseudonymised facts only, with no names, phones or full account numbers ([AI_DESIGN.md](AI_DESIGN.md) §12.3). [Prod]: a bank-approved deployment or no LLM | [MVP] |
@@ -78,9 +78,9 @@ The enforcement layers are (1) FastAPI route dependencies `require_roles(...)` a
 ## 5. Secrets management
 
 - All secrets come from the environment ([ENVIRONMENT.md](ENVIRONMENT.md)). `.env` is git-ignored, and only `.env.example` (with placeholders) is committed.
-- Required secrets are `KAAVAL_JWT_SECRET`, `KAAVAL_SERVICE_API_KEY`, `KAAVAL_PII_ENCRYPTION_KEY` and `KAAVAL_HMAC_KEY`. Optional ones are `TWILIO_*`, `TELEGRAM_*` and `ANTHROPIC_API_KEY`.
-- Startup fails if a required secret is missing, or if it still equals its `.env.example` placeholder while `KAAVAL_ENV=production`.
-- Seeded demo passwords come from `KAAVAL_SEED_PASSWORD` and are never hard-coded.
+- Required secrets are `THUNAI_JWT_SECRET`, `THUNAI_SERVICE_API_KEY`, `THUNAI_PII_ENCRYPTION_KEY` and `THUNAI_HMAC_KEY`. Optional ones are `TWILIO_*`, `TELEGRAM_*` and `ANTHROPIC_API_KEY`.
+- Startup fails if a required secret is missing, or if it still equals its `.env.example` placeholder while `THUNAI_ENV=production`.
+- Seeded demo passwords come from `THUNAI_SEED_PASSWORD` and are never hard-coded.
 - gitleaks runs before every push (T-045). If a secret is committed: rotate it immediately (§10). Rewriting history isn't enough.
 
 ## 6. Data minimisation (what we deliberately do **not** collect)
@@ -96,7 +96,7 @@ The enforcement layers are (1) FastAPI route dependencies `require_roles(...)` a
 | Data | In transit | At rest |
 |---|---|---|
 | All API traffic | [MVP local]: HTTP on localhost/LAN (accepted demo risk). [Hosted/Prod]: HTTPS only, plus HSTS | — |
-| Trusted-contact phone, Telegram chat id | — | Fernet (AES-128-CBC + HMAC-SHA256) with `KAAVAL_PII_ENCRYPTION_KEY` [MVP] |
+| Trusted-contact phone, Telegram chat id | — | Fernet (AES-128-CBC + HMAC-SHA256) with `THUNAI_PII_ENCRYPTION_KEY` [MVP] |
 | Payee-linked numbers | — | HMAC-SHA256 (not reversible) [MVP] |
 | Passwords | — | argon2id [MVP] |
 | Contact tokens | — | SHA-256 hash [MVP] |
@@ -131,7 +131,7 @@ The limits are in [API_SPEC.md](API_SPEC.md) §2.4. They are in-memory, which is
 | A genuine customer (false positive) | A delayed time-critical payment (hospital, property registration), embarrassment, a feeling of being distrusted | Holds only at HIGH and above. Fast release by the trusted contact. An officer release path. The customer can always cancel. Polite non-accusatory copy. False-hold rates disclosed per family. A "planned large payment" pre-registration as future work (with care, because scammers could coach it) |
 | A coerced customer (false negative) | Loss of life savings | Multi-signal fusion. The teller checklist as a human safety net. Warnings at MEDIUM. Disclosure that the system is not a guarantee |
 | The trusted contact | Distress, being drawn into a scam, privacy exposure | Minimal information. Clear instructions. Never asked to pay or share an OTP |
-| The payee (who may be an innocent account holder) | Being labelled a criminal | Kaaval **does not** label or act on the payee. FRI is a third-party signal shown as "rated by DoT FRI", not an accusation. Report drafts say "beneficiary account" and never "fraudster" |
+| The payee (who may be an innocent account holder) | Being labelled a criminal | Thunai **does not** label or act on the payee. FRI is a third-party signal shown as "rated by DoT FRI", not an accusation. Report drafts say "beneficiary account" and never "fraudster" |
 | Tellers and officers | Blame for misses or false holds | Decision support with recorded reasons. Final responsibility follows bank policy |
 
 ### 11.2 Prohibited designs (enforced in review)
@@ -162,7 +162,7 @@ The officer reviews every VERY_HIGH hold. Every hold has an officer path. Releas
 | Area | Relevance | Status |
 |---|---|---|
 | **Digital Personal Data Protection Act 2023 (DPDP)** and Rules | Consent for the call signal and trusted-contact sharing, purpose limitation, retention, data-principal rights (access, correction, erasure, grievance) | The design has consent records, minimisation and retention ([DATABASE_SCHEMA.md](DATABASE_SCHEMA.md) §5). Check which Rules provisions are in force at deployment |
-| **Supreme Court directions (Aug 2026) and RBI SOP** on digital-arrest scams | Expected to cover bank safeguards, including temporary debit holds and grievance or restoration mechanisms | Kaaval is designed to be explainable and auditable to fit this. **The final SOP text has not been reviewed.** Update this row when the SOP is published |
+| **Supreme Court directions (Aug 2026) and RBI SOP** on digital-arrest scams | Expected to cover bank safeguards, including temporary debit holds and grievance or restoration mechanisms | Thunai is designed to be explainable and auditable to fit this. **The final SOP text has not been reviewed.** Update this row when the SOP is published |
 | **RBI Master Directions on Fraud Risk Management** (2024) and customer-protection circulars | Fraud monitoring, reporting and customer liability | Officer workflow and reporting drafts align. Verify the specific clauses |
 | **Authority to delay a customer-authorised payment** | The bank's T&Cs, payment-system rules (RTGS/NEFT) and the SOP | **Open legal question (A-02).** Background only, not yet confirmed from primary sources: FINRA Rule 2165 (US brokerages, temporary holds for suspected exploitation of specified adults), Georgia HB 945 (2026, bank holds for adults 65+ with trusted-contact notification) |
 | **Telecom / DoT FRI** | Use of FRI data under DoT/DIP terms | Simulated only. A real use requires DIP onboarding |

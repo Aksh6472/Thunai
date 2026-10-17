@@ -1,4 +1,4 @@
-# Kaaval AI — Product Requirements Document
+# Thunai — Product Requirements Document
 
 | Field | Value |
 |---|---|
@@ -11,11 +11,11 @@
 
 ## 1. Executive summary
 
-Kaaval AI is a **bank-side coercion-risk engine**. It protects a *genuine* customer who is being pressured — typically by "digital arrest" scammers posing as police, CBI, customs or court officials — into moving their own savings to a criminal's account.
+Thunai is a **bank-side coercion-risk engine**. It protects a *genuine* customer who is being pressured — typically by "digital arrest" scammers posing as police, CBI, customs or court officials — into moving their own savings to a criminal's account.
 
 Existing fraud controls are built to catch an *impostor* (stolen credentials, account takeover) or a *mule receiver*. In a coercion scam, the real customer authenticates correctly, from their own device or in person at their own branch. Single-transaction anomaly checks often see nothing wrong.
 
-Kaaval AI looks at the **sequence of behaviour across several days**:
+Thunai looks at the **sequence of behaviour across several days**:
 
 1. A fixed deposit is closed early,
 2. money from several accounts is pooled,
@@ -41,7 +41,7 @@ It combines this sequence with external risk signals: the DoT Financial Fraud Ri
 
 ### 2.2 Why existing approaches fall short (summary; details in [docs/COMPETITOR_ANALYSIS.md](docs/COMPETITOR_ANALYSIS.md))
 
-**The gap in one line:** the victim is a genuine customer, so login, device and OTP checks all pass. The public Indian tools we reviewed watch the **scammer's number** (DoT FRI), the **receiving account** (RBI MuleHunter.AI) or the **call** (Truecaller, Google's call scam detection, call-content research such as DeepVerif.AI). Kaaval watches the **victim's own abnormal money movement across days**. That focus is our core differentiator. We state it as *"we did not find a tool that does this"*, not "nobody does this", because global vendors such as BioCatch Scams360 target authorised-push-payment scams within digital sessions (see below).
+**The gap in one line:** the victim is a genuine customer, so login, device and OTP checks all pass. The public Indian tools we reviewed watch the **scammer's number** (DoT FRI), the **receiving account** (RBI MuleHunter.AI) or the **call** (Truecaller, Google's call scam detection, call-content research such as DeepVerif.AI). Thunai watches the **victim's own abnormal money movement across days**. That focus is our core differentiator. We state it as *"we did not find a tool that does this"*, not "nobody does this", because global vendors such as BioCatch Scams360 target authorised-push-payment scams within digital sessions (see below).
 
 - **Receiver-side tools** (e.g., RBI's MuleHunter.AI) detect mule accounts. They are complementary, but they do not intervene with the coerced sender at the moment of payment.
 - **Phone-side tools** (Truecaller Family Protection, Android scam detection) do not see the bank transactions.
@@ -136,7 +136,7 @@ Priority: **M** = Must Have (MVP), **S** = Should Have, **C** = Could Have, **W*
 | ID | Requirement | Pri |
 |---|---|---|
 | FR-16 | **Ops dashboard.** A queue of holds, warnings and watch-listed customers sorted by urgency. Alert detail shows the reasons, a score history chart, the multi-day episode timeline and officer actions. KPIs: active holds, awaiting contact, awaiting officer, warnings today | M |
-| FR-17 | **Demo control panel.** List scenarios, reset to seed state, run a scenario at a chosen speed, and show the simulated clock. Available only when `KAAVAL_DEMO_MODE=true` | M |
+| FR-17 | **Demo control panel.** List scenarios, reset to seed state, run a scenario at a chosen speed, and show the simulated clock. Available only when `THUNAI_DEMO_MODE=true` | M |
 | FR-18 | **Evaluation harness.** A CLI that runs all scenario families on held-out seeds and writes a metrics report (§9). Results are labelled as synthetic | M |
 | FR-19 | **Staff authentication and RBAC.** Roles TELLER, OFFICER, ADMIN, plus CUSTOMER (demo customers), plus a service API key for the simulator | M |
 | FR-20 | **Audit log.** Append-only record of every assessment, hold transition, contact response, officer action, report change and login | M |

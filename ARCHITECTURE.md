@@ -1,8 +1,8 @@
-# Kaaval AI — Architecture
+# Thunai — Architecture
 
 ## 1. Summary
 
-Kaaval AI is a **modular monolith**. It has one FastAPI backend process, one PostgreSQL database and one React single-page app. A separate **simulator** process plays the role of the bank's core banking system and the customer's phone, and it talks to the backend **only over HTTP**, as a real integration would. There are no microservices, message brokers or model servers. The requirements (50 customers, one branch, a 24–48 h build) don't justify them ([DECISIONS.md](DECISIONS.md) ADR-001).
+Thunai is a **modular monolith**. It has one FastAPI backend process, one PostgreSQL database and one React single-page app. A separate **simulator** process plays the role of the bank's core banking system and the customer's phone, and it talks to the backend **only over HTTP**, as a real integration would. There are no microservices, message brokers or model servers. The requirements (50 customers, one branch, a 24–48 h build) don't justify them ([DECISIONS.md](DECISIONS.md) ADR-001).
 
 ## 2. High-level diagram
 
@@ -35,8 +35,8 @@ flowchart LR
   SMS["Twilio SMS / Telegram<br/>(optional)"]
   LLM["Anthropic API<br/>(optional, report narrative)"]
 
-  CBS -- "X-Kaaval-Service-Key" --> API
-  PHONE -- "X-Kaaval-Service-Key" --> API
+  CBS -- "X-Thunai-Service-Key" --> API
+  PHONE -- "X-Thunai-Service-Key" --> API
   OPS & TEL & CUS & DEM -- "JWT, polling 2s" --> API
   TRU -- "single-use token" --> API
   API --> SVC --> DOM
@@ -153,7 +153,7 @@ The consume step is a single conditional `UPDATE`, so a double-tap or replay is 
 flowchart TD
   R[Request] --> H{Credential type?}
   H -- "Bearer JWT" --> J[Verify HS256 sig, exp, role claim] --> RB{Role allowed for route?}
-  H -- "X-Kaaval-Service-Key" --> K[Constant-time compare] --> SR{Route is service-scoped?}
+  H -- "X-Thunai-Service-Key" --> K[Constant-time compare] --> SR{Route is service-scoped?}
   H -- "/trusted/{token}" --> T[sha256 lookup, not expired, not used]
   H -- none --> P{Public route?}
   RB -- yes --> O{Resource ownership / branch check in service}
@@ -183,7 +183,7 @@ There is no model server. Scoring is an in-process function call (§4.2). The LL
 | DB unavailable | `/readyz` and SQLAlchemy errors | 503 `DEPENDENCY_UNAVAILABLE`. Assessment returns 503 and **never allows by default** |
 | FRI adapter slow or failing | 300 ms timeout | 0 points, plus an info reason `FRI_UNAVAILABLE` |
 | Notifier failure (Twilio/Telegram) | Provider exception | `delivery_status=FAILED`. Automatic fallback to the console notifier. The UI shows "SMS failed — use resend or call the contact" |
-| LLM failure | Timeout, error, refusal or validator rejection | Template narrative and an `X-Kaaval-LLM-Fallback` header |
+| LLM failure | Timeout, error, refusal or validator rejection | Template narrative and an `X-Thunai-LLM-Fallback` header |
 | Invalid scoring config | Startup validation | The process refuses to start. `/readyz` is never green |
 | Duplicate submissions | Unique keys | Idempotent replay (API_SPEC §2.3) |
 | Concurrent updates to an episode | `SELECT … FOR UPDATE` on the open episode row | Events for one customer are serialised |

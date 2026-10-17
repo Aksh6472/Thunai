@@ -1,4 +1,4 @@
-# Kaaval AI — API Specification (v1)
+# Thunai — API Specification (v1)
 
 - **Base URL:** `http://localhost:8000/api/v1` locally. The hosted URL is listed in [DEPLOYMENT.md](DEPLOYMENT.md).
 - **Format:** JSON, UTF-8. Timestamps are ISO 8601 with offset. Money is integer **paise** (`*_paise`).
@@ -9,7 +9,7 @@
 | Caller | Mechanism | Header |
 |---|---|---|
 | Staff (TELLER, OFFICER, ADMIN) and demo customers (CUSTOMER) | `POST /auth/login` returns a JWT (HS256, 60 min, claims `sub`, `role`, `branch`, `exp`, `jti`) | `Authorization: Bearer <jwt>` |
-| Core-banking simulator (service) | A static API key from `KAAVAL_SERVICE_API_KEY`, compared in constant time | `X-Kaaval-Service-Key: <key>` |
+| Core-banking simulator (service) | A static API key from `THUNAI_SERVICE_API_KEY`, compared in constant time | `X-Thunai-Service-Key: <key>` |
 | Trusted contact | A single-use token in the URL path (32 random bytes, base64url, SHA-256 at rest, 30 min TTL) | — |
 | Public | None (health endpoints only) | — |
 
@@ -63,7 +63,7 @@ The API uses cursor pagination: `?limit=50&cursor=<opaque>`. The maximum `limit`
 | Service-key endpoints | 1200 / min / key (the simulator runs at high speed) |
 | Other authenticated endpoints | 300 / min / user |
 
-Rate limiting is bypassed when `KAAVAL_ENV=test` (unit and integration tests, and the evaluation harness running at infinite speed). The rate-limit tests turn it on explicitly with a fixture.
+Rate limiting is bypassed when `THUNAI_ENV=test` (unit and integration tests, and the evaluation harness running at infinite speed). The rate-limit tests turn it on explicitly with a fixture.
 
 ### 2.5 Shared schemas
 
@@ -161,7 +161,7 @@ Response 202 `{"accepted": true, "episode": {…watch…}}`.
   "scenario_label": "P1"
 }
 ```
-`scenario_label` is accepted only when `KAAVAL_DEMO_MODE=true`. It is stored for evaluation and never read by the engine.
+`scenario_label` is accepted only when `THUNAI_DEMO_MODE=true`. It is stored for evaluation and never read by the engine.
 
 Response 200 `AssessmentResult`. Side effects:
 - ALLOW: the transfer becomes `EXECUTED` (simulated).
@@ -253,7 +253,7 @@ The content is fixed and reviewed (not generated). It is defined in `backend/app
 ## 8. Reports (1930 / cybercrime.gov.in drafts)
 
 ### `POST /holds/{id}/report` (TELLER, OFFICER)
-Creates or returns the draft. Request `{"use_llm": false}`. `true` is honoured only if `KAAVAL_LLM_ENABLED=true`.
+Creates or returns the draft. Request `{"use_llm": false}`. `true` is honoured only if `THUNAI_LLM_ENABLED=true`.
 
 Response 201:
 ```json
@@ -269,7 +269,7 @@ Response 201:
  "narrative_text": "…", "narrative_source": "TEMPLATE",
  "disclaimer": "Draft for officer review. Not submitted. File via 1930 or cybercrime.gov.in."}
 ```
-If the LLM fails, the response is still 201 with `narrative_source: "TEMPLATE"` and the response header `X-Kaaval-LLM-Fallback: <reason_code>`.
+If the LLM fails, the response is still 201 with `narrative_source: "TEMPLATE"` and the response header `X-Thunai-LLM-Fallback: <reason_code>`.
 
 ### `PATCH /reports/{id}` (TELLER, OFFICER)
 `{"customer_reported": {"claimed_agency": "CBI", "scammer_numbers_given_by_customer": ["+91…"], "platform": "WhatsApp video"}, "narrative_text": "…", "status": "READY"}`. Editing `narrative_text` sets `narrative_source=EDITED`.
@@ -315,7 +315,7 @@ The token is consumed (single use). Response 200 `{"result_key": "RELEASED" | "S
 
 ---
 
-## 11. Demo control (ADMIN; only when `KAAVAL_DEMO_MODE=true`, otherwise 403 `DEMO_MODE_DISABLED`)
+## 11. Demo control (ADMIN; only when `THUNAI_DEMO_MODE=true`, otherwise 403 `DEMO_MODE_DISABLED`)
 
 | Method & path | Purpose |
 |---|---|
@@ -342,7 +342,7 @@ The token is consumed (single use). Response 200 `{"result_key": "RELEASED" | "S
 ```bash
 # 1. Simulator posts day-3 payee addition
 curl -s -X POST localhost:8000/api/v1/events \
-  -H "X-Kaaval-Service-Key: $KAAVAL_SERVICE_API_KEY" -H 'Content-Type: application/json' \
+  -H "X-Thunai-Service-Key: $THUNAI_SERVICE_API_KEY" -H 'Content-Type: application/json' \
   -d '{"event_id":"EVT-P1-0007","customer_ref":"CUST-0007","event_type":"PAYEE_ADDED",
        "occurred_at":"2026-10-03T09:12:00+05:30",
        "payload":{"payee_ref":"PAY-0007-03","display_name":"Verification Account","bank_name":"Example Bank",
@@ -350,7 +350,7 @@ curl -s -X POST localhost:8000/api/v1/events \
 # → 202 {"event_id":"EVT-P1-0007","stage_detected":"S3_NEW_PAYEE","episode":{"watch_score":63,"watch_tier":"HIGH"}}
 
 # 2. Branch RTGS assessment
-curl -s -X POST localhost:8000/api/v1/transfers/assess -H "X-Kaaval-Service-Key: $KAAVAL_SERVICE_API_KEY" \
+curl -s -X POST localhost:8000/api/v1/transfers/assess -H "X-Thunai-Service-Key: $THUNAI_SERVICE_API_KEY" \
   -H 'Content-Type: application/json' \
   -d '{"transfer_ref":"TRF-P1-0001","customer_ref":"CUST-0007","from_account":"XXXXXX2201","payee_ref":"PAY-0007-03",
        "amount_paise":460000000,"rail":"RTGS","channel":"BRANCH","initiated_at":"2026-10-03T11:20:00+05:30"}'

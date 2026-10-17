@@ -1,4 +1,4 @@
-# Kaaval AI — Data Sources, Provenance and Licensing
+# Thunai — Data Sources, Provenance and Licensing
 
 ## 1. Summary
 
@@ -27,7 +27,7 @@
 
 ## 3. Case grounding for scenario families (to extend in T-023 / T-049)
 
-Each row is a **publicly reported case**, coded into Kaaval's stage model. Fill in more rows (target 10+). Record only what the article states. Don't invent details.
+Each row is a **publicly reported case**, coded into Thunai's stage model. Fill in more rows (target 10+). Record only what the article states. Don't invent details.
 
 | # | Case (as reported) | Date | S1 liquidation | S2 pooling | S3 new payee | S4 large transfer | Call / isolation | Branch? | Outcome | Family | Source |
 |---|---|---|---|---|---|---|---|---|---|---|---|
