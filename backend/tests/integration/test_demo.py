@@ -70,6 +70,9 @@ async def test_reset_restores_seed_quickly_and_hero_runs(
         assert runs[0]["run_id"] == run_id
         assert runs[0]["status"] == "DONE", runs[0]
         assert runs[0]["transfers"][0]["tier"] == "VERY_HIGH"
+        # Even at a finite, very high speed every step is decided at its scenario time.
+        assert runs[0]["transfers"][0]["raw_score"] == 115
+        assert runs[0]["transfers"][0]["assessed_at"].startswith("2026-10-03T05:50")
         clock = (await c.get("/api/v1/demo/clock", headers=headers)).json()
         assert clock["sim_now"].startswith("2026-10-03")
         assert clock["running_scenario"] is None

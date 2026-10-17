@@ -63,16 +63,21 @@ async def run_steps(
     teller_login: tuple[str, str] | None = None,
     on_line: Callable[[str], None] = lambda _: None,
 ) -> list[StepResult]:
-    """speed = math.inf replays instantly (tests, evaluation)."""
+    """speed = math.inf replays instantly (tests, evaluation).
+
+    The clock is frozen at the step's exact time while the step is posted, so every decision
+    sees the scenario's time regardless of speed; it runs at `speed` only while waiting for the
+    next step (so the demo clock visibly moves).
+    """
     results: list[StepResult] = []
     previous = None
-    clock_speed = 0.0 if math.isinf(speed) else speed
     for step in steps:
         if previous is not None and not math.isinf(speed):
+            await client.set_clock(previous, speed, step.scenario_id)
             gap = (step.at - previous).total_seconds() / speed
             await asyncio.sleep(min(max(gap, 0.0), MAX_SLEEP_SECONDS))
         previous = step.at
-        await client.set_clock(step.at, clock_speed, step.scenario_id)
+        await client.set_clock(step.at, 0.0, step.scenario_id)
         if step.kind == "teller":
             if teller_login is None:
                 raise RuntimeError("teller steps need a teller login")

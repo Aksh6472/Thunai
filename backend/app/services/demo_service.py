@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 
 from app.core.clock import SimClock
 from app.core.errors import DemoModeDisabled, NotFound
+from app.core.rate_limit import RateLimiter
 from app.core.security import hmac_msisdn
 from app.core.settings import Settings
 from app.domain.enums import ActorType, FriRating
@@ -72,7 +73,8 @@ def reset(session: Session, state: Any) -> ResetOut:
     if isinstance(state.clock, SimClock):
         state.clock.reload()
     state.console_notifier.clear()
-    state.rate_limiter.enabled = state.settings.rate_limits_enabled
+    # A fresh limiter: a presenter's repeated logins must not lock them out after a reset.
+    state.rate_limiter = RateLimiter(enabled=state.settings.rate_limits_enabled)
     audit(
         session,
         "DEMO_RESET",
